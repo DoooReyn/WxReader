@@ -20,7 +20,7 @@ class _Languages:
         "app:name": "微读自动阅读器",
 
         # main menu
-        "main_menu:file": "文件",
+        "main_menu:file": "更多",
         "main_menu:file:help": "帮助",
         "main_menu:file:about": "关于",
         "main_menu:file:profile": "选项",

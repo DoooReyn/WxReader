@@ -46,12 +46,12 @@ class _View(GUI.View):
         self.ui_tool_bar.setMovable(False)
         self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.ui_act_back_home = self.add_action(MainToolbar.ActionBackHome, self.ui_tool_bar)
-        self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
         self.ui_act_theme = self.add_action(MainToolbar.ActionExport, self.ui_tool_bar)
         self.ui_act_export = self.add_action(MainToolbar.ActionTheme, self.ui_tool_bar)
-        self.ui_act_speed_up = self.add_action(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
-        self.ui_act_speed_dw = self.add_action(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
         self.ui_act_screen = self.add_action(MainToolbar.ActionFullscreen, self.ui_tool_bar)
+        self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
+        self.ui_act_speed_dw = self.add_action(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
+        self.ui_act_speed_up = self.add_action(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
 
         # 1.3 内容
         self.ui_webview = QWebEngineView()
