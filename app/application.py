@@ -46,7 +46,7 @@ class Application(object):
         self.qt_app = QApplication(sys.argv)
         self.qt_app.setApplicationName(I18n.text("app:name"))
         self.qt_app.setApplicationDisplayName(I18n.text("app:name"))
-        self.qt_app.setStyleSheet('QWidget {font-family: "微软雅黑"; font-size: 15px; }')
+        self.qt_app.setStyleSheet(GUI.Theme.Default)
         self.qt_app.setWindowIcon(GUI.icon(ResMap.icon_app))
         self.qt_win = Window()
 

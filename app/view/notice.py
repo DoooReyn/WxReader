@@ -27,7 +27,6 @@ class _View(GUI.View):
         self.ui_msg_box.setAcceptRichText(True)
         self.ui_msg_box.setOpenExternalLinks(True)
         self.ui_msg_box.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
-        # self.ui_msg_box.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui_btn_ok = QPushButton(I18n.text("notice:btn_ok"))
         self.ui_btn_ok.setFixedSize(120, 48)
 

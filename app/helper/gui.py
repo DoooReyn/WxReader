@@ -22,19 +22,103 @@ class GUI:
     """GUI辅助工具"""
 
     class Preferences:
+        """默认值"""
         layout_spacing = 8
         line_height = 36
-        font_size = 12
-        font_name = 'Microsoft YaHei'
+        font_size = 14
+        font_name = '微软雅黑'
         view_size = QSize(640, 480)
 
+    class Theme:
+        """主题"""
+        Default = """
+            QWidget 
+            {
+                font-family: "微软雅黑"; 
+                font-size: 15px;
+                padding: 4px 2px 2px 4px;
+            }
+            
+            QTextBrowser 
+            { 
+                border: none; 
+                border-radius: 4px; 
+                background-color: #fbfbfb; 
+            }
+
+            QScrollBar:vertical
+            {
+                background-color: #f1f1f1;
+                width: 8px;
+                margin: 0px 0px 0px 0px;
+                border: 1px transparent #2A2929;
+            }
+        
+            QScrollBar::handle:vertical
+            {
+                background-color: #c1c1c1;
+                min-height: 5px;
+                border-radius: 4px;
+            }
+        
+            QScrollBar::sub-line:vertical
+            {
+                margin: 3px 0px 3px 0px;
+                border-image: url(:/qss_icons/rc/up_arrow_disabled.png);
+                height: 10px;
+                width: 10px;
+                subcontrol-position: top;
+                subcontrol-origin: margin;
+            }
+        
+            QScrollBar::add-line:vertical
+            {
+                margin: 3px 0px 3px 0px;
+                border-image: url(:/qss_icons/rc/down_arrow_disabled.png);
+                height: 10px;
+                width: 10px;
+                subcontrol-position: bottom;
+                subcontrol-origin: margin;
+            }
+        
+            QScrollBar::sub-line:vertical:hover,QScrollBar::sub-line:vertical:on
+            {
+                border-image: url(:/qss_icons/rc/up_arrow.png);
+                height: 10px;
+                width: 10px;
+                subcontrol-position: top;
+                subcontrol-origin: margin;
+            }
+        
+            QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on
+            {
+                border-image: url(:/qss_icons/rc/down_arrow.png);
+                height: 10px;
+                width: 10px;
+                subcontrol-position: bottom;
+                subcontrol-origin: margin;
+            }
+        
+            QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+            {
+                background: none;
+            }
+        
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+            {
+                background: none;
+            }
+        """
+
     class GridItem:
+        """网格子项"""
         def __init__(self, widget: QWidget, col_start: int, col_span: int):
             self.widget = widget
             self.col_start = col_start
             self.col_span = col_span
 
     class View(QWidget):
+        """视窗基类"""
         window_code: int = 0
         rect_key: str = None
 
