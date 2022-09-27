@@ -8,7 +8,10 @@
 """
 from PyQt5.QtCore import pyqtSignal as QSignal, QObject
 
+from helper.cmm import Cmm
 
+
+@Cmm.Decorator.Singleton
 class Signals(QObject):
     """Qt信号"""
 

@@ -16,7 +16,27 @@ class _Languages:
     语言包列表
     """
     CN = {
-        "app:name": "微读自动阅读器"
+        # general
+        "app:name": "微读自动阅读器",
+
+        # main menu
+        "main_menu:file": "文件",
+        "main_menu:file:help": "帮助",
+        "main_menu:file:about": "关于",
+        "main_menu:file:profile": "选项",
+        "main_menu:file:quit": "退出",
+
+        # toolbar
+        "toolbar:auto": "自动阅读",
+        "toolbar:export": "导出笔记",
+        "toolbar:theme": "切换主题",
+        "toolbar:fullscreen": "切换全屏",
+        "toolbar:back_home": "回到首页",
+        "toolbar:speed_up": "加速",
+        "toolbar:speed_dw": "减速",
+
+        # debug
+        "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",
     }
 
 

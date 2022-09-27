@@ -26,7 +26,7 @@ class I18n:
         if I18n.get_lang() != pack.name:
             Preferences.storage.setValue(UserKey.General.Lang, pack.name)
             # 语言包切换信号触发
-            Signals.lang_changed.emit(pack.name)
+            Signals().lang_changed.emit(pack.name)
 
     @staticmethod
     def text(key: str):

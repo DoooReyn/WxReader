@@ -1,11 +1,13 @@
-#
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+# -*- coding: utf-8 -*-
 
+"""
+@File    : app.py
+@Time    : 2022/9/27 17:21
+@Author  : DoooReyn<jl88744653@gmail.com>
+@Desc    : 应用入口
+"""
 
-# Press the green button in the gutter to run the script.
+from application import Application
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    Application().run()
