@@ -133,3 +133,6 @@ dmypy.json
 
 # vscode
 .vscode
+
+# qrc
+*.qrc
