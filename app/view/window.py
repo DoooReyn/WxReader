@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QMenuBar, QSystemTrayIcon, QToolBar
 
-from conf.menus import MainMenu, MainToolbar
+from conf.menus import MainMenu, MainToolbar, MainTray
 from conf.res_map import ResMap
 from conf.user_key import UserKey
 from conf.views import Views
@@ -30,13 +30,13 @@ class _View(GUI.View):
         # 1.1 菜单栏
         self.ui_menu_bar = QMenuBar(self)
 
-        menu_name = I18n.text(MainMenu.File.Name)
+        menu_name = I18n.text(MainMenu.More.Name)
         self.ui_menu_file = QMenu(menu_name, self)
         self.ui_menu_bar.addMenu(self.ui_menu_file)
-        self.ui_act_help = self.add_action(MainMenu.File.ActionHelp, self.ui_menu_file)
-        self.ui_act_about = self.add_action(MainMenu.File.ActionAbout, self.ui_menu_file)
-        self.ui_act_profile = self.add_action(MainMenu.File.ActionProfile, self.ui_menu_file)
-        self.ui_act_quit = self.add_action(MainMenu.File.ActionQuit, self.ui_menu_file)
+        self.ui_act_help = self.add_action(MainMenu.More.ActionHelp, self.ui_menu_file)
+        self.ui_act_about = self.add_action(MainMenu.More.ActionAbout, self.ui_menu_file)
+        self.ui_act_profile = self.add_action(MainMenu.More.ActionProfile, self.ui_menu_file)
+        self.ui_act_quit = self.add_action(MainMenu.More.ActionQuit, self.ui_menu_file)
 
         # 1.2 工具栏
         self.ui_tool_bar = QToolBar('工具栏', self)
@@ -52,6 +52,7 @@ class _View(GUI.View):
         self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
         self.ui_act_speed_dw = self.add_action(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
         self.ui_act_speed_up = self.add_action(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
+        self.ui_act_sponsor = self.add_action(MainToolbar.ActionSponsor, self.ui_tool_bar)
 
         # 1.3 内容
         self.ui_webview = QWebEngineView()
@@ -60,6 +61,9 @@ class _View(GUI.View):
         # 1.4 系统托盘
         self.ui_tray = QSystemTrayIcon(self)
         self.ui_tray.setIcon(GUI.icon(ResMap.icon_app))
+        self.ui_tray_menu = QMenu(self)
+        self.add_action(MainTray.ActionQuit, self.ui_tray_menu)
+        self.ui_tray.setContextMenu(self.ui_tray_menu)
         self.ui_tray.show()
 
 
@@ -116,6 +120,9 @@ class Window(QMainWindow, _View):
     def on_main_menu_profile(self):
         print('on_main_menu_profile')
         pass
+
+    def on_toolbar_sponsor(self):
+        print('on_toolbar_sponsor')
 
     def on_toolbar_fullscreen(self):
         if self.isFullScreen():

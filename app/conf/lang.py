@@ -20,11 +20,11 @@ class _Languages:
         "app:name": "微读自动阅读器",
 
         # main menu
-        "main_menu:file": "更多",
-        "main_menu:file:help": "帮助",
-        "main_menu:file:about": "关于",
-        "main_menu:file:profile": "选项",
-        "main_menu:file:quit": "退出",
+        "main_menu:more": "更多",
+        "main_menu:more:help": "帮助",
+        "main_menu:more:about": "关于",
+        "main_menu:more:profile": "选项",
+        "main_menu:more:quit": "退出",
 
         # toolbar
         "toolbar:auto": "自动阅读",
@@ -34,6 +34,7 @@ class _Languages:
         "toolbar:back_home": "回到首页",
         "toolbar:speed_up": "加速",
         "toolbar:speed_dw": "减速",
+        "toolbar:sponsor": "赞助",
 
         # debug
         "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",

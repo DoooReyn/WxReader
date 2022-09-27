@@ -3,6 +3,7 @@ class ResMap:
     icon_arrow_autofit_down = ":icon/arrow_autofit_down"
     icon_arrows_maximize = ":icon/arrows_maximize"
     icon_brand_github = ":icon/brand_github"
+    icon_coffee = ":icon/coffee"
     icon_hearts = ":icon/hearts"
     icon_help = ":icon/help"
     icon_home_heart = ":icon/home_heart"
