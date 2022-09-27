@@ -24,7 +24,7 @@ class Signals(QObject):
     logger_fatal = QSignal(str)
 
     # 窗口
-    win_closed = QSignal(str)
+    win_closed = QSignal(int)
     win_focus_main = QSignal()
 
     # 多语言

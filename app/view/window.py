@@ -16,12 +16,14 @@ from conf.user_key import UserKey
 from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
+from view.notice import Notice
 
 
 class _View(GUI.View):
     """
     主窗口视窗基类
     """
+
     def __init__(self):
         super(_View, self).__init__()
 
@@ -109,13 +111,21 @@ class Window(QMainWindow, _View):
             else:
                 self.showNormal()
 
-    def on_main_menu_help(self):
-        print('on_main_menu_help')
-        pass
+    @staticmethod
+    def on_main_menu_help():
+        Notice(Views.Help,
+               UserKey.Help.WinRect,
+               I18n.text("main_menu:more:help"),
+               I18n.text("notice:help")
+               ).exec()
 
-    def on_main_menu_about(self):
-        print('on_main_menu_about')
-        pass
+    @staticmethod
+    def on_main_menu_about():
+        Notice(Views.About,
+               UserKey.About.WinRect,
+               I18n.text("main_menu:more:about"),
+               I18n.text("notice:about")
+               ).exec()
 
     def on_main_menu_profile(self):
         print('on_main_menu_profile')

@@ -24,7 +24,7 @@ class GUI:
     class Preferences:
         layout_spacing = 8
         line_height = 36
-        font_size = 11
+        font_size = 12
         font_name = 'Microsoft YaHei'
         view_size = QSize(640, 480)
 

@@ -14,3 +14,9 @@ class UserKey:
     class General:
         Lang = 'general:i18n_lang'
         WinRect = 'general:win_rect'
+
+    class Help:
+        WinRect = 'help:win_rect'
+
+    class About:
+        WinRect = 'about:win_rect'
