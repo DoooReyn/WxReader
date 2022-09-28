@@ -20,5 +20,8 @@ class Views:
     # 关于
     About = 2
 
-    # 配置
+    # 选项
     Profile = 3
+
+    # 赞助
+    Sponsor = 4

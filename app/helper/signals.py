@@ -29,3 +29,6 @@ class Signals(QObject):
 
     # 多语言
     lang_changed = QSignal(str)
+
+    # 阅读器
+    reader_setting_changed = QSignal(int)

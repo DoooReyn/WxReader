@@ -61,14 +61,11 @@ class _Languages:
         # general
         "app:name": "微读自动阅读器",
 
-        # main menu
-        "main_menu:more": "更多",
-        "main_menu:more:help": "查看帮助",
-        "main_menu:more:about": "关于作者",
-        "main_menu:more:profile": "更多选项",
-        "main_menu:more:quit": "退出阅读",
-
         # toolbar
+        "toolbar:help": "查看帮助",
+        "toolbar:about": "关于作者",
+        "toolbar:profile": "更多选项",
+        "toolbar:quit": "退出阅读",
         "toolbar:auto": "自动阅读",
         "toolbar:export": "导出笔记",
         "toolbar:theme": "切换主题",
@@ -83,6 +80,8 @@ class _Languages:
         "notice:btn_ok": "好哒！",
         "notice:about": ABOUT_CN,
         "notice:help": HELP_CN,
+        "notice:profile": HELP_CN,
+        "notice:sponsor": HELP_CN,
 
         # debug
         "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",

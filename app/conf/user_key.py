@@ -19,9 +19,17 @@ class UserKey:
         Scrollable = 'reader:scrollable'
         Pinned = 'reader:pinned'
         Speed = 'reader:speed'
+        Step = 'reader:step'
+        LatestUrl = 'reader:latest_url'
 
     class Help:
         WinRect = 'help:win_rect'
 
     class About:
         WinRect = 'about:win_rect'
+
+    class Profile:
+        WinRect = 'profile:win_rect'
+
+    class Sponsor:
+        WinRect = 'sponsor:win_rect'

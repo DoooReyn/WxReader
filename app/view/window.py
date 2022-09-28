@@ -6,9 +6,8 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 主窗口
 """
-from PyQt5.QtCore import QEvent, QObject, Qt, QUrl
-from PyQt5.QtGui import QMouseEvent
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QSystemTrayIcon, QToolBar
 
 from conf.menus import MainToolbar, MainTray
@@ -18,7 +17,9 @@ from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences
+from helper.signals import Signals
 from view.notice import Notice
+from view.webview import ReaderActions, Webview
 
 
 class _View(GUI.View):
@@ -55,7 +56,7 @@ class _View(GUI.View):
         self.ui_act_pinned.setCheckable(True)
 
         # 1.2 内容
-        self.ui_webview = QWebEngineView()
+        self.ui_webview = Webview()
         self.ui_webview.setContextMenuPolicy(Qt.NoContextMenu)
 
         # 1.3 系统托盘
@@ -73,7 +74,6 @@ class Window(QMainWindow, _View):
         - 继承自视窗基类
         - 继承自 QMainWindow
     """
-    HOME_PAGE = QUrl('https://weread.qq.com/')
 
     def __init__(self):
         super(Window, self).__init__()
@@ -90,7 +90,6 @@ class Window(QMainWindow, _View):
         self.setWindowIcon(GUI.icon(ResMap.icon_app))
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.ui_tool_bar)
         self.setCentralWidget(self.ui_webview)
-        self.ui_webview.load(Window.HOME_PAGE)
 
     def setup_preferences(self):
         self.ui_act_auto.setChecked(Preferences.storage.value(UserKey.Reader.Scrollable, False, bool))
@@ -102,17 +101,13 @@ class Window(QMainWindow, _View):
         # noinspection PyUnresolvedReferences
         self.ui_tray.activated.connect(self.on_tray_activated)
 
-    def eventFilter(self, obj: 'QObject', event: QEvent) -> bool:
+    def closeEvent(self, event: QCloseEvent):
+        Preferences.storage.setValue(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
+        event.accept()
+        super(Window, self).closeEvent(event)
+
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
         et = event.type()
-        # event.
-        # display = True
-        # if et in [QEvent.Enter, QEvent.WindowActivate, QEvent.HoverEnter, QEvent.HoverMove, QEvent.MouseMove]:
-        #     display = True
-        # if self.isFullScreen():
-        #     self.ui_tool_bar.hide()
-        # else:
-        #     self.ui_tool_bar.show() if display else self.ui_tool_bar.hide()
-        # print(event.type(), display)
         moved = et in [
             QEvent.MouseMove,
             QEvent.MouseTrackingChange,
@@ -126,7 +121,6 @@ class Window(QMainWindow, _View):
             QEvent.GraphicsSceneMove,
             QEvent.TabletMove,
         ]
-        # print(et, moved)
         if moved:
             self.mouseMoveEvent(event)
         return super(Window, self).eventFilter(obj, event)
@@ -160,27 +154,36 @@ class Window(QMainWindow, _View):
                 self.showNormal()
 
     @staticmethod
-    def on_main_menu_help():
+    def on_toolbar_help():
         Notice(Views.Help,
                UserKey.Help.WinRect,
-               I18n.text("main_menu:more:help"),
+               I18n.text("toolbar:help"),
                I18n.text("notice:help")
                ).exec()
 
     @staticmethod
-    def on_main_menu_about():
+    def on_toolbar_about():
         Notice(Views.About,
                UserKey.About.WinRect,
-               I18n.text("main_menu:more:about"),
+               I18n.text("toolbar:about"),
                I18n.text("notice:about")
                ).exec()
 
-    def on_main_menu_profile(self):
-        print('on_main_menu_profile')
-        pass
+    @staticmethod
+    def on_toolbar_profile():
+        Notice(Views.Profile,
+               UserKey.Help.WinRect,
+               I18n.text("toolbar:profile"),
+               I18n.text("notice:profile")
+               ).exec()
 
-    def on_toolbar_sponsor(self):
-        print('on_toolbar_sponsor')
+    @staticmethod
+    def on_toolbar_sponsor():
+        Notice(Views.Sponsor,
+               UserKey.Help.WinRect,
+               I18n.text("toolbar:sponsor"),
+               I18n.text("notice:sponsor")
+               ).exec()
 
     def on_toolbar_fullscreen(self):
         if self.isFullScreen():
@@ -188,31 +191,40 @@ class Window(QMainWindow, _View):
         else:
             self.showFullScreen()
 
-    def on_toolbar_speed_up(self):
-        print('on_toolbar_speed_up')
-        pass
-
-    def on_toolbar_speed_dw(self):
-        print('on_toolbar_speed_dw')
-        pass
-
-    def on_toolbar_export(self):
-        print('on_toolbar_export')
-        pass
-
-    def on_toolbar_back_home(self):
-        self.ui_webview.load(Window.HOME_PAGE)
-
-    def on_toolbar_set_auto(self):
-        Preferences.storage.setValue(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
-
-    def on_toolbar_theme(self):
-        print('on_toolbar_theme')
-        pass
-
     def on_toolbar_pinned(self):
         Preferences.storage.setValue(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
 
+    def on_toolbar_speed_up(self):
+        self.adjust_speed(True)
+
+    def on_toolbar_speed_dw(self):
+        self.adjust_speed(False)
+
     @staticmethod
-    def on_main_menu_quit():
+    def adjust_speed(speed_up: bool):
+        step = Preferences.storage.value(UserKey.Reader.Step, 1.0, float)
+        speed = Preferences.storage.value(UserKey.Reader.Speed, 1.0, float)
+        now = min(10.0, max(0.1, speed + step if speed_up else -step))
+        if now != speed:
+            Preferences.storage.setValue(UserKey.Reader.Speed, now)
+            Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
+
+    @staticmethod
+    def on_toolbar_export():
+        Signals().reader_setting_changed.emit(ReaderActions.ExportNote)
+
+    @staticmethod
+    def on_toolbar_back_home():
+        Signals().reader_setting_changed.emit(ReaderActions.BackHome)
+
+    def on_toolbar_set_auto(self):
+        Preferences.storage.setValue(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
+        Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
+
+    @staticmethod
+    def on_toolbar_theme():
+        Signals().reader_setting_changed.emit(ReaderActions.NextTheme)
+
+    @staticmethod
+    def on_toolbar_quit():
         QApplication.exit()
