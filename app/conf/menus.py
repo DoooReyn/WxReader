@@ -19,26 +19,21 @@ class ActionInfo:
         self.shortcut = shortcut
 
 
-class MainMenu:
-    """菜单栏"""
-    class More:
-        Name = 'main_menu:more'
-        ActionHelp = ActionInfo('main_menu:more:help', ResMap.icon_help, 'on_main_menu_help', 'F1')
-        ActionAbout = ActionInfo('main_menu:more:about', ResMap.icon_brand_github, 'on_main_menu_about', 'F2')
-        ActionProfile = ActionInfo('main_menu:more:profile', ResMap.icon_settings, 'on_main_menu_profile', 'F12')
-        ActionQuit = ActionInfo('main_menu:more:quit', ResMap.icon_logout, 'on_main_menu_quit', 'Alt+Q')
-
-
 class MainToolbar:
     """工具栏"""
+    ActionHelp = ActionInfo('main_menu:more:help', ResMap.icon_help, 'on_main_menu_help', 'F1')
+    ActionAbout = ActionInfo('main_menu:more:about', ResMap.icon_brand_github, 'on_main_menu_about', 'F2')
+    ActionProfile = ActionInfo('main_menu:more:profile', ResMap.icon_settings, 'on_main_menu_profile', 'F12')
+    ActionQuit = ActionInfo('main_menu:more:quit', ResMap.icon_logout, 'on_main_menu_quit', 'Alt+Q')
     ActionBackHome = ActionInfo('toolbar:back_home', ResMap.icon_home_heart, 'on_toolbar_back_home', 'F5')
     ActionExport = ActionInfo('toolbar:export', ResMap.icon_markdown, 'on_toolbar_export', 'F8')
     ActionTheme = ActionInfo('toolbar:theme', ResMap.icon_sun, 'on_toolbar_theme', 'F9')
-    ActionAuto = ActionInfo('toolbar:auto', ResMap.icon_player_play, 'on_toolbar_set_auto', 'F10')
+    ActionAuto = ActionInfo('toolbar:auto', ResMap.icon_arrow_autofit_down, 'on_toolbar_set_auto', 'F10')
     ActionFullscreen = ActionInfo('toolbar:fullscreen', ResMap.icon_arrows_maximize, 'on_toolbar_fullscreen', 'F11')
-    ActionSpeedUp = ActionInfo('toolbar:speed_up', ResMap.icon_plus, 'on_toolbar_speed_up', '+')
-    ActionSpeedDw = ActionInfo('toolbar:speed_dw', ResMap.icon_minus, 'on_toolbar_speed_dw', '-')
-    ActionSponsor = ActionInfo('toolbar:sponsor', ResMap.icon_coffee, 'on_toolbar_sponsor', '-')
+    ActionSpeedUp = ActionInfo('toolbar:speed_up', ResMap.icon_chevrons_right, 'on_toolbar_speed_up', '+')
+    ActionSpeedDw = ActionInfo('toolbar:speed_dw', ResMap.icon_chevrons_left, 'on_toolbar_speed_dw', '-')
+    ActionSponsor = ActionInfo('toolbar:sponsor', ResMap.icon_coffee, 'on_toolbar_sponsor')
+    ActionPinned = ActionInfo('toolbar:pinned', ResMap.icon_pinned_off, 'on_toolbar_pinned')
 
 
 class MainTray:

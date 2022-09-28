@@ -15,6 +15,11 @@ class UserKey:
         Lang = 'general:i18n_lang'
         WinRect = 'general:win_rect'
 
+    class Reader:
+        Scrollable = 'reader:scrollable'
+        Pinned = 'reader:pinned'
+        Speed = 'reader:speed'
+
     class Help:
         WinRect = 'help:win_rect'
 

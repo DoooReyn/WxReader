@@ -63,10 +63,10 @@ class _Languages:
 
         # main menu
         "main_menu:more": "更多",
-        "main_menu:more:help": "帮助",
-        "main_menu:more:about": "关于",
-        "main_menu:more:profile": "选项",
-        "main_menu:more:quit": "退出",
+        "main_menu:more:help": "查看帮助",
+        "main_menu:more:about": "关于作者",
+        "main_menu:more:profile": "更多选项",
+        "main_menu:more:quit": "退出阅读",
 
         # toolbar
         "toolbar:auto": "自动阅读",
@@ -74,9 +74,10 @@ class _Languages:
         "toolbar:theme": "切换主题",
         "toolbar:fullscreen": "切换全屏",
         "toolbar:back_home": "回到首页",
-        "toolbar:speed_up": "加速",
-        "toolbar:speed_dw": "减速",
-        "toolbar:sponsor": "赞助",
+        "toolbar:speed_up": "再快一点",
+        "toolbar:speed_dw": "放慢一些",
+        "toolbar:sponsor": "一杯咖啡",
+        "toolbar:pinned": "固定此栏",
 
         # notice
         "notice:btn_ok": "好哒！",
@@ -85,7 +86,6 @@ class _Languages:
 
         # debug
         "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",
-
     }
 
 

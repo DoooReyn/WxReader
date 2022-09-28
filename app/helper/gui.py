@@ -35,10 +35,57 @@ class GUI:
             QWidget 
             {
                 font-family: "微软雅黑"; 
-                font-size: 15px;
-                padding: 4px 2px 2px 4px;
+                font-size: 13px;
             }
             
+            QMenuBar 
+            {
+                border: none;
+                background: #ffffff;
+                spacing: 2px;
+            }
+            
+            QToolBar 
+            {
+                border: none;
+                background: #ffffff;
+                spacing: 2px;
+            }
+            
+            QPushButton 
+            {
+                border: 2px solid #34a7ff;
+                border-radius: 10px;
+                background: #f4f8f8;
+                font: 15px;
+            }
+            
+            QPushButton::hover,pressed
+            {
+                font: bold;
+                background: #f4f8f8;
+            }
+            
+            QPushButton::pressed
+            {
+                font: bold;
+                margin: 1px 4px 0 4px;
+                background: #f4f8f8;
+            }
+            
+            QToolButton::hover,pressed {
+                border: 1px solid #8f8f8f;
+                border-radius: 10px;
+                background-color: #f1f1f1;
+                font: bold;
+            }
+
+            QToolButton::checked {
+                border: 1px solid #8f8f8f;
+                border-radius: 10px;
+                background-color: #f1f1f1;
+            }
+
             QTextBrowser 
             { 
                 border: none; 

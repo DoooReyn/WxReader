@@ -9,10 +9,11 @@
 import sys
 from traceback import format_exception
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
-from conf.resources import qInitResources
 
 from conf.res_map import ResMap
+from conf.resources import qInitResources
 from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences
@@ -44,6 +45,7 @@ class Application(object):
 
         # 创建 Qt 窗口
         self.qt_app = QApplication(sys.argv)
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
         self.qt_app.setApplicationName(I18n.text("app:name"))
         self.qt_app.setApplicationDisplayName(I18n.text("app:name"))
         self.qt_app.setStyleSheet(GUI.Theme.Default)
