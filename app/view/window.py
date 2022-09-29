@@ -107,7 +107,7 @@ class Window(QMainWindow, _View):
         event.accept()
         super(Window, self).closeEvent(event)
 
-    def eventFilter(self, obj: QObject, event: QEvent) -> bool:
+    def eventFilter(self, obj: QObject, event: QEvent):
         et = event.type()
         moved = et in [
             QEvent.MouseMove,
@@ -129,7 +129,7 @@ class Window(QMainWindow, _View):
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         """
         自动隐藏工具栏
-        - 使用 hide 会导致控件不可用，连带其子控件关联的事件都失效了，因此使用 height 来控制它的
+        - 使用 hide 会导致控件不可用，连带其子控件关联的事件都失效了，因此使用 height 来控制
         """
         if hasattr(event, 'pos') and self.ui_act_pinned.isChecked() is False:
             pos = event.pos()
@@ -153,6 +153,25 @@ class Window(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
+
+    def on_toolbar_fullscreen(self):
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
+
+    def on_toolbar_pinned(self):
+        Preferences.storage.setValue(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
+
+    def on_toolbar_speed_up(self):
+        self.adjust_speed(True)
+
+    def on_toolbar_speed_dw(self):
+        self.adjust_speed(False)
+
+    def on_toolbar_set_auto(self):
+        Preferences.storage.setValue(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
+        Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
     @staticmethod
     def on_toolbar_help():
@@ -186,21 +205,6 @@ class Window(QMainWindow, _View):
                I18n.text("notice:sponsor")
                ).exec()
 
-    def on_toolbar_fullscreen(self):
-        if self.isFullScreen():
-            self.showNormal()
-        else:
-            self.showFullScreen()
-
-    def on_toolbar_pinned(self):
-        Preferences.storage.setValue(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
-
-    def on_toolbar_speed_up(self):
-        self.adjust_speed(True)
-
-    def on_toolbar_speed_dw(self):
-        self.adjust_speed(False)
-
     @staticmethod
     def adjust_speed(speed_up: bool):
         step = Preferences.storage.value(UserKey.Reader.Step, 1.0, float)
@@ -217,10 +221,6 @@ class Window(QMainWindow, _View):
     @staticmethod
     def on_toolbar_back_home():
         Signals().reader_setting_changed.emit(ReaderActions.BackHome)
-
-    def on_toolbar_set_auto(self):
-        Preferences.storage.setValue(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
-        Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
     @staticmethod
     def on_toolbar_theme():

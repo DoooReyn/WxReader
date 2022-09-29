@@ -13,6 +13,7 @@
     - 最后，QWebEngineView 要指定 QWebEnginePage
     - 微信读书网页版设定了开启开发者工具就会触发断点，可以在调试面板禁用所有断点
 """
+from typing import Callable
 
 from PyQt5.QtCore import pyqtSignal as QSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
 from PyQt5.QtWebChannel import QWebChannel
@@ -25,6 +26,7 @@ from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences
 from helper.signals import Signals
+from helper.thread_runner import ThreadRunner
 from view.notice import FillType, Notice
 
 
@@ -37,6 +39,7 @@ class ReaderActions:
     SpeedUp = 4
     ExportNote = 5
     NextTheme = 6
+    WatchSelection = 11
 
 
 class PjTransport(QObject):
@@ -45,12 +48,22 @@ class PjTransport(QObject):
     # Python 调用 JS
     p2j = QSignal(int)
 
+    def __init__(self):
+        super(PjTransport, self).__init__()
+        self.has_selection = False
+
     # JS 调用 Python
     @pyqtSlot(str)
     def j2p(self, msg):
         print('Py received output:', msg)
 
-    def trigger(self, act: ReaderActions):
+    @pyqtSlot(int)
+    def setSelection(self, has):
+        print('set selection:', has)
+        self.has_selection = has == 1
+        print('选中' if self.has_selection else '未选中')
+
+    def trigger(self, act: int):
         # noinspection PyUnresolvedReferences
         self.p2j.emit(act)
 
@@ -67,6 +80,7 @@ class Webview(QWebEngineView, GUI.View):
     def __init__(self):
         super(Webview, self).__init__()
 
+        # self.scroller = ThreadRunner().start(self._on_scroll)
         self.profile = QWebEngineProfile(Webview.PROFILE, self)
         self.inject_js_script(Webview.SCRIPT_WEB_CONTENT, "WebContent")
         self.inject_js_script(ResMap.js_reader, "WxReader")
@@ -87,7 +101,7 @@ class Webview(QWebEngineView, GUI.View):
             script = QWebEngineScript()
             script.setName(name)
             script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
-            script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentCreation)
+            script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentReady)
             script.setRunsOnSubFrames(True)
             script.setSourceCode(source)
             self.profile.scripts().insert(script)
@@ -121,8 +135,22 @@ class Webview(QWebEngineView, GUI.View):
         url = self.current_url()
         return url.startswith(Webview.BOOK_PAGE)
 
-    def _on_reader_action_triggered(self, act: ReaderActions):
-        print('阅读器动作触发', act)
+    def run_js(self, script: str, callback: Callable = None):
+        def _pass(_):
+            pass
+
+        callback = callback or _pass
+        self.page().runJavaScript(script, callback)
+
+    def _on_scroll(self):
+        if self.is_on_reading_page() is False:
+            ThreadRunner().pause(self.scroller)
+            return
+        if self.pjTransport.has_selection is True:
+            ThreadRunner().pause(self.scroller)
+            return
+
+    def _on_reader_action_triggered(self, act: int):
         if act == ReaderActions.BackHome:
             self.go_home()
             return
@@ -144,6 +172,7 @@ class Webview(QWebEngineView, GUI.View):
 
     def _on_load_finished_ok(self):
         print('[finished good]', self.current_url())
+        self.pjTransport.trigger(ReaderActions.WatchSelection)
 
     def _on_load_finished_bad(self):
         print('[finished  bad]', self.current_url())
@@ -158,3 +187,4 @@ class Webview(QWebEngineView, GUI.View):
 
     def _on_url_changed(self, url: QUrl):
         print('[ url changed ]', url.toString())
+        self.pjTransport.trigger(ReaderActions.WatchSelection)
