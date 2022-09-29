@@ -112,7 +112,7 @@ class Window(QMainWindow, _View):
         ThreadRunner().stop(self.scroller)
         self.scroller = None
         Preferences.storage.setValue(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
-        event.accept()
+        self.save_win_rect()
         super(Window, self).closeEvent(event)
 
     def eventFilter(self, obj: QObject, event: QEvent):

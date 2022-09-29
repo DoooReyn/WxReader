@@ -179,6 +179,12 @@ class GUI:
             event.accept()
             super().closeEvent(event)
 
+        def resizeEvent(self, event):
+            if self.rect_key is not None:
+                self.save_win_rect()
+            event.accept()
+            super().resizeEvent(event)
+
         def set_window_code(self, code: int):
             self.window_code = code
 
@@ -200,6 +206,7 @@ class GUI:
                 rect = [r.topLeft().x(), r.topLeft().y(), r.width(), r.height()]
                 rect = ','.join([str(r) for r in rect])
                 Preferences.storage.setValue(self.rect_key, rect)
+                print(self.rect_key, rect)
 
         @staticmethod
         def menu_method_not_implemented(menu, name):
