@@ -215,9 +215,9 @@ class Window(QMainWindow, _View):
 
     @staticmethod
     def adjust_speed(speed_up: bool):
-        step = Preferences.storage.value(UserKey.Reader.Step, 1.0, float)
-        speed = Preferences.storage.value(UserKey.Reader.Speed, 1.0, float)
-        now = min(10.0, max(0.1, speed + step if speed_up else -step))
+        step = Preferences.storage.value(UserKey.Reader.Step, 1, int)
+        speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
+        now = min(100, max(1, speed + step * (1 if speed_up else -1)))
         if now != speed:
             Preferences.storage.setValue(UserKey.Reader.Speed, now)
             Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)

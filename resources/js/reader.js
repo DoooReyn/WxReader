@@ -10,12 +10,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 /**
  * 数据缓存区
- * @type {{HasSelection: number, ScrollToEnd: number}}
+ * @type {{HasSelection: number, ScrollToEnd: number, Loading: number, Speed: number}}
  */
 const SwapData = {
     HasSelection: 0,
     ScrollToEnd: 0,
-    Loading: 0
+    Loading: 0,
+    Speed: 1
 }
 
 /**
@@ -75,21 +76,25 @@ function watchScroll() {
  * 执行滚动
  */
 function doScroll() {
-    window.scroll({left: 0, top: document.documentElement.scrollTop + 1, behavior: 'smooth'});
+    const top = document.documentElement.scrollTop || document.body.scrollTop;
+    window.scroll({left: 0, top: top + SwapData.Speed, behavior: 'smooth'});
 }
 
+/**
+ * 滚动到底部回调
+ */
 function onScrollToEnd() {
     if (SwapData.ScrollToEnd === 0) return;
 
     let element = document.querySelector('.readerFooter_button');
-    pjTransport && pjTransport.j2p(element ? '切换' : '不切换');
     if (element) {
-        // 下一章: 按键码 39
+        // 下一章: 按下向右按键（按键码39）
         pjTransport && pjTransport.j2p('切换下一章')
         fireKeyEvent(39);
         setSelection(0);
         setScrollToEnd(0);
     } else {
+        // 找不到下一章时，查看全文是否已结束
         let done = document.querySelector('.readerTopBar_title_link');
         if (done) {
             pjTransport && pjTransport.j2p('全书已读完！')
@@ -136,7 +141,7 @@ function watchSelection() {
 
     // reader_toolbar_container 在加载后并未创建，因此先要监听他的父节点
     const element_container = document.querySelector('.renderTargetContainer');
-    const observer_container = new MutationObserver(function (mutations, observe) {
+    const observer_container = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             for (const node of mutation.addedNodes) {
                 if (node.className === 'reader_toolbar_container') {
@@ -225,11 +230,15 @@ function changeTheme() {
     dark && pressMouseKey(dark);
 }
 
+/**
+ * 载入 QWebContent
+ */
 window.onload = function () {
     new QWebChannel(qt.webChannelTransport, function (channel) {
         window.pjTransport = channel.objects.pjTransport;
+
         pjTransport.p2j.connect(function (code) {
-            pjTransport.j2p(code);
+            // pjTransport.j2p(`正在应用阅读器动作: ${code}`);
             if (code === ReaderActions.ExportNote) {
                 exportNotes();
             } else if (code === ReaderActions.NextTheme) {
@@ -241,8 +250,16 @@ window.onload = function () {
                 doScroll();
             } else if (code === ReaderActions.CheckLoading) {
                 setPageLoading();
+            } else if (code > 1000) {
+                // 使用新的信号竟然不生效，暂时使用这种 Hack 方式来实现速度调节
+                const speed = code - 1000;
+                SwapData.Speed = speed;
+                localStorage.setItem('speed', speed.toString());
+                pjTransport.j2p(`正在应用页面滚动速度: ${speed}`);
             }
         })
+
+        SwapData.Speed = parseInt(localStorage.getItem('speed') || '1');
 
         // 自动启用选中监听
         watchSelection();

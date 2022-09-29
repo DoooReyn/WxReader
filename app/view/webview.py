@@ -5,17 +5,22 @@
 @Time    : 2022/9/28 15:28
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 微信读书网页视图
-@Todo    :
-    - ":/qtwebchannel/qwebchannel.js" 要用 QFile去读取，可将其放入 qrc 中
-    - QWebEngineProfile 要指定名称
-    - QWebEnginePage 要指定 QWebEngineProfile
-    - QWebChannel 要关联到 QWebEnginePage
-    - 最后，QWebEngineView 要指定 QWebEnginePage
+    - 初始化这个Web引擎比较复杂，具体有如下几个要求，缺一不可：
+        - QWebEngineProfile 要指定名称
+        - QWebEngineScript 要先准备好，再注入 QWebEngineProfile
+            - `qwebchannel.js` 是 Qt 内置的，要用 QFile 去读取，再转换为 QWebEngineScript
+            - 用户脚本可以放到 qrc 中，再转换为 QWebEngineScript
+        - QWebEnginePage 要指定 QWebEngineProfile
+        - QWebChannel 要关联到 QWebEnginePage
+            - QWebChannel 要关联信号对象，其名称将被注册到 JavaScript 中的 QWebChannel 对象上
+            - 利用信号可以让 Python 发消息给 JavaScript
+            - JavaScript 可以调用 Python 信号对象上的槽方法，不过要注意参数一定要对应，否则是不会生效的
+        - QWebEngineView 要指定 QWebEnginePage，之后的操作就都在这个页面对象上了
     - 微信读书网页版设定了开启开发者工具就会触发断点，可以在调试面板禁用所有断点
 """
 from typing import Callable
 
-from PyQt5.QtCore import pyqtSignal as QSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
 
@@ -31,54 +36,82 @@ from view.notice import FillType, Notice
 
 class ReaderActions:
     """阅读器动作"""
+
+    # 回到首页
     BackHome = 0
+    # 刷新页面
     Refresh = 1
+    # 切换自动阅读
     Scrollable = 2
+    # 降低滚动速度
     SpeedDown = 3
+    # 加快滚动速度
     SpeedUp = 4
+    # 导出笔记
     ExportNote = 5
+    # 切换主题
     NextTheme = 6
-    WatchSelection = 11
+    # 启用页面选中状态监听
+    Watching = 11
+    # 启用页面滚动状态监听
     Scrolling = 12
-    CheckLoading = 13
+    # 启用页面加载状态监听
+    Loading = 13
 
 
 class PjTransport(QObject):
     """Python/JS 消息交换中心"""
 
     # Python 调用 JS
-    p2j = QSignal(int)
+    # @pyqtSignal(int)
+    p2j = pyqtSignal(int)
+
+    # 调整滚动速度
+    # @pyqtSignal(int)
+    speed = pyqtSignal(int)
 
     def __init__(self):
         super(PjTransport, self).__init__()
+        # 页面是否有选中内容
         self.has_selection = False
+        # 页面是否已滚动到底部
         self.scroll_to_end = False
+        # 页面是否正在加载中
         self.loading = False
 
-    # JS 调用 Python
     @pyqtSlot(str)
     def j2p(self, msg):
-        # print('Python 收到消息:', msg)
+        """js 给 python 发消息，方便测试"""
+        print('Python 收到消息:', msg)
         pass
 
     @pyqtSlot(int)
     def setSelection(self, has):
+        """设置页面是否有选中内容"""
         self.has_selection = has == 1
-        # print('有选中' if self.has_selection else '无选中')
 
     @pyqtSlot(int)
     def setScrollToEnd(self, end):
+        """设置页面是否已滚动到底部"""
         self.scroll_to_end = end == 1
-        # print('已滚动到底部' if self.scroll_to_end else '还没滚到底')
 
     @pyqtSlot(int)
     def setPageLoading(self, loading):
+        """设置页面是否正在加载中"""
         self.loading = loading == 1
-        # print('页面加载中' if self.loading else '页面已加载')
 
     def trigger(self, act: int):
+        """触发阅读器动作"""
         # noinspection PyUnresolvedReferences
         self.p2j.emit(act)
+
+    def refresh_speed(self):
+        """刷新页面滚动速度"""
+        speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
+        print('刷新页面滚动速度', speed)
+        # noinspection PyUnresolvedReferences
+        # self.speed.emit(speed)
+        self.p2j.emit(1000 + speed)
 
 
 class Webview(QWebEngineView, GUI.View):
@@ -140,7 +173,6 @@ class Webview(QWebEngineView, GUI.View):
     def setup_signals(self):
         self.loadStarted.connect(self._on_load_started)
         self.loadFinished.connect(self._on_load_finished)
-        self.urlChanged.connect(self._on_url_changed)
         Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
 
     def restore_latest_page(self):
@@ -157,21 +189,14 @@ class Webview(QWebEngineView, GUI.View):
         url = self.current_url()
         return url.startswith(Webview.BOOK_PAGE)
 
-    def run_js(self, script: str, callback: Callable = None):
-        def _pass(_):
-            pass
-
-        callback = callback or _pass
-        self.page().runJavaScript(script, callback)
-
     def check_scroll(self):
-        self.pjTransport.trigger(ReaderActions.CheckLoading)
+        self.pjTransport.trigger(ReaderActions.Loading)
         if self.pjTransport.loading:
             print("页面加载中")
             return
         else:
             if self.wait_next is True:
-                self.pjTransport.trigger(ReaderActions.WatchSelection)
+                self.pjTransport.trigger(ReaderActions.Watching)
                 self.wait_next = False
                 print("下一章加载完成")
                 return
@@ -198,6 +223,9 @@ class Webview(QWebEngineView, GUI.View):
         elif act == ReaderActions.Refresh:
             self.goto_page(self.webpage.url())
             return
+        elif act == ReaderActions.SpeedDown or act == ReaderActions.SpeedUp:
+            self.pjTransport.refresh_speed()
+            return
 
         if self.is_on_reading_page():
             self.pjTransport.trigger(act)
@@ -206,28 +234,24 @@ class Webview(QWebEngineView, GUI.View):
         return self.page().url().toString()
 
     def _on_load_started(self):
-        print('[开始加载]', self.current_url())
+        print('页面开始加载', self.current_url())
         self.pjTransport.scroll_to_end = False
         self.pjTransport.has_selection = False
-        self.pjTransport.trigger(ReaderActions.WatchSelection)
+        self.pjTransport.trigger(ReaderActions.Watching)
 
     def _on_load_finished(self, result: bool):
-        self._on_load_finished_ok() if result else self._on_load_finished_bad()
-
-    def _on_load_finished_ok(self):
-        print('[加载完成]', self.current_url())
-        self.pjTransport.trigger(ReaderActions.WatchSelection)
-
-    def _on_load_finished_bad(self):
-        print('[加载失败]', self.current_url())
-        Notice(
-            Views.Exception,
-            UserKey.General.Exception,
-            I18n.text("exception:name"),
-            I18n.text("debug:network_error"),
-            FillType.PlainText,
-            True
-        ).exec()
-
-    def _on_url_changed(self, url: QUrl):
-        print('[页面切换]', url.toString())
+        if result:
+            print('页面加载完成', self.current_url())
+            self.pjTransport.trigger(ReaderActions.Watching)
+            # self.pjTransport.refresh_speed()
+            Signals().reader_setting_changed.emit(ReaderActions.SpeedUp)
+        else:
+            print('页面加载失败', self.current_url())
+            Notice(
+                Views.Exception,
+                UserKey.General.Exception,
+                I18n.text("exception:name"),
+                I18n.text("debug:network_error"),
+                FillType.PlainText,
+                True
+            ).exec()
