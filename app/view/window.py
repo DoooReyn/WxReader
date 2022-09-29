@@ -40,6 +40,7 @@ class _View(GUI.View):
         self.ui_tool_bar.setMovable(False)
         self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.ui_act_back_home = self.add_action(MainToolbar.ActionBackHome, self.ui_tool_bar)
+        self.ui_act_refresh = self.add_action(MainToolbar.ActionRefresh, self.ui_tool_bar)
         self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
         self.ui_act_speed_dw = self.add_action(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
         self.ui_act_speed_up = self.add_action(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
@@ -228,3 +229,7 @@ class Window(QMainWindow, _View):
     @staticmethod
     def on_toolbar_quit():
         QApplication.exit()
+
+    @staticmethod
+    def on_toolbar_refresh():
+        Signals().reader_setting_changed.emit(ReaderActions.Refresh)

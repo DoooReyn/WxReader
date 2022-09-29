@@ -25,3 +25,6 @@ class Views:
 
     # 赞助
     Sponsor = 4
+
+    # 异常
+    Exception = 999

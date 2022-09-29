@@ -58,6 +58,8 @@ class GUI:
                 border-radius: 10px;
                 background: #f4f8f8;
                 font: 15px;
+                min-width: 64px;
+                min-height: 32px;
             }
             
             QPushButton::hover,pressed

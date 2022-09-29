@@ -14,6 +14,7 @@ class UserKey:
     class General:
         Lang = 'general:i18n_lang'
         WinRect = 'general:win_rect'
+        Exception = 'general:exception_panel'
 
     class Reader:
         Scrollable = 'reader:scrollable'

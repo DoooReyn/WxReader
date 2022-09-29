@@ -63,6 +63,7 @@ class _Languages:
 
         # toolbar
         "toolbar:help": "查看帮助",
+        "toolbar:refresh": "刷新一下",
         "toolbar:about": "关于作者",
         "toolbar:profile": "更多选项",
         "toolbar:quit": "退出阅读",
@@ -83,8 +84,13 @@ class _Languages:
         "notice:profile": HELP_CN,
         "notice:sponsor": HELP_CN,
 
+        # exception
+        "exception:name": "异常通知",
+
         # debug
         "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",
+        "debug:inject_script_failed": "注入脚本{}失败",
+        "debug:network_error": "网络似乎有点问题呢~"
     }
 
 

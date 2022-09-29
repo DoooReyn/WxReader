@@ -34,8 +34,9 @@ class MainToolbar:
     ActionSpeedDw = ActionInfo('toolbar:speed_dw', ResMap.icon_chevrons_left, 'on_toolbar_speed_dw', '-')
     ActionSponsor = ActionInfo('toolbar:sponsor', ResMap.icon_coffee, 'on_toolbar_sponsor')
     ActionPinned = ActionInfo('toolbar:pinned', ResMap.icon_pinned_off, 'on_toolbar_pinned')
+    ActionRefresh = ActionInfo('toolbar:refresh', ResMap.icon_refresh, 'on_toolbar_refresh')
 
 
 class MainTray:
     """系统托盘"""
-    ActionQuit = ActionInfo('main_menu:more:quit', ResMap.icon_logout, 'on_main_menu_quit')
+    ActionQuit = ActionInfo('toolbar:quit', ResMap.icon_logout, 'on_toolbar_quit')
