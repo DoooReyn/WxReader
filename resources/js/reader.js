@@ -10,22 +10,94 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 /**
  * 数据缓存区
- * @type {{HasSelection: number}}
+ * @type {{HasSelection: number, ScrollToEnd: number}}
  */
 const SwapData = {
-    HasSelection: 0
+    HasSelection: 0,
+    ScrollToEnd: 0,
+    Loading: 0
 }
 
 /**
  * 阅读器动作
- * @type {{ExportNote: number, HasSelection: number, NextTheme: number}}
+ * @type {{ExportNote: number, WatchSelection: number, NextTheme: number}}
  */
 const ReaderActions = {
     WatchSelection: 11,
+    Scrolling: 12,
+    CheckLoading: 13,
     ExportNote: 5,
     NextTheme: 6,
 }
 
+/**
+ * 设置选中状态
+ * @param {number} value
+ */
+function setSelection(value) {
+    SwapData.HasSelection = value;
+    pjTransport && pjTransport.setSelection(SwapData.HasSelection);
+}
+
+/**
+ * 设置是否已滚动到底部
+ * @param {number} value
+ */
+function setScrollToEnd(value) {
+    SwapData.ScrollToEnd = value;
+    pjTransport && pjTransport.setScrollToEnd(SwapData.ScrollToEnd);
+}
+
+/**
+ * 滚动监听
+ */
+function watchScroll() {
+    document.onscroll = function () {
+        // 变量scrollTop是滚动条滚动时，滚动条上端距离顶部的距离
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        // 变量windowHeight是可视区的高度
+        const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        // 变量scrollHeight是滚动条的总高度（当前可滚动的页面的总高度）
+        const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        // 滚动条到底部
+        if (scrollTop + windowHeight >= scrollHeight) {
+            // 要进行的操作
+            setScrollToEnd(1);
+            onScrollToEnd();
+        } else {
+            setScrollToEnd(0);
+        }
+    }
+    pjTransport && pjTransport.j2p('滚动监听已启动！');
+}
+
+/**
+ * 执行滚动
+ */
+function doScroll() {
+    window.scroll({left: 0, top: document.documentElement.scrollTop + 1, behavior: 'smooth'});
+}
+
+function onScrollToEnd() {
+    if (SwapData.ScrollToEnd === 0) return;
+
+    let element = document.querySelector('.readerFooter_button');
+    pjTransport && pjTransport.j2p(element ? '切换' : '不切换');
+    if (element) {
+        // 下一章: 按键码 39
+        pjTransport && pjTransport.j2p('切换下一章')
+        fireKeyEvent(39);
+        setSelection(0);
+        setScrollToEnd(0);
+    } else {
+        let done = document.querySelector('.readerTopBar_title_link');
+        if (done) {
+            pjTransport && pjTransport.j2p('全书已读完！')
+        } else {
+            pjTransport && pjTransport.j2p('糟糕，未检测到的情况！')
+        }
+    }
+}
 
 /**
  * 监听选中状态
@@ -34,33 +106,24 @@ function watchSelection() {
     const MutationObserver = window['MutationObserver'] || window['WebKitMutationObserver'] || window['MozMutationObserver']
 
     /**
-     * 设置选中状态
-     */
-    function setSelection() {
-        pjTransport && pjTransport.setSelection(SwapData.HasSelection);
-    }
-
-    /**
      * 选中监听
      */
     function watch() {
         document.addEventListener('selectionchange', function () {
             let selection = window.getSelection()
             if (selection && selection.toString() !== '') {
-                SwapData.HasSelection = 1;
+                setSelection(1);
             } else {
-                SwapData.HasSelection = 0;
+                setSelection(0);
             }
-            setSelection();
         })
 
         const element_toolbar = document.querySelector('.reader_toolbar_container');
         const observer_toolbar = new MutationObserver(function (mutations) {
             mutations.forEach(function (mutation) {
                 if (mutation.type === 'attributes') {
-                    SwapData.HasSelection = mutation.target.style.display ? 0 : 1;
+                    setSelection(mutation.target.style.display ? 0 : 1);
                     pjTransport && pjTransport.j2p('选中状态改变');
-                    setSelection();
                 }
             });
         });
@@ -90,14 +153,22 @@ function watchSelection() {
     pjTransport && pjTransport.j2p('正在启用选中监听');
 }
 
+/**
+ * 页面是否正在加载中
+ * @return {boolean}
+ */
+function setPageLoading() {
+    SwapData.Loading = document.querySelector('.readerChapterContentLoading') ? 1 : 0;
+    pjTransport && pjTransport.setPageLoading(SwapData.Loading);
+}
 
 /**
  * 在元素上模拟鼠标按下事件
- * @param {string} elementName
+ * @param {string|HTMLElement} selector
  */
-function pressMouseKey(elementName) {
-    let elements = document.getElementsByClassName(elementName);
-    if (elements && elements.length > 0) {
+function pressMouseKey(selector) {
+    let element = (selector instanceof HTMLElement) ? selector : document.querySelector(selector);
+    if (element) {
         let clickEvent = document.createEvent('MouseEvent');
         clickEvent.initMouseEvent(
             'click',
@@ -116,10 +187,22 @@ function pressMouseKey(elementName) {
             0,
             null
         );
-        elements[0].dispatchEvent(clickEvent);
+        element.dispatchEvent(clickEvent);
         return true;
     }
     return false;
+}
+
+
+/**
+ * 模拟发送键盘事件
+ * @param {number} key_code
+ */
+function fireKeyEvent(key_code) {
+    const ke = new KeyboardEvent('keydown', {
+        bubbles: true, cancelable: true, keyCode: key_code
+    });
+    document.body.dispatchEvent(ke);
 }
 
 /**
@@ -136,26 +219,35 @@ function exportNotes() {
  * 点击切换主题
  */
 function changeTheme() {
-    !pressMouseKey('readerControls_item white') &&
-    pressMouseKey('readerControls_item dark');
+    const white = document.querySelector('.readerControls_item.white')
+    const dark = document.querySelector('.readerControls_item.dark')
+    white && pressMouseKey(white);
+    dark && pressMouseKey(dark);
 }
 
 window.onload = function () {
     new QWebChannel(qt.webChannelTransport, function (channel) {
         window.pjTransport = channel.objects.pjTransport;
         pjTransport.p2j.connect(function (code) {
-            console.log('[js2py]', code);
             pjTransport.j2p(code);
             if (code === ReaderActions.ExportNote) {
                 exportNotes();
             } else if (code === ReaderActions.NextTheme) {
                 changeTheme();
             } else if (code === ReaderActions.WatchSelection) {
-                watchSelection()
+                watchSelection();
+                watchScroll();
+            } else if (code === ReaderActions.Scrolling) {
+                doScroll();
+            } else if (code === ReaderActions.CheckLoading) {
+                setPageLoading();
             }
         })
 
         // 自动启用选中监听
         watchSelection();
+
+        // 自动开启滚动监听
+        watchScroll();
     });
 }

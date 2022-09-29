@@ -18,6 +18,7 @@ from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences
 from helper.signals import Signals
+from helper.thread_runner import ThreadRunner
 from view.notice import Notice
 from view.webview import ReaderActions, Webview
 
@@ -84,6 +85,7 @@ class Window(QMainWindow, _View):
         self.setup_signals()
         self.setup_preferences()
         self.setup_ui()
+        self.scroller = ThreadRunner().start(self._check_scroll, 0.15)
 
     def setup_ui(self):
         self.setMinimumSize(640, 480)
@@ -91,6 +93,10 @@ class Window(QMainWindow, _View):
         self.setWindowIcon(GUI.icon(ResMap.icon_app))
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.ui_tool_bar)
         self.setCentralWidget(self.ui_webview)
+
+    def _check_scroll(self):
+        if self.scroller and self.ui_act_auto and self.ui_act_auto.isChecked():
+            self.ui_webview.check_scroll()
 
     def setup_preferences(self):
         self.ui_act_auto.setChecked(Preferences.storage.value(UserKey.Reader.Scrollable, False, bool))
@@ -103,6 +109,8 @@ class Window(QMainWindow, _View):
         self.ui_tray.activated.connect(self.on_tray_activated)
 
     def closeEvent(self, event: QCloseEvent):
+        ThreadRunner().stop(self.scroller)
+        self.scroller = None
         Preferences.storage.setValue(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
         event.accept()
         super(Window, self).closeEvent(event)

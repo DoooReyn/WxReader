@@ -26,7 +26,6 @@ from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences
 from helper.signals import Signals
-from helper.thread_runner import ThreadRunner
 from view.notice import FillType, Notice
 
 
@@ -40,6 +39,8 @@ class ReaderActions:
     ExportNote = 5
     NextTheme = 6
     WatchSelection = 11
+    Scrolling = 12
+    CheckLoading = 13
 
 
 class PjTransport(QObject):
@@ -51,17 +52,29 @@ class PjTransport(QObject):
     def __init__(self):
         super(PjTransport, self).__init__()
         self.has_selection = False
+        self.scroll_to_end = False
+        self.loading = False
 
     # JS 调用 Python
     @pyqtSlot(str)
     def j2p(self, msg):
-        print('Py received output:', msg)
+        # print('Python 收到消息:', msg)
+        pass
 
     @pyqtSlot(int)
     def setSelection(self, has):
-        print('set selection:', has)
         self.has_selection = has == 1
-        print('选中' if self.has_selection else '未选中')
+        # print('有选中' if self.has_selection else '无选中')
+
+    @pyqtSlot(int)
+    def setScrollToEnd(self, end):
+        self.scroll_to_end = end == 1
+        # print('已滚动到底部' if self.scroll_to_end else '还没滚到底')
+
+    @pyqtSlot(int)
+    def setPageLoading(self, loading):
+        self.loading = loading == 1
+        # print('页面加载中' if self.loading else '页面已加载')
 
     def trigger(self, act: int):
         # noinspection PyUnresolvedReferences
@@ -69,9 +82,18 @@ class PjTransport(QObject):
 
 
 class Webview(QWebEngineView, GUI.View):
+    """微信读书网页视图"""
+
+    # 主页网址
     HOME_PAGE = 'https://weread.qq.com/'
+
+    # 阅读页网址
     BOOK_PAGE = "https://weread.qq.com/web/reader/"
+
+    # 内置 WebContent 脚本的存放位置
     SCRIPT_WEB_CONTENT = ":/qtwebchannel/qwebchannel.js"
+
+    # 网页配置的名称
     PROFILE = "WxReader"
 
     # WebContent 中使用的对象名称
@@ -80,7 +102,7 @@ class Webview(QWebEngineView, GUI.View):
     def __init__(self):
         super(Webview, self).__init__()
 
-        # self.scroller = ThreadRunner().start(self._on_scroll)
+        self.wait_next = False
         self.profile = QWebEngineProfile(Webview.PROFILE, self)
         self.inject_js_script(Webview.SCRIPT_WEB_CONTENT, "WebContent")
         self.inject_js_script(ResMap.js_reader, "WxReader")
@@ -142,13 +164,32 @@ class Webview(QWebEngineView, GUI.View):
         callback = callback or _pass
         self.page().runJavaScript(script, callback)
 
-    def _on_scroll(self):
-        if self.is_on_reading_page() is False:
-            ThreadRunner().pause(self.scroller)
+    def check_scroll(self):
+        self.pjTransport.trigger(ReaderActions.CheckLoading)
+        if self.pjTransport.loading:
+            print("页面加载中")
             return
+        else:
+            if self.wait_next is True:
+                self.pjTransport.trigger(ReaderActions.WatchSelection)
+                self.wait_next = False
+                print("下一章加载完成")
+                return
         if self.pjTransport.has_selection is True:
-            ThreadRunner().pause(self.scroller)
+            print("有选中文本")
             return
+        if self.wait_next is True:
+            print("等待跳转下一章")
+            return
+        if self.pjTransport.scroll_to_end is True:
+            print("滚动到底部了")
+            self.pjTransport.scroll_to_end = False
+            self.wait_next = True
+            return
+        if self.is_on_reading_page() is False:
+            print("不在阅读页面")
+            return
+        self.pjTransport.trigger(ReaderActions.Scrolling)
 
     def _on_reader_action_triggered(self, act: int):
         if act == ReaderActions.BackHome:
@@ -165,17 +206,20 @@ class Webview(QWebEngineView, GUI.View):
         return self.page().url().toString()
 
     def _on_load_started(self):
-        print('[   started   ]', self.current_url())
+        print('[开始加载]', self.current_url())
+        self.pjTransport.scroll_to_end = False
+        self.pjTransport.has_selection = False
+        self.pjTransport.trigger(ReaderActions.WatchSelection)
 
     def _on_load_finished(self, result: bool):
         self._on_load_finished_ok() if result else self._on_load_finished_bad()
 
     def _on_load_finished_ok(self):
-        print('[finished good]', self.current_url())
+        print('[加载完成]', self.current_url())
         self.pjTransport.trigger(ReaderActions.WatchSelection)
 
     def _on_load_finished_bad(self):
-        print('[finished  bad]', self.current_url())
+        print('[加载失败]', self.current_url())
         Notice(
             Views.Exception,
             UserKey.General.Exception,
@@ -186,5 +230,4 @@ class Webview(QWebEngineView, GUI.View):
         ).exec()
 
     def _on_url_changed(self, url: QUrl):
-        print('[ url changed ]', url.toString())
-        self.pjTransport.trigger(ReaderActions.WatchSelection)
+        print('[页面切换]', url.toString())
