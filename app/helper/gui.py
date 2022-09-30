@@ -38,6 +38,20 @@ class GUI:
                 font-size: 13px;
             }
             
+            QProgressBar 
+            {
+                border: 1px solid #8f8f8f;
+                border-radius: 4px;
+                background-color: #f1f1f1;
+            }
+            
+            QProgressBar::chunk 
+            {
+                background-color: #85caff;
+                width: 20px;
+                margin: 0.5px;
+            }
+            
             QMenuBar 
             {
                 border: none;
@@ -206,7 +220,6 @@ class GUI:
                 rect = [r.topLeft().x(), r.topLeft().y(), r.width(), r.height()]
                 rect = ','.join([str(r) for r in rect])
                 Preferences.storage.setValue(self.rect_key, rect)
-                print(self.rect_key, rect)
 
         @staticmethod
         def menu_method_not_implemented(menu, name):

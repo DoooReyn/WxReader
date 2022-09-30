@@ -18,7 +18,6 @@
         - QWebEngineView 要指定 QWebEnginePage，之后的操作就都在这个页面对象上了
     - 微信读书网页版设定了开启开发者工具就会触发断点，可以在调试面板禁用所有断点
 """
-from typing import Callable
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
 from PyQt5.QtWebChannel import QWebChannel
@@ -63,12 +62,7 @@ class PjTransport(QObject):
     """Python/JS 消息交换中心"""
 
     # Python 调用 JS
-    # @pyqtSignal(int)
     p2j = pyqtSignal(int)
-
-    # 调整滚动速度
-    # @pyqtSignal(int)
-    speed = pyqtSignal(int)
 
     def __init__(self):
         super(PjTransport, self).__init__()
@@ -83,6 +77,7 @@ class PjTransport(QObject):
     def j2p(self, msg):
         """js 给 python 发消息，方便测试"""
         print('Python 收到消息:', msg)
+        Signals().status_tip_updated.emit(msg)
         pass
 
     @pyqtSlot(int)
@@ -108,9 +103,7 @@ class PjTransport(QObject):
     def refresh_speed(self):
         """刷新页面滚动速度"""
         speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
-        print('刷新页面滚动速度', speed)
         # noinspection PyUnresolvedReferences
-        # self.speed.emit(speed)
         self.p2j.emit(1000 + speed)
 
 
@@ -172,6 +165,7 @@ class Webview(QWebEngineView, GUI.View):
 
     def setup_signals(self):
         self.loadStarted.connect(self._on_load_started)
+        self.loadProgress.connect(self._on_load_progressed)
         self.loadFinished.connect(self._on_load_finished)
         Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
 
@@ -192,28 +186,30 @@ class Webview(QWebEngineView, GUI.View):
     def check_scroll(self):
         self.pjTransport.trigger(ReaderActions.Loading)
         if self.pjTransport.loading:
-            print("页面加载中")
+            self.send_tip(I18n.text("tips:page_ready"))
             return
         else:
             if self.wait_next is True:
                 self.pjTransport.trigger(ReaderActions.Watching)
                 self.wait_next = False
-                print("下一章加载完成")
+                self.send_tip(I18n.text("tips:next_chapter_ready"))
                 return
         if self.pjTransport.has_selection is True:
-            print("有选中文本")
+            self.send_tip(I18n.text("tips:has_selection"))
             return
         if self.wait_next is True:
-            print("等待跳转下一章")
+            self.send_tip(I18n.text("tips:wait_for_next_chapter"))
             return
         if self.pjTransport.scroll_to_end is True:
-            print("滚动到底部了")
+            self.send_tip(I18n.text("tips:scroll_to_end"))
             self.pjTransport.scroll_to_end = False
             self.wait_next = True
             return
         if self.is_on_reading_page() is False:
-            print("不在阅读页面")
+            self.send_tip(I18n.text("tips:no_book_view"))
             return
+        self.send_tip(I18n.text("tips:auto_read_on"), False)
+        Signals().page_loading_progress.emit(0)
         self.pjTransport.trigger(ReaderActions.Scrolling)
 
     def _on_reader_action_triggered(self, act: int):
@@ -233,20 +229,29 @@ class Webview(QWebEngineView, GUI.View):
     def current_url(self):
         return self.page().url().toString()
 
+    def send_tip(self, tip: str, output: bool = True):
+        if output:
+            print(tip, self.current_url())
+        Signals().status_tip_updated.emit(tip)
+
     def _on_load_started(self):
-        print('页面开始加载', self.current_url())
+        self.send_tip(I18n.text("tips:page_ready"))
         self.pjTransport.scroll_to_end = False
         self.pjTransport.has_selection = False
         self.pjTransport.trigger(ReaderActions.Watching)
 
+    def _on_load_progressed(self, value):
+        self.send_tip(I18n.text("tips:page_loading"))
+        Signals().page_loading_progress.emit(value)
+
     def _on_load_finished(self, result: bool):
         if result:
-            print('页面加载完成', self.current_url())
             self.pjTransport.trigger(ReaderActions.Watching)
-            # self.pjTransport.refresh_speed()
             Signals().reader_setting_changed.emit(ReaderActions.SpeedUp)
+            Signals().page_loading_progress.emit(0)
+            self.send_tip(I18n.text("tips:page_loaded_ok"))
         else:
-            print('页面加载失败', self.current_url())
+            self.send_tip(I18n.text("tips:page_loaded_bad"))
             Notice(
                 Views.Exception,
                 UserKey.General.Exception,

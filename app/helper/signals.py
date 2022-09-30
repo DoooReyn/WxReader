@@ -32,3 +32,5 @@ class Signals(QObject):
 
     # 阅读器
     reader_setting_changed = QSignal(int)
+    page_loading_progress = QSignal(int)
+    status_tip_updated = QSignal(str)

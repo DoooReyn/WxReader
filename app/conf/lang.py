@@ -72,8 +72,8 @@ class _Languages:
         "toolbar:theme": "切换主题",
         "toolbar:fullscreen": "切换全屏",
         "toolbar:back_home": "回到首页",
-        "toolbar:speed_up": "再快一点",
-        "toolbar:speed_dw": "放慢一些",
+        "toolbar:speed_up": "神行太保",
+        "toolbar:speed_dw": "凌波微步",
         "toolbar:sponsor": "一杯咖啡",
         "toolbar:pinned": "固定此栏",
 
@@ -90,7 +90,20 @@ class _Languages:
         # debug
         "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",
         "debug:inject_script_failed": "注入脚本{}失败",
-        "debug:network_error": "网络似乎有点问题呢~"
+        "debug:network_error": "网络似乎有点问题呢~",
+
+        # tips
+        "tips:speed": "阅读速度:{}",
+        "tips:page_ready": "准备加载页面",
+        "tips:page_loading": "正在加载页面",
+        "tips:next_chapter_ready": "下一章加载完成",
+        "tips:has_selection": "有选中文本",
+        "tips:wait_for_next_chapter": "等待跳转下一章",
+        "tips:scroll_to_end": "滚动到底部了",
+        "tips:bo_book_view": "未打开书籍",
+        "tips:auto_read_on": '自动阅读中...',
+        "tips:page_loaded_ok": '页面加载完成',
+        "tips:page_loaded_bad": '页面加载失败',
     }
 
 

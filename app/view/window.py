@@ -8,7 +8,8 @@
 """
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QCloseEvent, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMenu, QSystemTrayIcon, QToolBar
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
+    QToolBar
 
 from conf.menus import MainToolbar, MainTray
 from conf.res_map import ResMap
@@ -57,6 +58,16 @@ class _View(GUI.View):
         self.ui_act_auto.setCheckable(True)
         self.ui_act_pinned.setCheckable(True)
 
+        self.ui_status_bar = QStatusBar(self)
+        self.ui_progress = QProgressBar()
+        self.ui_progress.setValue(0)
+        self.ui_progress.setTextVisible(False)
+        self.ui_lab_status = QLabel('')
+        self.ui_lab_speed = QLabel('')
+        self.ui_status_bar.addPermanentWidget(self.ui_lab_status, 1)
+        self.ui_status_bar.addPermanentWidget(self.ui_progress, 8)
+        self.ui_status_bar.addPermanentWidget(self.ui_lab_speed, 1)
+
         # 1.2 内容
         self.ui_webview = Webview()
         self.ui_webview.setContextMenuPolicy(Qt.NoContextMenu)
@@ -91,6 +102,7 @@ class Window(QMainWindow, _View):
         self.setMinimumSize(640, 480)
         self.setWindowTitle(I18n.text('app:name'))
         self.setWindowIcon(GUI.icon(ResMap.icon_app))
+        self.setStatusBar(self.ui_status_bar)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.ui_tool_bar)
         self.setCentralWidget(self.ui_webview)
 
@@ -101,12 +113,15 @@ class Window(QMainWindow, _View):
     def setup_preferences(self):
         self.ui_act_auto.setChecked(Preferences.storage.value(UserKey.Reader.Scrollable, False, bool))
         self.ui_act_pinned.setChecked(Preferences.storage.value(UserKey.Reader.Pinned, True, bool))
+        self.ui_lab_speed.setText(I18n.text("tips:speed").format(Preferences.storage.value(UserKey.Reader.Speed, True, int)))
 
     def setup_signals(self):
         self.installEventFilter(self)
         self.setMouseTracking(True)
         # noinspection PyUnresolvedReferences
         self.ui_tray.activated.connect(self.on_tray_activated)
+        Signals().page_loading_progress.connect(self.on_update_progress)
+        Signals().status_tip_updated.connect(self.on_update_status_tip)
 
     def closeEvent(self, event: QCloseEvent):
         ThreadRunner().stop(self.scroller)
@@ -134,7 +149,7 @@ class Window(QMainWindow, _View):
             self.mouseMoveEvent(event)
         return super(Window, self).eventFilter(obj, event)
 
-    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+    def mouseMoveEvent(self, event: QMouseEvent):
         """
         自动隐藏工具栏
         - 使用 hide 会导致控件不可用，连带其子控件关联的事件都失效了，因此使用 height 来控制
@@ -161,6 +176,12 @@ class Window(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
+
+    def on_update_progress(self, value: int):
+        self.ui_progress.setValue(value)
+
+    def on_update_status_tip(self, tip: str):
+        self.ui_lab_status.setText(tip)
 
     def on_toolbar_fullscreen(self):
         if self.isFullScreen():
@@ -213,14 +234,14 @@ class Window(QMainWindow, _View):
                I18n.text("notice:sponsor")
                ).exec()
 
-    @staticmethod
-    def adjust_speed(speed_up: bool):
+    def adjust_speed(self, speed_up: bool):
         step = Preferences.storage.value(UserKey.Reader.Step, 1, int)
         speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
         now = min(100, max(1, speed + step * (1 if speed_up else -1)))
         if now != speed:
             Preferences.storage.setValue(UserKey.Reader.Speed, now)
             Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
+            self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
 
     @staticmethod
     def on_toolbar_export():
