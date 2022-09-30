@@ -210,14 +210,83 @@ function fireKeyEvent(key_code) {
     document.body.dispatchEvent(ke);
 }
 
+
+/**
+ * 获取格式化后的内容
+ * @param {string} prefix
+ * @param {string} para
+ */
+function formateContent(prefix, para) {
+    let result = [];
+    let contents = para.split('\n');
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].replace(/\s*/g, '').length > 0 &&
+        result.push(prefix + contents[i]);
+    }
+    return result.join('\n' + prefix + '\n');
+}
+
+/**
+ * 获取格式化后的想法
+ * @param {string} para
+ * @param {string} thought
+ */
+function formatNoteThought(para, thought) {
+    let t = formateContent('  > ', para);
+    let l = '    >> 想法：\n    >>';
+    let p = formateContent('    >> ', thought);
+    return [t, l, p].join('\n') + '\n';
+}
+
+/**
+ * 获取格式化后的段落
+ * @param {string} para
+ */
+function formatNoteParagraph(para) {
+    return formateContent('  > ', para) + '\n';
+}
+
+/**
+ * 获取格式化后的章节标题
+ * @param {string} title
+ */
+function formatNoteTitle(title) {
+    return '## ' + title + '\n';
+}
+
+/**
+ * 获取格式化后的书名标题
+ * @param {string} header
+ */
+function formatNoteHeader(header) {
+    return '# 《' + header + '》读书笔记\n';
+}
+
 /**
  * 导出笔记
  */
 function exportNotes() {
-    let notes_elements = document.getElementsByClassName('sectionListItem');
+    let notes_elements = document.querySelectorAll('.sectionListItem');
     if (notes_elements.length === 0) {
         return alert('你还没有做笔记哦！');
     }
+
+    let book = document.querySelector('.readerTopBar_title_link').innerText;
+    let notes = [formatNoteHeader(book)];
+    for (let i = 0; i < notes_elements.length; i++) {
+        let ele = notes_elements[i];
+        let titles = ele.getElementsByClassName('sectionListItem_title');
+        let abstracts = ele.getElementsByClassName('abstract');
+        let texts = ele.getElementsByClassName('text');
+        titles.length > 0 && notes.push(formatNoteTitle(titles[0].innerText));
+        if (abstracts.length > 0) {
+            const note = formatNoteThought(abstracts[0].innerText, texts[0].innerText)
+            notes.push(note);
+        } else {
+            notes.push(formatNoteParagraph(texts[0].innerText));
+        }
+    }
+    pjTransport && pjTransport.downloadNote(`${book}.md`, notes.join('\n'));
 }
 
 /**
@@ -240,6 +309,7 @@ window.onload = function () {
         pjTransport.p2j.connect(function (code) {
             // pjTransport.j2p(`正在应用阅读器动作: ${code}`);
             if (code === ReaderActions.ExportNote) {
+                pjTransport.j2p('正在尝试导出笔记');
                 exportNotes();
             } else if (code === ReaderActions.NextTheme) {
                 changeTheme();

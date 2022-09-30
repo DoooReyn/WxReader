@@ -104,6 +104,9 @@ class _Languages:
         "tips:auto_read_on": '自动阅读中...',
         "tips:page_loaded_ok": '页面加载完成',
         "tips:page_loaded_bad": '页面加载失败',
+        "tips:export_note": '保存笔记',
+        "tips:note_exported_ok": '【{}】已保存',
+        "tips:note_exported_bad": '【{}】未保存',
     }
 
 

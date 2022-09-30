@@ -66,3 +66,8 @@ class Cmm:
     @staticmethod
     def mkdir(directory: str):
         makedirs(directory, exist_ok=True)
+
+    @staticmethod
+    def save_as(where: str, content: str):
+        with open(where, 'w', encoding='utf-8') as f:
+            f.write(content)

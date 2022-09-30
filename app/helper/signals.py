@@ -34,3 +34,4 @@ class Signals(QObject):
     reader_setting_changed = QSignal(int)
     page_loading_progress = QSignal(int)
     status_tip_updated = QSignal(str)
+    download_note = QSignal(str, str)

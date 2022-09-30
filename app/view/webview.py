@@ -18,12 +18,15 @@
         - QWebEngineView 要指定 QWebEnginePage，之后的操作就都在这个页面对象上了
     - 微信读书网页版设定了开启开发者工具就会触发断点，可以在调试面板禁用所有断点
 """
+from os.path import isfile
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
+from PyQt5.QtWidgets import QFileDialog
 
 from conf.res_map import ResMap
+from helper.cmm import Cmm
 from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences, UserKey
@@ -76,7 +79,10 @@ class PjTransport(QObject):
         """js 给 python 发消息，方便测试"""
         print('Python 收到消息:', msg)
         Signals().status_tip_updated.emit(msg)
-        pass
+
+    @pyqtSlot(str, str)
+    def downloadNote(self, filename, content):
+        Signals().download_note.emit(filename, content)
 
     @pyqtSlot(int)
     def setSelection(self, has):
@@ -158,6 +164,7 @@ class Webview(QWebEngineView, GUI.View):
         self.loadProgress.connect(self._on_load_progressed)
         self.loadFinished.connect(self._on_load_finished)
         Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
+        Signals().download_note.connect(self._on_save_note)
 
     def restore_latest_page(self):
         self.goto_page(Preferences().get(UserKey.Reader.LatestUrl))
@@ -214,6 +221,14 @@ class Webview(QWebEngineView, GUI.View):
 
         if self.is_on_reading_page():
             self.pjTransport.trigger(act)
+
+    def _on_save_note(self, filename: str, content: str):
+        where, _ = QFileDialog.getSaveFileName(self, I18n.text('tips:export_note'), filename, filter='*.md')
+        if len(where) > 0:
+            Cmm.save_as(where, content)
+            self.send_tip(I18n.text('tips:note_exported_ok').format(filename))
+        else:
+            self.send_tip(I18n.text('tips:note_exported_ok').format(filename))
 
     def current_url(self):
         return self.page().url().toString()
