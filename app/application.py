@@ -9,7 +9,7 @@
 import sys
 from traceback import format_exception
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtWidgets import QApplication
 
 from conf.res_map import ResMap
@@ -45,7 +45,10 @@ class Application(object):
 
         # 创建 Qt 窗口
         self.qt_app = QApplication(sys.argv)
-        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+        # 尝试修复 QWebEngine WebGL 的问题
+        self.qt_app.setAttribute(Qt.AA_UseDesktopOpenGL)
+        # 使用高清 icon
+        self.qt_app.setAttribute(Qt.AA_UseHighDpiPixmaps)
         self.qt_app.setApplicationName(I18n.text("app:name"))
         self.qt_app.setApplicationDisplayName(I18n.text("app:name"))
         self.qt_app.setStyleSheet(GUI.Theme.Default)
