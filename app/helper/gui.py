@@ -48,7 +48,7 @@ class GUI:
             QProgressBar::chunk 
             {
                 background-color: #85caff;
-                width: 20px;
+                width: 4px;
                 margin: 0.5px;
             }
             
@@ -209,7 +209,7 @@ class GUI:
 
         def get_win_rect(self):
             if self.rect_key is not None:
-                return [int(v) for v in Preferences.storage.value(self.rect_key, '640,640,640,480', str).split(',')]
+                return [int(v) for v in Preferences().get(self.rect_key)]
             else:
                 r = self.geometry()
                 return r.topLeft().x(), r.topLeft().y(), r.width(), r.height()
@@ -218,8 +218,7 @@ class GUI:
             if self.rect_key is not None:
                 r = self.geometry()
                 rect = [r.topLeft().x(), r.topLeft().y(), r.width(), r.height()]
-                rect = ','.join([str(r) for r in rect])
-                Preferences.storage.setValue(self.rect_key, rect)
+                Preferences().set(self.rect_key, rect)
 
         @staticmethod
         def menu_method_not_implemented(menu, name):

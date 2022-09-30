@@ -100,7 +100,7 @@ class _Languages:
         "tips:has_selection": "有选中文本",
         "tips:wait_for_next_chapter": "等待跳转下一章",
         "tips:scroll_to_end": "滚动到底部了",
-        "tips:bo_book_view": "未打开书籍",
+        "tips:no_book_view": "未打开书籍",
         "tips:auto_read_on": '自动阅读中...',
         "tips:page_loaded_ok": '页面加载完成',
         "tips:page_loaded_bad": '页面加载失败',

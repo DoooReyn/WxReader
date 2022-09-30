@@ -8,16 +8,15 @@
 """
 from PyQt5.QtCore import QEvent, QObject, Qt
 from PyQt5.QtGui import QCloseEvent, QMouseEvent
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
+from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
     QToolBar
 
 from conf.menus import MainToolbar, MainTray
 from conf.res_map import ResMap
-from conf.user_key import UserKey
 from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
-from helper.preferences import Preferences
+from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
 from helper.thread_runner import ThreadRunner
 from view.notice import Notice
@@ -96,7 +95,7 @@ class Window(QMainWindow, _View):
         self.setup_signals()
         self.setup_preferences()
         self.setup_ui()
-        self.scroller = ThreadRunner().start(self._check_scroll, 0.15)
+        self.scroller = ThreadRunner().start(self._check_scroll, 0.1)
 
     def setup_ui(self):
         self.setMinimumSize(640, 480)
@@ -107,13 +106,13 @@ class Window(QMainWindow, _View):
         self.setCentralWidget(self.ui_webview)
 
     def _check_scroll(self):
-        if self.scroller and self.ui_act_auto and self.ui_act_auto.isChecked():
+        if self and self.scroller and self.ui_act_auto and self.ui_act_auto.isChecked():
             self.ui_webview.check_scroll()
 
     def setup_preferences(self):
-        self.ui_act_auto.setChecked(Preferences.storage.value(UserKey.Reader.Scrollable, False, bool))
-        self.ui_act_pinned.setChecked(Preferences.storage.value(UserKey.Reader.Pinned, True, bool))
-        self.ui_lab_speed.setText(I18n.text("tips:speed").format(Preferences.storage.value(UserKey.Reader.Speed, True, int)))
+        self.ui_act_auto.setChecked(Preferences().get(UserKey.Reader.Scrollable))
+        self.ui_act_pinned.setChecked(Preferences().get(UserKey.Reader.Pinned))
+        self.ui_lab_speed.setText(I18n.text("tips:speed").format(Preferences().get(UserKey.Reader.Speed)))
 
     def setup_signals(self):
         self.installEventFilter(self)
@@ -124,10 +123,12 @@ class Window(QMainWindow, _View):
         Signals().status_tip_updated.connect(self.on_update_status_tip)
 
     def closeEvent(self, event: QCloseEvent):
+        Preferences().set(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
+        self.save_win_rect()
+        Preferences().save()
         ThreadRunner().stop(self.scroller)
         self.scroller = None
-        Preferences.storage.setValue(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
-        self.save_win_rect()
+        event.accept()
         super(Window, self).closeEvent(event)
 
     def eventFilter(self, obj: QObject, event: QEvent):
@@ -190,7 +191,7 @@ class Window(QMainWindow, _View):
             self.showFullScreen()
 
     def on_toolbar_pinned(self):
-        Preferences.storage.setValue(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
+        Preferences().set(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
 
     def on_toolbar_speed_up(self):
         self.adjust_speed(True)
@@ -198,8 +199,20 @@ class Window(QMainWindow, _View):
     def on_toolbar_speed_dw(self):
         self.adjust_speed(False)
 
+    def adjust_speed(self, speed_up: bool):
+        step = Preferences().get(UserKey.Reader.Step)
+        speed = Preferences().get(UserKey.Reader.Speed)
+        now = min(100, max(1, speed + step * (1 if speed_up else -1)))
+        if now != speed:
+            Preferences().set(UserKey.Reader.Speed, now)
+            Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
+            self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
+
+    def on_toolbar_quit(self):
+        self.close()
+
     def on_toolbar_set_auto(self):
-        Preferences.storage.setValue(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
+        Preferences().set(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
         Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
     @staticmethod
@@ -234,15 +247,6 @@ class Window(QMainWindow, _View):
                I18n.text("notice:sponsor")
                ).exec()
 
-    def adjust_speed(self, speed_up: bool):
-        step = Preferences.storage.value(UserKey.Reader.Step, 1, int)
-        speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
-        now = min(100, max(1, speed + step * (1 if speed_up else -1)))
-        if now != speed:
-            Preferences.storage.setValue(UserKey.Reader.Speed, now)
-            Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
-            self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
-
     @staticmethod
     def on_toolbar_export():
         Signals().reader_setting_changed.emit(ReaderActions.ExportNote)
@@ -254,10 +258,6 @@ class Window(QMainWindow, _View):
     @staticmethod
     def on_toolbar_theme():
         Signals().reader_setting_changed.emit(ReaderActions.NextTheme)
-
-    @staticmethod
-    def on_toolbar_quit():
-        QApplication.exit()
 
     @staticmethod
     def on_toolbar_refresh():

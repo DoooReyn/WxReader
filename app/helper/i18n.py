@@ -7,9 +7,8 @@
 @Desc    : 多语言
 """
 from conf.lang import LangPack
-from conf.user_key import UserKey
-from helper.preferences import Preferences
 from helper.signals import Signals
+from helper.preferences import Preferences, UserKey
 
 
 class I18n:
@@ -18,13 +17,13 @@ class I18n:
     @staticmethod
     def get_lang():
         """当前语言"""
-        return Preferences.storage.value(UserKey.General.Lang, LangPack.CN.name, str)
+        return Preferences().get(UserKey.General.Lang)
 
     @staticmethod
     def set_lang(pack: LangPack):
         """切换语言"""
         if I18n.get_lang() != pack.name:
-            Preferences.storage.setValue(UserKey.General.Lang, pack.name)
+            Preferences().set(UserKey.General.Lang, pack.name)
             # 语言包切换信号触发
             Signals().lang_changed.emit(pack.name)
 

@@ -24,11 +24,10 @@ from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
 
 from conf.res_map import ResMap
-from conf.user_key import UserKey
 from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
-from helper.preferences import Preferences
+from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
 from view.notice import FillType, Notice
 
@@ -102,9 +101,8 @@ class PjTransport(QObject):
 
     def refresh_speed(self):
         """刷新页面滚动速度"""
-        speed = Preferences.storage.value(UserKey.Reader.Speed, 1, int)
         # noinspection PyUnresolvedReferences
-        self.p2j.emit(1000 + speed)
+        self.p2j.emit(1000 + Preferences().get(UserKey.Reader.Speed))
 
 
 class Webview(QWebEngineView, GUI.View):
@@ -156,7 +154,7 @@ class Webview(QWebEngineView, GUI.View):
         else:
             Notice(
                 Views.Exception,
-                UserKey.General.Exception,
+                UserKey.Exception.WinRect,
                 I18n.text("exception:name"),
                 I18n.text("debug:inject_script_failed").format(filepath),
                 FillType.PlainText,
@@ -170,8 +168,7 @@ class Webview(QWebEngineView, GUI.View):
         Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
 
     def restore_latest_page(self):
-        page = Preferences.storage.value(UserKey.Reader.LatestUrl, Webview.HOME_PAGE, str)
-        self.goto_page(page)
+        self.goto_page(Preferences().get(UserKey.Reader.LatestUrl))
 
     def goto_page(self, url: str):
         self.load(QUrl(url))
@@ -254,7 +251,7 @@ class Webview(QWebEngineView, GUI.View):
             self.send_tip(I18n.text("tips:page_loaded_bad"))
             Notice(
                 Views.Exception,
-                UserKey.General.Exception,
+                UserKey.Exception.WinRect,
                 I18n.text("exception:name"),
                 I18n.text("debug:network_error"),
                 FillType.PlainText,

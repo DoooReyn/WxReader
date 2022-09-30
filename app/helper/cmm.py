@@ -6,11 +6,18 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 通用
 """
+from os import makedirs
+from os.path import join
 from traceback import format_exc, print_exc
+
+from PyQt5.QtCore import QStandardPaths
 
 
 class Cmm:
     """通用辅助工具集合"""
+
+    AppName = 'WxReader'
+    AppConfig = 'WxReader.json'
 
     class Decorator:
         """装饰器"""
@@ -43,3 +50,19 @@ class Cmm:
         finally:
             if on_final:
                 return on_final()
+
+    @staticmethod
+    def local_cache_at():
+        return QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)
+
+    @staticmethod
+    def app_storage_at():
+        return join(Cmm.local_cache_at(), Cmm.AppName)
+
+    @staticmethod
+    def app_config_at():
+        return join(Cmm.app_storage_at(), Cmm.AppConfig)
+
+    @staticmethod
+    def mkdir(directory: str):
+        makedirs(directory, exist_ok=True)

@@ -30,7 +30,7 @@ class MainToolbar:
     ActionTheme = ActionInfo('toolbar:theme', ResMap.icon_sun, 'on_toolbar_theme', 'F9')
     ActionAuto = ActionInfo('toolbar:auto', ResMap.icon_arrow_autofit_down, 'on_toolbar_set_auto', 'F10')
     ActionFullscreen = ActionInfo('toolbar:fullscreen', ResMap.icon_arrows_maximize, 'on_toolbar_fullscreen', 'F11')
-    ActionSpeedUp = ActionInfo('toolbar:speed_up', ResMap.icon_chevrons_right, 'on_toolbar_speed_up', '+')
+    ActionSpeedUp = ActionInfo('toolbar:speed_up', ResMap.icon_chevrons_right, 'on_toolbar_speed_up', '=')
     ActionSpeedDw = ActionInfo('toolbar:speed_dw', ResMap.icon_chevrons_left, 'on_toolbar_speed_dw', '-')
     ActionSponsor = ActionInfo('toolbar:sponsor', ResMap.icon_coffee, 'on_toolbar_sponsor')
     ActionPinned = ActionInfo('toolbar:pinned', ResMap.icon_pinned_off, 'on_toolbar_pinned')

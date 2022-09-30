@@ -41,7 +41,7 @@ class Application(object):
         qInitResources()
 
         # 初始化用户配置
-        Preferences.init()
+        Preferences().init()
 
         # 创建 Qt 窗口
         self.qt_app = QApplication(sys.argv)
