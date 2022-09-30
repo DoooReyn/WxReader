@@ -24,12 +24,11 @@ from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
 
 from conf.res_map import ResMap
-from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
-from view.notice import FillType, Notice
+from view.bad_notice import InjectBadNotice, NetworkBadNotice
 
 
 class ReaderActions:
@@ -152,14 +151,7 @@ class Webview(QWebEngineView, GUI.View):
             script.setSourceCode(source)
             self.profile.scripts().insert(script)
         else:
-            Notice(
-                Views.Exception,
-                UserKey.Exception.WinRect,
-                I18n.text("exception:name"),
-                I18n.text("debug:inject_script_failed").format(filepath),
-                FillType.PlainText,
-                True
-            ).exec()
+            InjectBadNotice(filepath).exec()
 
     def setup_signals(self):
         self.loadStarted.connect(self._on_load_started)
@@ -249,11 +241,4 @@ class Webview(QWebEngineView, GUI.View):
             self.send_tip(I18n.text("tips:page_loaded_ok"))
         else:
             self.send_tip(I18n.text("tips:page_loaded_bad"))
-            Notice(
-                Views.Exception,
-                UserKey.Exception.WinRect,
-                I18n.text("exception:name"),
-                I18n.text("debug:network_error"),
-                FillType.PlainText,
-                True
-            ).exec()
+            NetworkBadNotice().exec()

@@ -110,11 +110,13 @@ class Window(QMainWindow, _View):
             self.ui_webview.check_scroll()
 
     def setup_preferences(self):
+        """初始化配置相关"""
         self.ui_act_auto.setChecked(Preferences().get(UserKey.Reader.Scrollable))
         self.ui_act_pinned.setChecked(Preferences().get(UserKey.Reader.Pinned))
         self.ui_lab_speed.setText(I18n.text("tips:speed").format(Preferences().get(UserKey.Reader.Speed)))
 
     def setup_signals(self):
+        """关联信号和槽"""
         self.installEventFilter(self)
         self.setMouseTracking(True)
         # noinspection PyUnresolvedReferences
@@ -123,11 +125,11 @@ class Window(QMainWindow, _View):
         Signals().status_tip_updated.connect(self.on_update_status_tip)
 
     def closeEvent(self, event: QCloseEvent):
+        ThreadRunner().stop(self.scroller)
+        self.scroller = None
         Preferences().set(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
         self.save_win_rect()
         Preferences().save()
-        ThreadRunner().stop(self.scroller)
-        self.scroller = None
         event.accept()
         super(Window, self).closeEvent(event)
 
