@@ -6,7 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 主窗口
 """
-from PyQt5.QtCore import QEvent, QObject, Qt
+from PyQt5.QtCore import QEvent, QObject, Qt, QTimerEvent
 from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
     QToolBar
@@ -18,7 +18,6 @@ from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
-from helper.thread_runner import ThreadRunner
 from view.notice import Notice
 from view.options import Options
 from view.webview import ReaderActions, Webview
@@ -53,6 +52,7 @@ class _View(GUI.View):
         self.ui_act_help = self.add_action(MainToolbar.ActionHelp, self.ui_tool_bar)
         self.ui_act_sponsor = self.add_action(MainToolbar.ActionSponsor, self.ui_tool_bar)
         self.ui_act_about = self.add_action(MainToolbar.ActionAbout, self.ui_tool_bar)
+        self.ui_act_hide = self.add_action(MainToolbar.ActionHide, self.ui_tool_bar)
         self.ui_act_quit = self.add_action(MainToolbar.ActionQuit, self.ui_tool_bar)
         self.ui_act_pinned = self.add_action(MainToolbar.ActionPinned, self.ui_tool_bar)
         self.ui_act_auto.setCheckable(True)
@@ -91,12 +91,17 @@ class Window(QMainWindow, _View):
     def __init__(self):
         super(Window, self).__init__()
 
+        self.setWindowFlags(Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
         self.set_window_code(Views.Main)
         self.set_rect_key(UserKey.General.WinRect)
         self.setup_signals()
         self.setup_preferences()
         self.setup_ui()
-        self.scroller = ThreadRunner().start(self._check_scroll, 0.1)
+        self.scroller = self.startTimer(100, Qt.PreciseTimer)
+
+    def timerEvent(self, timer: QTimerEvent):
+        if timer.timerId() == self.scroller:
+            self._check_scroll()
 
     def setup_ui(self):
         self.setMinimumSize(640, 480)
@@ -107,7 +112,7 @@ class Window(QMainWindow, _View):
         self.setCentralWidget(self.ui_webview)
 
     def _check_scroll(self):
-        if self.scroller is None:
+        if self.scroller <= 0:
             return
         if self.ui_act_auto.isChecked():
             self.ui_webview.check_scroll()
@@ -131,8 +136,8 @@ class Window(QMainWindow, _View):
         Signals().reader_refresh_speed.connect(self.on_refresh_speed)
 
     def closeEvent(self, event: QCloseEvent):
-        ThreadRunner().stop(self.scroller)
-        self.scroller = None
+        self.killTimer(self.scroller)
+        self.scroller = -1
         Preferences().set(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
         self.save_win_rect()
         Preferences().save()
@@ -141,6 +146,10 @@ class Window(QMainWindow, _View):
 
     def eventFilter(self, obj: QObject, event: QEvent):
         et = event.type()
+
+        if et in [QEvent.WindowDeactivate, QEvent.ApplicationDeactivate]:
+            print('----!!!!!!!')
+
         moved = et in [
             QEvent.MouseMove,
             QEvent.MouseTrackingChange,
@@ -175,9 +184,6 @@ class Window(QMainWindow, _View):
 
     def on_tray_activated(self):
         self.activateWindow()
-        self._show()
-
-    def _show(self):
         if self.isFullScreen():
             self.showFullScreen()
         else:
@@ -185,6 +191,8 @@ class Window(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
+                tx, ty, tw, th = self.get_win_rect()
+                self.setGeometry(tx, ty, tw, th)
 
     def on_update_progress(self, value: int):
         self.ui_progress.setValue(value)
@@ -226,6 +234,11 @@ class Window(QMainWindow, _View):
     def on_toolbar_set_auto(self):
         Preferences().set(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
         Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
+
+    def on_toolbar_hide(self):
+        # self.setWindowFlags(self.windowFlags() & Qt.WindowSystemMenuHint)
+        tx, ty, tw, th = self.get_win_rect()
+        self.setGeometry(-tx, -ty, tw, th)
 
     @staticmethod
     def on_toolbar_help():
