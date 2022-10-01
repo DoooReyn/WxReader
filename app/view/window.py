@@ -106,8 +106,12 @@ class Window(QMainWindow, _View):
         self.setCentralWidget(self.ui_webview)
 
     def _check_scroll(self):
-        if self and self.scroller and self.ui_act_auto and self.ui_act_auto.isChecked():
+        if self.scroller is None:
+            return
+        if self.ui_act_auto.isChecked():
             self.ui_webview.check_scroll()
+        else:
+            self.ui_webview.send_tip('', False)
 
     def setup_preferences(self):
         """初始化配置相关"""

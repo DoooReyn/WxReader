@@ -26,5 +26,8 @@ class Views:
     # 赞助
     Sponsor = 4
 
+    # 读完
+    ReadingFinished = 99
+
     # 异常
     Exception = 999

@@ -43,6 +43,9 @@ class UserKey:
     class Exception:
         WinRect = 'exception.win_rect'
 
+    class ReadingFinished:
+        WinRect = 'reading_finished.win_rect'
+
 
 default_user_data = {
     UserKey.Reader.Speed: 1,
@@ -57,6 +60,7 @@ default_user_data = {
     UserKey.Help.WinRect: [0, 0, 640, 480],
     UserKey.Exception.WinRect: [0, 0, 640, 480],
     UserKey.Sponsor.WinRect: [0, 0, 640, 480],
+    UserKey.ReadingFinished.WinRect: [0, 0, 640, 480],
 }
 
 
@@ -75,6 +79,7 @@ class Preferences:
             try:
                 with open(self.config_at, 'r', encoding='utf-8') as f:
                     self._data = loads(f.read())
+                    self._sync()
             except JSONDecodeError:
                 self._save_default()
         else:
@@ -83,6 +88,11 @@ class Preferences:
     def _save_default(self):
         self._data = default_user_data
         self.save()
+
+    def _sync(self):
+        for k, v in default_user_data.items():
+            if self._data.get(k) is None:
+                self._data.setdefault(k, v)
 
     def save(self):
         with open(self.config_at, 'w', encoding='utf-8') as f:

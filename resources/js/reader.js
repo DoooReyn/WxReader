@@ -10,13 +10,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 /**
  * 数据缓存区
- * @type {{HasSelection: number, ScrollToEnd: number, Loading: number, Speed: number}}
+ * @type {{HasSelection: number, ScrollToEnd: number, Loading: number, Speed: number, Scrollable: boolean}}
  */
 const SwapData = {
     HasSelection: 0,
     ScrollToEnd: 0,
     Loading: 0,
-    Speed: 1
+    Speed: 1,
+    Scrollable: false
 }
 
 /**
@@ -24,11 +25,14 @@ const SwapData = {
  * @type {{ExportNote: number, WatchSelection: number, NextTheme: number}}
  */
 const ReaderActions = {
+    Scrollable: 2,
+    ExportNote: 5,
+    NextTheme: 6,
     WatchSelection: 11,
     Scrolling: 12,
     CheckLoading: 13,
-    ExportNote: 5,
-    NextTheme: 6,
+    ScrollableOff: 20,
+    ScrollableOn: 21,
 }
 
 /**
@@ -85,6 +89,7 @@ function doScroll() {
  */
 function onScrollToEnd() {
     if (SwapData.ScrollToEnd === 0) return;
+    if (!SwapData.Scrollable) return;
 
     let element = document.querySelector('.readerFooter_button');
     if (element) {
@@ -95,9 +100,11 @@ function onScrollToEnd() {
         setScrollToEnd(0);
     } else {
         // 找不到下一章时，查看全文是否已结束
-        let done = document.querySelector('.readerTopBar_title_link');
+        let done = document.querySelector('.readerFooter_ending');
         if (done) {
-            pjTransport && pjTransport.j2p('全书已读完！')
+            pjTransport && pjTransport.j2p('全书已读完.');
+            pjTransport && pjTransport.readingFinished();
+            alert('全书已读完.')
         } else {
             pjTransport && pjTransport.j2p('糟糕，未检测到的情况！')
         }
@@ -109,6 +116,24 @@ function onScrollToEnd() {
  */
 function watchSelection() {
     const MutationObserver = window['MutationObserver'] || window['WebKitMutationObserver'] || window['MozMutationObserver']
+
+    const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.type === 'attributes') {
+                setSelection(mutation.target.style.display ? 0 : 1);
+                pjTransport && pjTransport.j2p('选中状态改变');
+            }
+            console.log(mutation)
+        });
+    });
+
+    const listen = (e) => {
+        e && observer.observe(e, {
+            attributes: true,
+            // attributeFilter: ['style'],
+            childList: true
+        });
+    }
 
     /**
      * 选中监听
@@ -124,18 +149,8 @@ function watchSelection() {
         })
 
         const element_toolbar = document.querySelector('.reader_toolbar_container');
-        const observer_toolbar = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                if (mutation.type === 'attributes') {
-                    setSelection(mutation.target.style.display ? 0 : 1);
-                    pjTransport && pjTransport.j2p('选中状态改变');
-                }
-            });
-        });
-        observer_toolbar.observe(element_toolbar, {
-            attributes: true,
-            attributeFilter: ['style']
-        });
+        listen(element_toolbar);
+
         pjTransport && pjTransport.j2p('选中监听已启动！');
     }
 
@@ -155,6 +170,12 @@ function watchSelection() {
     observer_container.observe(element_container, {
         childList: true,
     });
+
+    const element_catalog = document.querySelector('.readerCatalog');
+    const element_note = document.querySelector('.readerNotePanel');
+    listen(element_catalog);
+    listen(element_note);
+
     pjTransport && pjTransport.j2p('正在启用选中监听');
 }
 
@@ -216,7 +237,7 @@ function fireKeyEvent(key_code) {
  * @param {string} prefix
  * @param {string} para
  */
-function formateContent(prefix, para) {
+function formatContent(prefix, para) {
     let result = [];
     let contents = para.split('\n');
     for (let i = 0; i < contents.length; i++) {
@@ -232,9 +253,9 @@ function formateContent(prefix, para) {
  * @param {string} thought
  */
 function formatNoteThought(para, thought) {
-    let t = formateContent('  > ', para);
+    let t = formatContent('  > ', para);
     let l = '    >> 想法：\n    >>';
-    let p = formateContent('    >> ', thought);
+    let p = formatContent('    >> ', thought);
     return [t, l, p].join('\n') + '\n';
 }
 
@@ -243,7 +264,7 @@ function formatNoteThought(para, thought) {
  * @param {string} para
  */
 function formatNoteParagraph(para) {
-    return formateContent('  > ', para) + '\n';
+    return formatContent('  > ', para) + '\n';
 }
 
 /**
@@ -271,7 +292,7 @@ function exportNotes() {
         return alert('你还没有做笔记哦！');
     }
 
-    let book = document.querySelector('.readerTopBar_title_link').innerText;
+    let book = document.querySelector('.readerCatalog_bookInfo_title_txt').innerText;
     let notes = [formatNoteHeader(book)];
     for (let i = 0; i < notes_elements.length; i++) {
         let ele = notes_elements[i];
@@ -320,6 +341,10 @@ window.onload = function () {
                 doScroll();
             } else if (code === ReaderActions.CheckLoading) {
                 setPageLoading();
+            } else if (code === ReaderActions.ScrollableOff) {
+                SwapData.Scrollable = false;
+            } else if (code === ReaderActions.ScrollableOn) {
+                SwapData.Scrollable = true;
             } else if (code > 1000) {
                 // 使用新的信号竟然不生效，暂时使用这种 Hack 方式来实现速度调节
                 const speed = code - 1000;

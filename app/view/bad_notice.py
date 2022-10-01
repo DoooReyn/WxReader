@@ -41,3 +41,16 @@ class InjectBadNotice(BadNotice):
     def __init__(self, filepath: str):
         tips = I18n.text("debug:inject_script_failed").format(filepath)
         super(InjectBadNotice, self).__init__(tips)
+
+
+class ReadingFinishedNotice(Notice):
+    def __init__(self):
+        super(ReadingFinishedNotice, self).__init__(
+            Views.ReadingFinished,
+            UserKey.ReadingFinished.WinRect,
+            I18n.text("tips:notice"),
+            I18n.text("tips:reading_finished"),
+            FillType.Html,
+            True
+        )
+        self.setFixedSize(240, 100)

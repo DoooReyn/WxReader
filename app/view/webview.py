@@ -18,7 +18,6 @@
         - QWebEngineView 要指定 QWebEnginePage，之后的操作就都在这个页面对象上了
     - 微信读书网页版设定了开启开发者工具就会触发断点，可以在调试面板禁用所有断点
 """
-from os.path import isfile
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject, QUrl
 from PyQt5.QtWebChannel import QWebChannel
@@ -31,7 +30,7 @@ from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
-from view.bad_notice import InjectBadNotice, NetworkBadNotice
+from view.bad_notice import InjectBadNotice, NetworkBadNotice, ReadingFinishedNotice
 
 
 class ReaderActions:
@@ -57,6 +56,10 @@ class ReaderActions:
     Scrolling = 12
     # 启用页面加载状态监听
     Loading = 13
+    # 关闭自动阅读
+    ScrollableOff = 20
+    # 开启自动阅读
+    ScrollableOn = 21
 
 
 class PjTransport(QObject):
@@ -80,8 +83,14 @@ class PjTransport(QObject):
         print('Python 收到消息:', msg)
         Signals().status_tip_updated.emit(msg)
 
+    @pyqtSlot()
+    def readingFinished(self):
+        """全书已读完"""
+        Signals().reading_finished.emit()
+
     @pyqtSlot(str, str)
     def downloadNote(self, filename, content):
+        """下载笔记"""
         Signals().download_note.emit(filename, content)
 
     @pyqtSlot(int)
@@ -107,7 +116,17 @@ class PjTransport(QObject):
     def refresh_speed(self):
         """刷新页面滚动速度"""
         # noinspection PyUnresolvedReferences
-        self.p2j.emit(1000 + Preferences().get(UserKey.Reader.Speed))
+        self.trigger(1000 + Preferences().get(UserKey.Reader.Speed))
+
+    def refresh_scrollable(self):
+        """刷新自动阅读状态"""
+        scrollable = Preferences().get(UserKey.Reader.Scrollable)
+        code = ReaderActions.ScrollableOn if scrollable else ReaderActions.ScrollableOff
+        self.trigger(code)
+
+    def apply_watch(self):
+        """应用滚动、选中监听"""
+        self.trigger(ReaderActions.Watching)
 
 
 class Webview(QWebEngineView, GUI.View):
@@ -165,6 +184,7 @@ class Webview(QWebEngineView, GUI.View):
         self.loadFinished.connect(self._on_load_finished)
         Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
         Signals().download_note.connect(self._on_save_note)
+        Signals().reading_finished.connect(self._on_reading_finished)
 
     def restore_latest_page(self):
         self.goto_page(Preferences().get(UserKey.Reader.LatestUrl))
@@ -186,7 +206,7 @@ class Webview(QWebEngineView, GUI.View):
             return
         else:
             if self.wait_next is True:
-                self.pjTransport.trigger(ReaderActions.Watching)
+                self.pjTransport.apply_watch()
                 self.wait_next = False
                 self.send_tip(I18n.text("tips:next_chapter_ready"))
                 return
@@ -204,6 +224,7 @@ class Webview(QWebEngineView, GUI.View):
         if self.is_on_reading_page() is False:
             self.send_tip(I18n.text("tips:no_book_view"))
             return
+
         self.send_tip(I18n.text("tips:auto_read_on"), False)
         Signals().page_loading_progress.emit(0)
         self.pjTransport.trigger(ReaderActions.Scrolling)
@@ -218,6 +239,9 @@ class Webview(QWebEngineView, GUI.View):
         elif act == ReaderActions.SpeedDown or act == ReaderActions.SpeedUp:
             self.pjTransport.refresh_speed()
             return
+        elif act == ReaderActions.Scrollable:
+            self.pjTransport.refresh_scrollable()
+            return
 
         if self.is_on_reading_page():
             self.pjTransport.trigger(act)
@@ -228,7 +252,12 @@ class Webview(QWebEngineView, GUI.View):
             Cmm.save_as(where, content)
             self.send_tip(I18n.text('tips:note_exported_ok').format(filename))
         else:
-            self.send_tip(I18n.text('tips:note_exported_ok').format(filename))
+            self.send_tip(I18n.text('tips:note_exported_bad').format(filename))
+
+    @staticmethod
+    def _on_reading_finished():
+        # ReadingFinishedNotice().exec()
+        pass
 
     def current_url(self):
         return self.page().url().toString()
@@ -242,7 +271,7 @@ class Webview(QWebEngineView, GUI.View):
         self.send_tip(I18n.text("tips:page_ready"))
         self.pjTransport.scroll_to_end = False
         self.pjTransport.has_selection = False
-        self.pjTransport.trigger(ReaderActions.Watching)
+        self.pjTransport.apply_watch()
 
     def _on_load_progressed(self, value):
         self.send_tip(I18n.text("tips:page_loading"))
@@ -250,8 +279,9 @@ class Webview(QWebEngineView, GUI.View):
 
     def _on_load_finished(self, result: bool):
         if result:
-            self.pjTransport.trigger(ReaderActions.Watching)
-            Signals().reader_setting_changed.emit(ReaderActions.SpeedUp)
+            self.pjTransport.apply_watch()
+            self.pjTransport.refresh_speed()
+            self.pjTransport.refresh_scrollable()
             Signals().page_loading_progress.emit(0)
             self.send_tip(I18n.text("tips:page_loaded_ok"))
         else:

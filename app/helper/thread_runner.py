@@ -55,8 +55,8 @@ class StatefulThread(Thread):
 @Cmm.Decorator.Singleton
 class ThreadRunner:
     """线程任务"""
+
     def __init__(self):
-        print('--- thread_runner', id(self))
         self._threads: Dict[str, StatefulThread] = dict()
 
     def start(self, runner: Callable, interval: float = 0.015, stop_on_error: bool = False):
@@ -101,7 +101,7 @@ class ThreadRunner:
         self._call(tid, 'resume')
 
     def stop(self, tid: str):
-        self._call(tid, 'stop', lambda: self._threads.pop(tid))
+        self._call(tid, 'stop', lambda: self._threads.pop(tid).join(0))
 
     def paused(self, tid: str):
         return self._call(tid, 'paused')

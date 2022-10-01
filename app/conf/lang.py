@@ -107,6 +107,8 @@ class _Languages:
         "tips:export_note": '保存笔记',
         "tips:note_exported_ok": '【{}】已保存',
         "tips:note_exported_bad": '【{}】未保存',
+        "tips:notice": "通知",
+        "tips:reading_finished": "<p style='font-size:24px;color:#5d646e;text-align:center;'>全书已读完</p>",
     }
 
 
