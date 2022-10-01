@@ -25,7 +25,7 @@ class MainToolbar:
     ActionAbout = ActionInfo('toolbar:about', ResMap.icon_brand_github, 'on_toolbar_about', 'F2')
     ActionProfile = ActionInfo('toolbar:profile', ResMap.icon_settings, 'on_toolbar_profile', 'F12')
     ActionQuit = ActionInfo('toolbar:quit', ResMap.icon_logout, 'on_toolbar_quit', 'Alt+Q')
-    ActionHide = ActionInfo('toolbar:hide', ResMap.icon_eye_off, 'on_toolbar_hide', 'Alt+W')
+    ActionHide = ActionInfo('toolbar:hide', ResMap.icon_eye_off, 'on_toolbar_hide', 'Esc')
     ActionBackHome = ActionInfo('toolbar:back_home', ResMap.icon_home_heart, 'on_toolbar_back_home', 'F5')
     ActionExport = ActionInfo('toolbar:export', ResMap.icon_markdown, 'on_toolbar_export', 'F8')
     ActionTheme = ActionInfo('toolbar:theme', ResMap.icon_sun, 'on_toolbar_theme', 'F9')

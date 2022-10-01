@@ -91,7 +91,10 @@ class Window(QMainWindow, _View):
     def __init__(self):
         super(Window, self).__init__()
 
-        self.setWindowFlags(Qt.WindowTitleHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowTitleHint
+                            | Qt.CustomizeWindowHint
+                            | Qt.WindowSystemMenuHint
+                            | Qt.WindowCloseButtonHint)
         self.set_window_code(Views.Main)
         self.set_rect_key(UserKey.General.WinRect)
         self.setup_signals()
@@ -146,9 +149,6 @@ class Window(QMainWindow, _View):
 
     def eventFilter(self, obj: QObject, event: QEvent):
         et = event.type()
-
-        if et in [QEvent.WindowDeactivate, QEvent.ApplicationDeactivate]:
-            print('----!!!!!!!')
 
         moved = et in [
             QEvent.MouseMove,
@@ -236,9 +236,8 @@ class Window(QMainWindow, _View):
         Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
     def on_toolbar_hide(self):
-        # self.setWindowFlags(self.windowFlags() & Qt.WindowSystemMenuHint)
-        tx, ty, tw, th = self.get_win_rect()
-        self.setGeometry(-tx, -ty, tw, th)
+        rect = self.geometry()
+        self.setGeometry(-rect.x(), -rect.y(), rect.width(), rect.height())
 
     @staticmethod
     def on_toolbar_help():
