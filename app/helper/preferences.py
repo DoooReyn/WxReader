@@ -36,6 +36,7 @@ class UserKey:
 
     class Profile:
         WinRect = 'profile.win_rect'
+        NoticeUrl = 'profile.notice_url'
 
     class Sponsor:
         WinRect = 'sponsor.win_rect'
@@ -61,6 +62,7 @@ default_user_data = {
     UserKey.Exception.WinRect: [0, 0, 640, 480],
     UserKey.Sponsor.WinRect: [0, 0, 640, 480],
     UserKey.ReadingFinished.WinRect: [0, 0, 640, 480],
+    UserKey.Profile.NoticeUrl: ''
 }
 
 

@@ -20,6 +20,7 @@ from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
 from helper.thread_runner import ThreadRunner
 from view.notice import Notice
+from view.options import Options
 from view.webview import ReaderActions, Webview
 
 
@@ -127,6 +128,7 @@ class Window(QMainWindow, _View):
         self.ui_tray.activated.connect(self.on_tray_activated)
         Signals().page_loading_progress.connect(self.on_update_progress)
         Signals().status_tip_updated.connect(self.on_update_status_tip)
+        Signals().reader_refresh_speed.connect(self.on_refresh_speed)
 
     def closeEvent(self, event: QCloseEvent):
         ThreadRunner().stop(self.scroller)
@@ -212,7 +214,11 @@ class Window(QMainWindow, _View):
         if now != speed:
             Preferences().set(UserKey.Reader.Speed, now)
             Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
-            self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
+            self.on_refresh_speed()
+
+    def on_refresh_speed(self):
+        now = Preferences().get(UserKey.Reader.Speed)
+        self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
 
     def on_toolbar_quit(self):
         self.close()
@@ -239,11 +245,7 @@ class Window(QMainWindow, _View):
 
     @staticmethod
     def on_toolbar_profile():
-        Notice(Views.Profile,
-               UserKey.Help.WinRect,
-               I18n.text("toolbar:profile"),
-               I18n.text("notice:profile")
-               ).exec()
+        Options().exec()
 
     @staticmethod
     def on_toolbar_sponsor():
