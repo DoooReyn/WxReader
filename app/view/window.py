@@ -39,7 +39,8 @@ class _View(GUI.View):
         self.ui_tool_bar.setAllowedAreas(Qt.ToolBarArea.AllToolBarAreas)
         self.ui_tool_bar.setFloatable(False)
         self.ui_tool_bar.setMovable(False)
-        self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        self.ui_tool_bar.setContextMenuPolicy(Qt.NoContextMenu | Qt.PreventContextMenu)
+        self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.ui_act_back_home = self.add_action(MainToolbar.ActionBackHome, self.ui_tool_bar)
         self.ui_act_refresh = self.add_action(MainToolbar.ActionRefresh, self.ui_tool_bar)
         self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
@@ -71,6 +72,7 @@ class _View(GUI.View):
         # 1.2 内容
         self.ui_webview = Webview()
         self.ui_webview.setContextMenuPolicy(Qt.NoContextMenu)
+        self.ui_webview.setContentsMargins(4, 4, 4, 4)
 
         # 1.3 系统托盘
         self.ui_tray = QSystemTrayIcon(self)

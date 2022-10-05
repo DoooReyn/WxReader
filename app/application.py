@@ -20,6 +20,9 @@ from helper.preferences import Preferences
 from helper.signals import Signals
 from view.window import Window
 
+# 尝试修复 QWebEngine WebGL 的问题
+QCoreApplication.setAttribute(Qt.AA_UseDesktopOpenGL)
+
 
 class Application(object):
     """应用程序"""
@@ -45,8 +48,6 @@ class Application(object):
 
         # 创建 Qt 窗口
         self.qt_app = QApplication(sys.argv)
-        # 尝试修复 QWebEngine WebGL 的问题
-        self.qt_app.setAttribute(Qt.AA_UseDesktopOpenGL)
         # 使用高清 icon
         self.qt_app.setAttribute(Qt.AA_UseHighDpiPixmaps)
         self.qt_app.setApplicationName(I18n.text("app:name"))
