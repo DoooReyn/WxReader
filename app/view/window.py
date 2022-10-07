@@ -11,6 +11,7 @@ from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
     QToolBar
 
+from conf.lang import LanguageKeys
 from conf.menus import MainToolbar, MainTray
 from conf.res_map import ResMap
 from conf.views import Views
@@ -110,7 +111,7 @@ class Window(QMainWindow, _View):
 
     def setup_ui(self):
         self.setMinimumSize(640, 480)
-        self.setWindowTitle(I18n.text('app:name'))
+        self.setWindowTitle(I18n.text(LanguageKeys.app_name))
         self.setWindowIcon(GUI.icon(ResMap.icon_app))
         self.setStatusBar(self.ui_status_bar)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.ui_tool_bar)
@@ -128,7 +129,7 @@ class Window(QMainWindow, _View):
         """初始化配置相关"""
         self.ui_act_auto.setChecked(Preferences().get(UserKey.Reader.Scrollable))
         self.ui_act_pinned.setChecked(Preferences().get(UserKey.Reader.Pinned))
-        self.ui_lab_speed.setText(I18n.text("tips:speed").format(Preferences().get(UserKey.Reader.Speed)))
+        self.ui_lab_speed.setText(I18n.text(LanguageKeys.tips_speed).format(Preferences().get(UserKey.Reader.Speed)))
 
     def setup_signals(self):
         """关联信号和槽"""
@@ -228,7 +229,7 @@ class Window(QMainWindow, _View):
 
     def on_refresh_speed(self):
         now = Preferences().get(UserKey.Reader.Speed)
-        self.ui_lab_speed.setText(I18n.text("tips:speed").format(now))
+        self.ui_lab_speed.setText(I18n.text(LanguageKeys.tips_speed).format(now))
 
     def on_toolbar_quit(self):
         self.close()
@@ -245,16 +246,16 @@ class Window(QMainWindow, _View):
     def on_toolbar_help():
         Notice(Views.Help,
                UserKey.Help.WinRect,
-               I18n.text("toolbar:help"),
-               I18n.text("notice:help")
+               I18n.text(LanguageKeys.toolbar_help),
+               I18n.text(LanguageKeys.notice_help)
                ).exec()
 
     @staticmethod
     def on_toolbar_about():
         Notice(Views.About,
                UserKey.About.WinRect,
-               I18n.text("toolbar:about"),
-               I18n.text("notice:about")
+               I18n.text(LanguageKeys.toolbar_about),
+               I18n.text(LanguageKeys.notice_about)
                ).exec()
 
     @staticmethod
@@ -265,8 +266,8 @@ class Window(QMainWindow, _View):
     def on_toolbar_sponsor():
         Notice(Views.Sponsor,
                UserKey.Help.WinRect,
-               I18n.text("toolbar:sponsor"),
-               I18n.text("notice:sponsor")
+               I18n.text(LanguageKeys.toolbar_sponsor),
+               I18n.text(LanguageKeys.notice_sponsor)
                ).exec()
 
     @staticmethod

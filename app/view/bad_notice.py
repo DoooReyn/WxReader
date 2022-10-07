@@ -6,6 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 错误通知
 """
+from conf.lang import LanguageKeys
 from conf.views import Views
 from helper.i18n import I18n
 from helper.preferences import UserKey
@@ -19,7 +20,7 @@ class BadNotice(Notice):
         super(BadNotice, self).__init__(
             Views.Exception,
             UserKey.Exception.WinRect,
-            I18n.text("exception:name"),
+            I18n.text(LanguageKeys.exception_name),
             tips,
             FillType.PlainText,
             True
@@ -31,7 +32,7 @@ class NetworkBadNotice(BadNotice):
     """网络错误通知"""
 
     def __init__(self):
-        tips = I18n.text("debug:network_error")
+        tips = I18n.text(LanguageKeys.debug_network_error)
         super(NetworkBadNotice, self).__init__(tips)
 
 
@@ -39,7 +40,7 @@ class InjectBadNotice(BadNotice):
     """注入脚本失败通知"""
 
     def __init__(self, filepath: str):
-        tips = I18n.text("debug:inject_script_failed").format(filepath)
+        tips = I18n.text(LanguageKeys.debug_inject_script_failed).format(filepath)
         super(InjectBadNotice, self).__init__(tips)
 
 
@@ -48,8 +49,8 @@ class ReadingFinishedNotice(Notice):
         super(ReadingFinishedNotice, self).__init__(
             Views.ReadingFinished,
             UserKey.ReadingFinished.WinRect,
-            I18n.text("tips:notice"),
-            I18n.text("tips:reading_finished"),
+            I18n.text(LanguageKeys.tips_notice),
+            I18n.text(LanguageKeys.tips_reading_finished),
             FillType.Html,
             True
         )

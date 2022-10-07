@@ -12,6 +12,7 @@ from typing import Optional
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QPushButton, QTextBrowser, QVBoxLayout, QWidget
 
+from conf.lang import LanguageKeys
 from helper.gui import GUI
 from helper.i18n import I18n
 
@@ -27,7 +28,7 @@ class _View(GUI.View):
         self.ui_msg_box.setAcceptRichText(True)
         self.ui_msg_box.setOpenExternalLinks(True)
         self.ui_msg_box.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
-        self.ui_btn_ok = QPushButton(I18n.text("notice:btn_ok"))
+        self.ui_btn_ok = QPushButton(I18n.text(LanguageKeys.notice_btn_ok))
         self.ui_btn_ok.setFixedSize(120, 48)
 
         self.ui_layout = QVBoxLayout()

@@ -30,5 +30,6 @@ class I18n:
     @staticmethod
     def text(key: str):
         """获取语言对应文本"""
-        pack = LangPack[I18n.get_lang()].value
+        lang = I18n.get_lang()
+        pack = LangPack[lang].value
         return pack.get(key, '__unknown__')

@@ -24,13 +24,14 @@ from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
 from PyQt5.QtWidgets import QFileDialog
 
+from conf.lang import LanguageKeys
 from conf.res_map import ResMap
 from helper.cmm import Cmm
 from helper.gui import GUI
 from helper.i18n import I18n
 from helper.preferences import Preferences, UserKey
 from helper.signals import Signals
-from view.bad_notice import InjectBadNotice, NetworkBadNotice, ReadingFinishedNotice
+from view.bad_notice import InjectBadNotice, NetworkBadNotice
 
 
 class ReaderActions:
@@ -202,30 +203,30 @@ class Webview(QWebEngineView, GUI.View):
     def check_scroll(self):
         self.pjTransport.trigger(ReaderActions.Loading)
         if self.pjTransport.loading:
-            self.send_tip(I18n.text("tips:page_ready"))
+            self.send_tip(I18n.text(LanguageKeys.tips_page_ready))
             return
         else:
             if self.wait_next is True:
                 self.pjTransport.apply_watch()
                 self.wait_next = False
-                self.send_tip(I18n.text("tips:next_chapter_ready"))
+                self.send_tip(I18n.text(LanguageKeys.tips_next_chapter_ready))
                 return
         if self.pjTransport.has_selection is True:
-            self.send_tip(I18n.text("tips:has_selection"))
+            self.send_tip(I18n.text(LanguageKeys.tips_has_selection))
             return
         if self.wait_next is True:
-            self.send_tip(I18n.text("tips:wait_for_next_chapter"))
+            self.send_tip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
             return
         if self.pjTransport.scroll_to_end is True:
-            self.send_tip(I18n.text("tips:scroll_to_end"))
+            self.send_tip(I18n.text(LanguageKeys.tips_scroll_to_end))
             self.pjTransport.scroll_to_end = False
             self.wait_next = True
             return
         if self.is_on_reading_page() is False:
-            self.send_tip(I18n.text("tips:no_book_view"))
+            self.send_tip(I18n.text(LanguageKeys.tips_no_book_view))
             return
 
-        self.send_tip(I18n.text("tips:auto_read_on"), False)
+        self.send_tip(I18n.text(LanguageKeys.tips_auto_read_on), False)
         Signals().page_loading_progress.emit(0)
         self.pjTransport.trigger(ReaderActions.Scrolling)
 
@@ -247,12 +248,12 @@ class Webview(QWebEngineView, GUI.View):
             self.pjTransport.trigger(act)
 
     def _on_save_note(self, filename: str, content: str):
-        where, _ = QFileDialog.getSaveFileName(self, I18n.text('tips:export_note'), filename, filter='*.md')
+        where, _ = QFileDialog.getSaveFileName(self, I18n.text(LanguageKeys.tips_export_note), filename, filter='*.md')
         if len(where) > 0:
             Cmm.save_as(where, content)
-            self.send_tip(I18n.text('tips:note_exported_ok').format(filename))
+            self.send_tip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
         else:
-            self.send_tip(I18n.text('tips:note_exported_bad').format(filename))
+            self.send_tip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
 
     @staticmethod
     def _on_reading_finished():
@@ -268,13 +269,13 @@ class Webview(QWebEngineView, GUI.View):
         Signals().status_tip_updated.emit(tip)
 
     def _on_load_started(self):
-        self.send_tip(I18n.text("tips:page_ready"))
+        self.send_tip(I18n.text(LanguageKeys.tips_page_ready))
         self.pjTransport.scroll_to_end = False
         self.pjTransport.has_selection = False
         self.pjTransport.apply_watch()
 
     def _on_load_progressed(self, value):
-        self.send_tip(I18n.text("tips:page_loading"))
+        self.send_tip(I18n.text(LanguageKeys.tips_page_loading))
         Signals().page_loading_progress.emit(value)
 
     def _on_load_finished(self, result: bool):
@@ -283,7 +284,7 @@ class Webview(QWebEngineView, GUI.View):
             self.pjTransport.refresh_speed()
             self.pjTransport.refresh_scrollable()
             Signals().page_loading_progress.emit(0)
-            self.send_tip(I18n.text("tips:page_loaded_ok"))
+            self.send_tip(I18n.text(LanguageKeys.tips_page_loaded_ok))
         else:
-            self.send_tip(I18n.text("tips:page_loaded_bad"))
+            self.send_tip(I18n.text(LanguageKeys.tips_page_loaded_bad))
             NetworkBadNotice().exec()

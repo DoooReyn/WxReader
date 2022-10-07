@@ -10,6 +10,53 @@
 
 from enum import Enum, unique
 
+
+class LanguageKeys:
+    app_name = "app_name"
+    toolbar_help = "toolbar_help"
+    toolbar_refresh = "toolbar_refresh"
+    toolbar_about = "toolbar_about"
+    toolbar_profile = "toolbar_profile"
+    toolbar_quit = "toolbar_quit"
+    toolbar_hide = "toolbar_hide"
+    toolbar_auto = "toolbar_auto"
+    toolbar_export = "toolbar_export"
+    toolbar_theme = "toolbar_theme"
+    toolbar_fullscreen = "toolbar_fullscreen"
+    toolbar_back_home = "toolbar_back_home"
+    toolbar_speed_up = "toolbar_speed_up"
+    toolbar_speed_dw = "toolbar_speed_dw"
+    toolbar_sponsor = "toolbar_sponsor"
+    toolbar_pinned = "toolbar_pinned"
+    notice_btn_ok = "notice_btn_ok"
+    notice_about = "notice_about"
+    notice_help = "notice_help"
+    notice_profile = "notice_profile"
+    notice_sponsor = "notice_sponsor"
+    exception_name = "exception_name"
+    debug_method_not_implemented = "debug_method_not_implemented"
+    debug_inject_script_failed = "debug_inject_script_failed"
+    debug_network_error = "debug_network_error"
+    tips_speed = "tips_speed"
+    tips_page_ready = "tips_page_ready"
+    tips_page_loading = "tips_page_loading"
+    tips_next_chapter_ready = "tips_next_chapter_ready"
+    tips_has_selection = "tips_has_selection"
+    tips_wait_for_next_chapter = "tips_wait_for_next_chapter"
+    tips_scroll_to_end = "tips_scroll_to_end"
+    tips_no_book_view = "tips_no_book_view"
+    tips_auto_read_on = "tips_auto_read_on"
+    tips_page_loaded_ok = "tips_page_loaded_ok"
+    tips_page_loaded_bad = "tips_page_loaded_bad"
+    tips_export_note = "tips_export_note"
+    tips_note_exported_ok = "tips_note_exported_ok"
+    tips_note_exported_bad = "tips_note_exported_bad"
+    tips_notice = "tips_notice"
+    tips_reading_finished = "tips_reading_finished"
+
+
+TIPS_READING_FINISHED = "tips:reading_finished"
+
 ABOUT_CN = """
 ### Hi, there! 🤠 I'm DoooReyn.
 
@@ -59,57 +106,57 @@ class _Languages:
     """
     CN = {
         # general
-        "app:name": "微读自动阅读器",
+        "app_name": "微读自动阅读器",
 
         # toolbar
-        "toolbar:help": "查看帮助",
-        "toolbar:refresh": "刷新一下",
-        "toolbar:about": "关于作者",
-        "toolbar:profile": "更多选项",
-        "toolbar:quit": "退出阅读",
-        "toolbar:hide": "退到后台",
-        "toolbar:auto": "自动阅读",
-        "toolbar:export": "导出笔记",
-        "toolbar:theme": "切换主题",
-        "toolbar:fullscreen": "切换全屏",
-        "toolbar:back_home": "回到首页",
-        "toolbar:speed_up": "神行太保",
-        "toolbar:speed_dw": "凌波微步",
-        "toolbar:sponsor": "一杯咖啡",
-        "toolbar:pinned": "固定此栏",
+        "toolbar_help": "查看帮助",
+        "toolbar_refresh": "刷新一下",
+        "toolbar_about": "关于作者",
+        "toolbar_profile": "更多选项",
+        "toolbar_quit": "退出阅读",
+        "toolbar_hide": "退到后台",
+        "toolbar_auto": "自动阅读",
+        "toolbar_export": "导出笔记",
+        "toolbar_theme": "切换主题",
+        "toolbar_fullscreen": "切换全屏",
+        "toolbar_back_home": "回到首页",
+        "toolbar_speed_up": "神行太保",
+        "toolbar_speed_dw": "凌波微步",
+        "toolbar_sponsor": "一杯咖啡",
+        "toolbar_pinned": "固定此栏",
 
         # notice
-        "notice:btn_ok": "好哒！",
-        "notice:about": ABOUT_CN,
-        "notice:help": HELP_CN,
-        "notice:profile": HELP_CN,
-        "notice:sponsor": HELP_CN,
+        "notice_btn_ok": "好哒！",
+        "notice_about": ABOUT_CN,
+        "notice_help": HELP_CN,
+        "notice_profile": HELP_CN,
+        "notice_sponsor": HELP_CN,
 
         # exception
-        "exception:name": "异常通知",
+        "exception_name": "异常通知",
 
         # debug
-        "debug:method_not_implemented": "[ {0} > {1} ] 方法未实现",
-        "debug:inject_script_failed": "注入脚本{}失败",
-        "debug:network_error": "网络似乎有点问题呢~",
+        "debug_method_not_implemented": "[ {0} > {1} ] 方法未实现",
+        "debug_inject_script_failed": "注入脚本{}失败",
+        "debug_network_error": "网络似乎有点问题呢~",
 
         # tips
-        "tips:speed": "阅读速度:{}",
-        "tips:page_ready": "准备加载页面",
-        "tips:page_loading": "正在加载页面",
-        "tips:next_chapter_ready": "下一章加载完成",
-        "tips:has_selection": "有选中文本",
-        "tips:wait_for_next_chapter": "等待跳转下一章",
-        "tips:scroll_to_end": "滚动到底部了",
-        "tips:no_book_view": "未打开书籍",
-        "tips:auto_read_on": '自动阅读中...',
-        "tips:page_loaded_ok": '页面加载完成',
-        "tips:page_loaded_bad": '页面加载失败',
-        "tips:export_note": '保存笔记',
-        "tips:note_exported_ok": '【{}】已保存',
-        "tips:note_exported_bad": '【{}】未保存',
-        "tips:notice": "通知",
-        "tips:reading_finished": "<p style='font-size:24px;color:#5d646e;text-align:center;'>全书已读完</p>",
+        "tips_speed": "阅读速度:{}",
+        "tips_page_ready": "准备加载页面",
+        "tips_page_loading": "正在加载页面",
+        "tips_next_chapter_ready": "下一章加载完成",
+        "tips_has_selection": "有选中文本",
+        "tips_wait_for_next_chapter": "等待跳转下一章",
+        "tips_scroll_to_end": "滚动到底部了",
+        "tips_no_book_view": "未打开书籍",
+        "tips_auto_read_on": '自动阅读中...',
+        "tips_page_loaded_ok": '页面加载完成',
+        "tips_page_loaded_bad": '页面加载失败',
+        "tips_export_note": '保存笔记',
+        "tips_note_exported_ok": '【{}】已保存',
+        "tips_note_exported_bad": '【{}】未保存',
+        "tips_notice": "通知",
+        "tips_reading_finished": "<p style='font-size:24px;color:#5d646e;text-align:center;'>全书已读完</p>",
     }
 
 

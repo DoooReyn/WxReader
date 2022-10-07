@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QLineEdit, QPushButton, QSpinBox
 
+from conf.lang import LanguageKeys
 from conf.views import Views
 from helper.gui import GUI
 from helper.i18n import I18n
@@ -56,7 +57,7 @@ class Options(QDialog, _View):
     def __init__(self):
         super(Options, self).__init__()
 
-        self.setWindowTitle(I18n.text("toolbar:profile"))
+        self.setWindowTitle(I18n.text(LanguageKeys.toolbar_profile))
         self.setFixedHeight(120)
         self.setModal(True)
         self.set_window_code(Views.Profile)

@@ -12,6 +12,7 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
 
+from conf.lang import LanguageKeys
 from conf.menus import ActionInfo
 from helper.i18n import I18n
 from helper.preferences import Preferences
@@ -175,6 +176,7 @@ class GUI:
 
     class GridItem:
         """网格子项"""
+
         def __init__(self, widget: QWidget, col_start: int, col_span: int):
             self.widget = widget
             self.col_start = col_start
@@ -222,7 +224,7 @@ class GUI:
 
         @staticmethod
         def menu_method_not_implemented(menu, name):
-            msg = I18n.text("debug:method_not_implemented").format(menu, name)
+            msg = I18n.text(LanguageKeys.debug_method_not_implemented).format(menu, name)
             Signals().logger_warn.emit(msg)
             print(msg)
 
@@ -238,7 +240,8 @@ class GUI:
                 act.triggered.connect(lambda *args, t=self, g=act_info.trigger: getattr(t, g)())
             else:
                 # noinspection PyUnresolvedReferences
-                act.triggered.connect(lambda *args, m=parent.objectName(), n=name: self.menu_method_not_implemented(m, n))
+                act.triggered.connect(
+                    lambda *args, m=parent.objectName(), n=name: self.menu_method_not_implemented(m, n))
             parent.addAction(act)
             return act
 
