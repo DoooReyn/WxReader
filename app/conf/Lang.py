@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : lang.py
+@File    : Lang.py
 @Time    : 2022/9/27 16:20
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 语言包

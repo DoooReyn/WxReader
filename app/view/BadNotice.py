@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : bad_notice.py
+@File    : BadNotice.py
 @Time    : 2022/9/30 22:12
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 错误通知
 """
-from conf.lang import LanguageKeys
-from conf.views import Views
-from helper.i18n import I18n
-from helper.preferences import UserKey
-from view.notice import FillType, Notice
+from conf.Lang import LanguageKeys
+from conf.Views import Views
+from helper.I18n import I18n
+from helper.Preferences import UserKey
+from view.Notice import FillType, Notice
 
 
 class BadNotice(Notice):

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : menus.py
+@File    : Menus.py
 @Time    : 2022/9/27 17:07
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 菜单
 """
-from conf.lang import LanguageKeys
-from conf.res_map import ResMap
+from conf.Lang import LanguageKeys
+from conf.ResMap import ResMap
 
 
 class ActionInfo:

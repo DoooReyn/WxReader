@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : thread_runner.py
+@File    : ThreadRunner.py
 @Time    : 2022/9/27 17:22
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 线程任务
@@ -10,8 +10,8 @@ from threading import Event, Thread
 from time import sleep
 from typing import Callable, Dict
 
-from helper.cmm import Cmm
-from helper.signals import Signals
+from helper.Cmm import Cmm
+from helper.Signals import Signals
 
 
 class ThreadNotFound(Exception):

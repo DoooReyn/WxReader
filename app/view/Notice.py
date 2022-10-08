@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : notice.py
+@File    : Notice.py
 @Time    : 2022/9/27 21:56
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 通知子窗口
@@ -12,9 +12,9 @@ from typing import Optional
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QPushButton, QTextBrowser, QVBoxLayout, QWidget
 
-from conf.lang import LanguageKeys
-from helper.gui import GUI
-from helper.i18n import I18n
+from conf.Lang import LanguageKeys
+from helper.Gui import GUI
+from helper.I18n import I18n
 
 
 class _View(GUI.View):

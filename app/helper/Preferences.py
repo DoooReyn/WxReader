@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : preferences.py
+@File    : Preferences.py
 @Time    : 2022/9/27 15:46
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 软件配置
@@ -10,7 +10,7 @@ from json import dumps, JSONDecodeError, loads
 from os.path import exists
 
 # QSettings 存在读取和保存无效的问题，自己写一个来代替
-from helper.cmm import Cmm
+from helper.Cmm import Cmm
 
 
 class UserKey:

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : signals.py
+@File    : Signals.py
 @Time    : 2022/9/27 16:59
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 基础信号源
 """
 from PyQt5.QtCore import pyqtSignal as QSignal, QObject
 
-from helper.cmm import Cmm
+from helper.Cmm import Cmm
 
 
 @Cmm.Decorator.Singleton

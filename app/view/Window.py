@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : window.py
+@File    : Window.py
 @Time    : 2022/9/27 17:47
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 主窗口
@@ -11,17 +11,17 @@ from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, \
     QToolBar
 
-from conf.lang import LanguageKeys
-from conf.menus import MainToolbar, MainTray
-from conf.res_map import ResMap
-from conf.views import Views
-from helper.gui import GUI
-from helper.i18n import I18n
-from helper.preferences import Preferences, UserKey
-from helper.signals import Signals
-from view.notice import Notice
-from view.options import Options
-from view.webview import ReaderActions, Webview
+from conf.Lang import LanguageKeys
+from conf.Menus import MainToolbar, MainTray
+from conf.ResMap import ResMap
+from conf.Views import Views
+from helper.Gui import GUI
+from helper.I18n import I18n
+from helper.Preferences import Preferences, UserKey
+from helper.Signals import Signals
+from view.Notice import Notice
+from view.Options import Options
+from view.Webview import ReaderActions, Webview
 
 
 class _View(GUI.View):

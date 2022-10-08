@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : views.py
+@File    : Views.py
 @Time    : 2022/9/27 17:09
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 视窗定义

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : gui.py
+@File    : Gui.py
 @Time    : 2022/9/27 17:21
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : GUI辅助工具
@@ -12,11 +12,11 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
 
-from conf.lang import LanguageKeys
-from conf.menus import ActionInfo
-from helper.i18n import I18n
-from helper.preferences import Preferences
-from helper.signals import Signals
+from conf.Lang import LanguageKeys
+from conf.Menus import ActionInfo
+from helper.I18n import I18n
+from helper.Preferences import Preferences
+from helper.Signals import Signals
 
 
 class GUI:

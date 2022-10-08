@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : webview.py
+@File    : Webview.py
 @Time    : 2022/9/28 15:28
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 微信读书网页视图
@@ -24,14 +24,14 @@ from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
 from PyQt5.QtWidgets import QFileDialog
 
-from conf.lang import LanguageKeys
-from conf.res_map import ResMap
-from helper.cmm import Cmm
-from helper.gui import GUI
-from helper.i18n import I18n
-from helper.preferences import Preferences, UserKey
-from helper.signals import Signals
-from view.bad_notice import InjectBadNotice, NetworkBadNotice
+from conf.Lang import LanguageKeys
+from conf.ResMap import ResMap
+from helper.Cmm import Cmm
+from helper.Gui import GUI
+from helper.I18n import I18n
+from helper.Preferences import Preferences, UserKey
+from helper.Signals import Signals
+from view.BadNotice import InjectBadNotice, NetworkBadNotice
 
 
 class ReaderActions:

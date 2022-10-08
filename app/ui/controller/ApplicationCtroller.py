@@ -12,16 +12,16 @@ from traceback import format_exception
 from PyQt5.QtCore import QCoreApplication, Qt
 from PyQt5.QtWidgets import QApplication
 
-from conf.lang import LanguageKeys
-from conf.res_map import ResMap
-from conf.resources import qInitResources
-from helper.gui import GUI
-from helper.i18n import I18n
-from helper.preferences import Preferences
-from helper.signals import Signals
+from conf.Lang import LanguageKeys
+from conf.ResMap import ResMap
+from conf.Resources import qInitResources
+from helper.Gui import GUI
+from helper.I18n import I18n
+from helper.Preferences import Preferences
+from helper.Signals import Signals
 from ui.controller.Controller import Controller
 from ui.controller.WindowController import WindowController
-from view.window import Window
+from view.Window import Window
 
 
 class ErrorHookProxy:

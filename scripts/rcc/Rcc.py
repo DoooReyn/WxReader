@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : rcc.py
+@File    : Rcc.py
 @Date    : 2022/9/27 11:47
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : qrc资源文件生成及映射工具
   - 输出文件：
     - ./resources.qrc
-    - {project_dir}/app/conf/resources.py
-    - {project_dir}/app/conf/res_map.py
+    - {project_dir}/app/conf/Resources.py
+    - {project_dir}/app/conf/ResMap.py
 """
 
 from os import listdir, sep, walk
@@ -32,13 +32,11 @@ class Config:
     RESOURCES_AT = join(PROGRAM_AT, '..', '..', 'resources')
 
     # qrc文件
-    QRC_RAW_AT = join(PROGRAM_AT, 'resources.qrc')
-    QRC_PY_AT = join(PROGRAM_AT, '..', '..', 'app', 'conf', 'resources.py')
+    QRC_RAW_AT = join(PROGRAM_AT, 'Resources.qrc')
+    QRC_PY_AT = join(PROGRAM_AT, '..', '..', 'app', 'conf', 'Resources.py')
 
     # 资源映射文件
-    RES_MAP_AT = join(PROGRAM_AT, '..', '..', 'app', 'conf', 'res_map.py')
-
-    # qrc 转换
+    RES_MAP_AT = join(PROGRAM_AT, '..', '..', 'app', 'conf', 'ResMap.py')
 
     # 文件编码
     ENCODING = 'utf-8'

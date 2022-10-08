@@ -11,13 +11,13 @@ from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, QToolBar
 
-from conf.lang import LanguageKeys
-from conf.menus import MainToolbar, MainTray
-from conf.res_map import ResMap
-from conf.views import Views
-from helper.gui import GUI
-from helper.i18n import I18n
-from helper.preferences import Preferences, UserKey
+from conf.Lang import LanguageKeys
+from conf.Menus import MainToolbar, MainTray
+from conf.ResMap import ResMap
+from conf.Views import Views
+from helper.Gui import GUI
+from helper.I18n import I18n
+from helper.Preferences import Preferences, UserKey
 
 # 鼠标移动事件
 MOUSE_EVENT = [

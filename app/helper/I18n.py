@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : i18n.py
+@File    : I18n.py
 @Time    : 2022/9/27 17:15
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 多语言
 """
-from conf.lang import LangPack
-from helper.signals import Signals
-from helper.preferences import Preferences, UserKey
+from conf.Lang import LangPack
+from helper.Signals import Signals
+from helper.Preferences import Preferences, UserKey
 
 
 class I18n:

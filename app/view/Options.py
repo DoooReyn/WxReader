@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : options.py
+@File    : Options.py
 @Time    : 2022/10/1 11:52
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 用户自定义选项视图
@@ -10,13 +10,13 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QLineEdit, QPushButton, QSpinBox
 
-from conf.lang import LanguageKeys
-from conf.views import Views
-from helper.gui import GUI
-from helper.i18n import I18n
-from helper.preferences import Preferences, UserKey
-from helper.signals import Signals
-from view.webview import ReaderActions
+from conf.Lang import LanguageKeys
+from conf.Views import Views
+from helper.Gui import GUI
+from helper.I18n import I18n
+from helper.Preferences import Preferences, UserKey
+from helper.Signals import Signals
+from view.Webview import ReaderActions
 
 
 class _View(GUI.View):
