@@ -20,6 +20,7 @@ from helper.i18n import I18n
 from helper.preferences import Preferences
 from helper.signals import Signals
 from ui.controller.Controller import Controller
+from ui.controller.WindowController import WindowController
 from view.window import Window
 
 
@@ -71,8 +72,7 @@ class ApplicationController(Controller, ErrorHookProxy):
         self.app.setStyleSheet(GUI.Theme.Default)
 
         # 创建应用窗口
-        self.win = Window()
-        self.win.show()
+        self.win = WindowController()
 
         # 运行应用
         sys.exit(self.app.exec_())

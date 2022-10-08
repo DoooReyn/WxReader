@@ -42,21 +42,21 @@ class _View(GUI.View):
         self.ui_tool_bar.setMovable(False)
         self.ui_tool_bar.setContextMenuPolicy(Qt.NoContextMenu | Qt.PreventContextMenu)
         self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.ui_act_back_home = self.add_action(MainToolbar.ActionBackHome, self.ui_tool_bar)
-        self.ui_act_refresh = self.add_action(MainToolbar.ActionRefresh, self.ui_tool_bar)
-        self.ui_act_auto = self.add_action(MainToolbar.ActionAuto, self.ui_tool_bar)
-        self.ui_act_speed_dw = self.add_action(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
-        self.ui_act_speed_up = self.add_action(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
-        self.ui_act_theme = self.add_action(MainToolbar.ActionExport, self.ui_tool_bar)
-        self.ui_act_export = self.add_action(MainToolbar.ActionTheme, self.ui_tool_bar)
-        self.ui_act_screen = self.add_action(MainToolbar.ActionFullscreen, self.ui_tool_bar)
-        self.ui_act_profile = self.add_action(MainToolbar.ActionProfile, self.ui_tool_bar)
-        self.ui_act_help = self.add_action(MainToolbar.ActionHelp, self.ui_tool_bar)
-        self.ui_act_sponsor = self.add_action(MainToolbar.ActionSponsor, self.ui_tool_bar)
-        self.ui_act_about = self.add_action(MainToolbar.ActionAbout, self.ui_tool_bar)
-        self.ui_act_hide = self.add_action(MainToolbar.ActionHide, self.ui_tool_bar)
-        self.ui_act_quit = self.add_action(MainToolbar.ActionQuit, self.ui_tool_bar)
-        self.ui_act_pinned = self.add_action(MainToolbar.ActionPinned, self.ui_tool_bar)
+        self.ui_act_back_home = self.addActionBy(MainToolbar.ActionBackHome, self.ui_tool_bar)
+        self.ui_act_refresh = self.addActionBy(MainToolbar.ActionRefresh, self.ui_tool_bar)
+        self.ui_act_auto = self.addActionBy(MainToolbar.ActionAuto, self.ui_tool_bar)
+        self.ui_act_speed_dw = self.addActionBy(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
+        self.ui_act_speed_up = self.addActionBy(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
+        self.ui_act_theme = self.addActionBy(MainToolbar.ActionExport, self.ui_tool_bar)
+        self.ui_act_export = self.addActionBy(MainToolbar.ActionTheme, self.ui_tool_bar)
+        self.ui_act_screen = self.addActionBy(MainToolbar.ActionFullscreen, self.ui_tool_bar)
+        self.ui_act_profile = self.addActionBy(MainToolbar.ActionProfile, self.ui_tool_bar)
+        self.ui_act_help = self.addActionBy(MainToolbar.ActionHelp, self.ui_tool_bar)
+        self.ui_act_sponsor = self.addActionBy(MainToolbar.ActionSponsor, self.ui_tool_bar)
+        self.ui_act_about = self.addActionBy(MainToolbar.ActionAbout, self.ui_tool_bar)
+        self.ui_act_hide = self.addActionBy(MainToolbar.ActionHide, self.ui_tool_bar)
+        self.ui_act_quit = self.addActionBy(MainToolbar.ActionQuit, self.ui_tool_bar)
+        self.ui_act_pinned = self.addActionBy(MainToolbar.ActionPinned, self.ui_tool_bar)
         self.ui_act_auto.setCheckable(True)
         self.ui_act_pinned.setCheckable(True)
 
@@ -79,7 +79,7 @@ class _View(GUI.View):
         self.ui_tray = QSystemTrayIcon(self)
         self.ui_tray.setIcon(GUI.icon(ResMap.icon_app))
         self.ui_tray_menu = QMenu(self)
-        self.add_action(MainTray.ActionQuit, self.ui_tray_menu)
+        self.addActionBy(MainTray.ActionQuit, self.ui_tray_menu)
         self.ui_tray.setContextMenu(self.ui_tray_menu)
         self.ui_tray.show()
 
@@ -98,18 +98,18 @@ class Window(QMainWindow, _View):
                             | Qt.CustomizeWindowHint
                             | Qt.WindowSystemMenuHint
                             | Qt.WindowCloseButtonHint)
-        self.set_window_code(Views.Main)
-        self.set_rect_key(UserKey.General.WinRect)
-        self.setup_signals()
-        self.setup_preferences()
-        self.setup_ui()
+        self.setWindowCode(Views.Main)
+        self.setWinRectKey(UserKey.General.WinRect)
+        self.setupSignals()
+        self.setupPreferences()
+        self.setupUi()
         self.scroller = self.startTimer(100, Qt.PreciseTimer)
 
     def timerEvent(self, timer: QTimerEvent):
         if timer.timerId() == self.scroller:
-            self._check_scroll()
+            self.checkScroll()
 
-    def setup_ui(self):
+    def setupUi(self):
         self.setMinimumSize(640, 480)
         self.setWindowTitle(I18n.text(LanguageKeys.app_name))
         self.setWindowIcon(GUI.icon(ResMap.icon_app))
@@ -117,35 +117,35 @@ class Window(QMainWindow, _View):
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.ui_tool_bar)
         self.setCentralWidget(self.ui_webview)
 
-    def _check_scroll(self):
+    def checkScroll(self):
         if self.scroller <= 0:
             return
         if self.ui_act_auto.isChecked():
-            self.ui_webview.check_scroll()
+            self.ui_webview.checkScroll()
         else:
-            self.ui_webview.send_tip('', False)
+            self.ui_webview.sendTip('', False)
 
-    def setup_preferences(self):
+    def setupPreferences(self):
         """初始化配置相关"""
         self.ui_act_auto.setChecked(Preferences().get(UserKey.Reader.Scrollable))
         self.ui_act_pinned.setChecked(Preferences().get(UserKey.Reader.Pinned))
         self.ui_lab_speed.setText(I18n.text(LanguageKeys.tips_speed).format(Preferences().get(UserKey.Reader.Speed)))
 
-    def setup_signals(self):
+    def setupSignals(self):
         """关联信号和槽"""
         self.installEventFilter(self)
         self.setMouseTracking(True)
         # noinspection PyUnresolvedReferences
-        self.ui_tray.activated.connect(self.on_tray_activated)
-        Signals().page_loading_progress.connect(self.on_update_progress)
-        Signals().status_tip_updated.connect(self.on_update_status_tip)
-        Signals().reader_refresh_speed.connect(self.on_refresh_speed)
+        self.ui_tray.activated.connect(self.onTrayActivated)
+        Signals().page_loading_progress.connect(self.onRefreshProgress)
+        Signals().status_tip_updated.connect(self.onRefreshStatusTip)
+        Signals().reader_refresh_speed.connect(self.onRefreshSpeed)
 
     def closeEvent(self, event: QCloseEvent):
         self.killTimer(self.scroller)
         self.scroller = -1
-        Preferences().set(UserKey.Reader.LatestUrl, self.ui_webview.current_url())
-        self.save_win_rect()
+        Preferences().set(UserKey.Reader.LatestUrl, self.ui_webview.currentUrl())
+        self.saveWinRect()
         Preferences().save()
         event.accept()
         super(Window, self).closeEvent(event)
@@ -185,7 +185,7 @@ class Window(QMainWindow, _View):
             if current != height:
                 self.ui_tool_bar.setFixedHeight(height)
 
-    def on_tray_activated(self):
+    def onTrayActivated(self):
         self.activateWindow()
         if self.isFullScreen():
             self.showFullScreen()
@@ -194,56 +194,56 @@ class Window(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
-                tx, ty, tw, th = self.get_win_rect()
+                tx, ty, tw, th = self.getWinRect()
                 self.setGeometry(tx, ty, tw, th)
 
-    def on_update_progress(self, value: int):
+    def onRefreshProgress(self, value: int):
         self.ui_progress.setValue(value)
 
-    def on_update_status_tip(self, tip: str):
+    def onRefreshStatusTip(self, tip: str):
         self.ui_lab_status.setText(tip)
 
-    def on_toolbar_fullscreen(self):
+    def onToolbarFullscreen(self):
         if self.isFullScreen():
             self.showNormal()
         else:
             self.showFullScreen()
 
-    def on_toolbar_pinned(self):
+    def onToolbarPinned(self):
         Preferences().set(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
 
-    def on_toolbar_speed_up(self):
-        self.adjust_speed(True)
+    def onToolbarSpeedUp(self):
+        self.adjustSpeed(True)
 
-    def on_toolbar_speed_dw(self):
-        self.adjust_speed(False)
+    def onToolbarSpeedDown(self):
+        self.adjustSpeed(False)
 
-    def adjust_speed(self, speed_up: bool):
+    def adjustSpeed(self, speed_up: bool):
         step = Preferences().get(UserKey.Reader.Step)
         speed = Preferences().get(UserKey.Reader.Speed)
         now = min(100, max(1, speed + step * (1 if speed_up else -1)))
         if now != speed:
             Preferences().set(UserKey.Reader.Speed, now)
             Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
-            self.on_refresh_speed()
+            self.onRefreshSpeed()
 
-    def on_refresh_speed(self):
+    def onRefreshSpeed(self):
         now = Preferences().get(UserKey.Reader.Speed)
         self.ui_lab_speed.setText(I18n.text(LanguageKeys.tips_speed).format(now))
 
-    def on_toolbar_quit(self):
+    def onToolbarQuit(self):
         self.close()
 
-    def on_toolbar_set_auto(self):
+    def onToolbarSetAuto(self):
         Preferences().set(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
         Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
-    def on_toolbar_hide(self):
+    def onToolbarHide(self):
         rect = self.geometry()
         self.setGeometry(-rect.x(), -rect.y(), rect.width(), rect.height())
 
     @staticmethod
-    def on_toolbar_help():
+    def onToolbarHelp():
         Notice(Views.Help,
                UserKey.Help.WinRect,
                I18n.text(LanguageKeys.toolbar_help),
@@ -251,7 +251,7 @@ class Window(QMainWindow, _View):
                ).exec()
 
     @staticmethod
-    def on_toolbar_about():
+    def onToolbarAbout():
         Notice(Views.About,
                UserKey.About.WinRect,
                I18n.text(LanguageKeys.toolbar_about),
@@ -259,11 +259,11 @@ class Window(QMainWindow, _View):
                ).exec()
 
     @staticmethod
-    def on_toolbar_profile():
+    def onToolbarProfile():
         Options().exec()
 
     @staticmethod
-    def on_toolbar_sponsor():
+    def onToolbarSponsor():
         Notice(Views.Sponsor,
                UserKey.Help.WinRect,
                I18n.text(LanguageKeys.toolbar_sponsor),
@@ -271,17 +271,17 @@ class Window(QMainWindow, _View):
                ).exec()
 
     @staticmethod
-    def on_toolbar_export():
+    def onToolbarExport():
         Signals().reader_setting_changed.emit(ReaderActions.ExportNote)
 
     @staticmethod
-    def on_toolbar_back_home():
+    def onToolbarBackHome():
         Signals().reader_setting_changed.emit(ReaderActions.BackHome)
 
     @staticmethod
-    def on_toolbar_theme():
+    def onToolbarTheme():
         Signals().reader_setting_changed.emit(ReaderActions.NextTheme)
 
     @staticmethod
-    def on_toolbar_refresh():
+    def onToolbarReload():
         Signals().reader_setting_changed.emit(ReaderActions.Refresh)

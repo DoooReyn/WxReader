@@ -70,10 +70,10 @@ default_user_data = {
 class Preferences:
     def __init__(self):
         self._data = {}
-        self.config_at = Cmm.app_config_at()
+        self.config_at = Cmm.appConfigAt()
 
     def init(self):
-        Cmm.mkdir(Cmm.app_storage_at())
+        Cmm.mkdir(Cmm.appStorageAt())
         self._read()
 
     def _read(self):
@@ -83,11 +83,11 @@ class Preferences:
                     self._data = loads(f.read())
                     self._sync()
             except JSONDecodeError:
-                self._save_default()
+                self._saveDefault()
         else:
-            self._save_default()
+            self._saveDefault()
 
-    def _save_default(self):
+    def _saveDefault(self):
         self._data = default_user_data
         self.save()
 

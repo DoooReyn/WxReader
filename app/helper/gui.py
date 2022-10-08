@@ -189,7 +189,7 @@ class GUI:
 
         def closeEvent(self, event):
             if self.rect_key is not None:
-                self.save_win_rect()
+                self.saveWinRect()
             if self.window_code > 0:
                 Signals().win_closed.emit(self.window_code)
             event.accept()
@@ -197,38 +197,38 @@ class GUI:
 
         def resizeEvent(self, event):
             if self.rect_key is not None:
-                self.save_win_rect()
+                self.saveWinRect()
             event.accept()
             super().resizeEvent(event)
 
-        def set_window_code(self, code: int):
+        def setWindowCode(self, code: int):
             self.window_code = code
 
-        def set_rect_key(self, kr: str):
+        def setWinRectKey(self, kr: str):
             self.rect_key = kr
-            tx, ty, w, h = self.get_win_rect()
+            tx, ty, w, h = self.getWinRect()
             self.setGeometry(tx, ty, w, h)
 
-        def get_win_rect(self):
+        def getWinRect(self):
             if self.rect_key is not None:
                 return [int(v) for v in Preferences().get(self.rect_key)]
             else:
                 r = self.geometry()
                 return r.topLeft().x(), r.topLeft().y(), r.width(), r.height()
 
-        def save_win_rect(self):
+        def saveWinRect(self):
             if self.rect_key is not None:
                 r = self.geometry()
                 rect = [r.topLeft().x(), r.topLeft().y(), r.width(), r.height()]
                 Preferences().set(self.rect_key, rect)
 
         @staticmethod
-        def menu_method_not_implemented(menu, name):
+        def onMenuActionNotImplemented(menu, name):
             msg = I18n.text(LanguageKeys.debug_method_not_implemented).format(menu, name)
             Signals().logger_warn.emit(msg)
             print(msg)
 
-        def add_action(self, act_info: ActionInfo, parent: Union[QMenu, QToolBar]):
+        def addActionBy(self, act_info: ActionInfo, parent: Union[QMenu, QToolBar]):
             name = I18n.text(act_info.name)
             act = QAction(name, parent)
             if act_info.icon:
@@ -241,12 +241,12 @@ class GUI:
             else:
                 # noinspection PyUnresolvedReferences
                 act.triggered.connect(
-                    lambda *args, m=parent.objectName(), n=name: self.menu_method_not_implemented(m, n))
+                    lambda *args, m=parent.objectName(), n=name: self.onMenuActionNotImplemented(m, n))
             parent.addAction(act)
             return act
 
     @staticmethod
-    def view_size():
+    def viewSize():
         return GUI.Preferences.view_size
 
     @staticmethod

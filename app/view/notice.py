@@ -58,12 +58,12 @@ class Notice(QDialog, _View):
         super(Notice, self).__init__()
 
         self.setModal(modal)
-        self.set_window_code(code)
-        self.set_rect_key(rect_key)
-        self.setup_ui(sub_title, content, fill_type)
-        self.setup_signals()
+        self.setWindowCode(code)
+        self.setWinRectKey(rect_key)
+        self.setupUi(sub_title, content, fill_type)
+        self.setupSignals()
 
-    def setup_ui(self, sub_title: str, content: str, fill_type: FillType):
+    def setupUi(self, sub_title: str, content: str, fill_type: FillType):
         self.setWindowTitle(sub_title)
         self.setMinimumSize(480, 320)
 
@@ -76,10 +76,10 @@ class Notice(QDialog, _View):
 
         self.show()
 
-    def setup_signals(self):
+    def setupSignals(self):
         # noinspection PyUnresolvedReferences
-        self.ui_btn_ok.clicked.connect(self.on_ok_clicked)
+        self.ui_btn_ok.clicked.connect(self.onOkBtnClicked)
 
-    def on_ok_clicked(self):
+    def onOkBtnClicked(self):
         self.accept()
         # self.open()

@@ -114,18 +114,18 @@ class PjTransport(QObject):
         # noinspection PyUnresolvedReferences
         self.p2j.emit(act)
 
-    def refresh_speed(self):
+    def refreshSpeed(self):
         """刷新页面滚动速度"""
         # noinspection PyUnresolvedReferences
         self.trigger(1000 + Preferences().get(UserKey.Reader.Speed))
 
-    def refresh_scrollable(self):
+    def refreshScrollable(self):
         """刷新自动阅读状态"""
         scrollable = Preferences().get(UserKey.Reader.Scrollable)
         code = ReaderActions.ScrollableOn if scrollable else ReaderActions.ScrollableOff
         self.trigger(code)
 
-    def apply_watch(self):
+    def applyWatch(self):
         """应用滚动、选中监听"""
         self.trigger(ReaderActions.Watching)
 
@@ -153,18 +153,18 @@ class Webview(QWebEngineView, GUI.View):
 
         self.wait_next = False
         self.profile = QWebEngineProfile(Webview.PROFILE, self)
-        self.inject_js_script(Webview.SCRIPT_WEB_CONTENT, "WebContent")
-        self.inject_js_script(ResMap.js_reader, "WxReader")
+        self.injectJsScript(Webview.SCRIPT_WEB_CONTENT, "WebContent")
+        self.injectJsScript(ResMap.js_reader, "WxReader")
         self.webpage = QWebEnginePage(self.profile, self)
         self.channel = QWebChannel(self.webpage)
         self.pjTransport = PjTransport()
         self.channel.registerObject(Webview.PJ_TRANSPORT, self.pjTransport)
         self.webpage.setWebChannel(self.channel)
         self.setPage(self.webpage)
-        self.setup_signals()
-        self.restore_latest_page()
+        self.setupSignals()
+        self.restoreLatestPage()
 
-    def inject_js_script(self, filepath: str, name: str):
+    def injectJsScript(self, filepath: str, name: str):
         """注入JS脚本"""
         js = QFile(filepath)
         if js.open(QIODevice.ReadOnly) is True:
@@ -179,112 +179,112 @@ class Webview(QWebEngineView, GUI.View):
         else:
             InjectBadNotice(filepath).exec()
 
-    def setup_signals(self):
-        self.loadStarted.connect(self._on_load_started)
-        self.loadProgress.connect(self._on_load_progressed)
-        self.loadFinished.connect(self._on_load_finished)
-        Signals().reader_setting_changed.connect(self._on_reader_action_triggered)
-        Signals().download_note.connect(self._on_save_note)
-        Signals().reading_finished.connect(self._on_reading_finished)
+    def setupSignals(self):
+        self.loadStarted.connect(self.onLoadStarted)
+        self.loadProgress.connect(self.onLoadProgress)
+        self.loadFinished.connect(self.onLoadFinished)
+        Signals().reader_setting_changed.connect(self.onReaderActionTriggered)
+        Signals().download_note.connect(self.onSaveNote)
+        Signals().reading_finished.connect(self.onReadingFinished)
 
-    def restore_latest_page(self):
-        self.goto_page(Preferences().get(UserKey.Reader.LatestUrl))
+    def restoreLatestPage(self):
+        self.goToPage(Preferences().get(UserKey.Reader.LatestUrl))
 
-    def goto_page(self, url: str):
+    def goToPage(self, url: str):
         self.load(QUrl(url))
 
-    def go_home(self):
-        self.goto_page(Webview.HOME_PAGE)
+    def goToHome(self):
+        self.goToPage(Webview.HOME_PAGE)
 
-    def is_on_reading_page(self):
-        url = self.current_url()
+    def isReadingPage(self):
+        url = self.currentUrl()
         return url.startswith(Webview.BOOK_PAGE)
 
-    def check_scroll(self):
+    def checkScroll(self):
         self.pjTransport.trigger(ReaderActions.Loading)
         if self.pjTransport.loading:
-            self.send_tip(I18n.text(LanguageKeys.tips_page_ready))
+            self.sendTip(I18n.text(LanguageKeys.tips_page_ready))
             return
         else:
             if self.wait_next is True:
-                self.pjTransport.apply_watch()
+                self.pjTransport.applyWatch()
                 self.wait_next = False
-                self.send_tip(I18n.text(LanguageKeys.tips_next_chapter_ready))
+                self.sendTip(I18n.text(LanguageKeys.tips_next_chapter_ready))
                 return
         if self.pjTransport.has_selection is True:
-            self.send_tip(I18n.text(LanguageKeys.tips_has_selection))
+            self.sendTip(I18n.text(LanguageKeys.tips_has_selection))
             return
         if self.wait_next is True:
-            self.send_tip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
+            self.sendTip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
             return
         if self.pjTransport.scroll_to_end is True:
-            self.send_tip(I18n.text(LanguageKeys.tips_scroll_to_end))
+            self.sendTip(I18n.text(LanguageKeys.tips_scroll_to_end))
             self.pjTransport.scroll_to_end = False
             self.wait_next = True
             return
-        if self.is_on_reading_page() is False:
-            self.send_tip(I18n.text(LanguageKeys.tips_no_book_view))
+        if self.isReadingPage() is False:
+            self.sendTip(I18n.text(LanguageKeys.tips_no_book_view))
             return
 
-        self.send_tip(I18n.text(LanguageKeys.tips_auto_read_on), False)
+        self.sendTip(I18n.text(LanguageKeys.tips_auto_read_on), False)
         Signals().page_loading_progress.emit(0)
         self.pjTransport.trigger(ReaderActions.Scrolling)
 
-    def _on_reader_action_triggered(self, act: int):
+    def onReaderActionTriggered(self, act: int):
         if act == ReaderActions.BackHome:
-            self.go_home()
+            self.goToHome()
             return
         elif act == ReaderActions.Refresh:
-            self.goto_page(self.webpage.url())
+            self.goToPage(self.webpage.url())
             return
         elif act == ReaderActions.SpeedDown or act == ReaderActions.SpeedUp:
-            self.pjTransport.refresh_speed()
+            self.pjTransport.refreshSpeed()
             return
         elif act == ReaderActions.Scrollable:
-            self.pjTransport.refresh_scrollable()
+            self.pjTransport.refreshScrollable()
             return
 
-        if self.is_on_reading_page():
+        if self.isReadingPage():
             self.pjTransport.trigger(act)
 
-    def _on_save_note(self, filename: str, content: str):
+    def onSaveNote(self, filename: str, content: str):
         where, _ = QFileDialog.getSaveFileName(self, I18n.text(LanguageKeys.tips_export_note), filename, filter='*.md')
         if len(where) > 0:
-            Cmm.save_as(where, content)
-            self.send_tip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
+            Cmm.saveAs(where, content)
+            self.sendTip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
         else:
-            self.send_tip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
+            self.sendTip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
 
     @staticmethod
-    def _on_reading_finished():
+    def onReadingFinished():
         # ReadingFinishedNotice().exec()
         pass
 
-    def current_url(self):
+    def currentUrl(self):
         return self.page().url().toString()
 
-    def send_tip(self, tip: str, output: bool = True):
+    def sendTip(self, tip: str, output: bool = True):
         if output:
-            print(tip, self.current_url())
+            print(tip, self.currentUrl())
         Signals().status_tip_updated.emit(tip)
 
-    def _on_load_started(self):
-        self.send_tip(I18n.text(LanguageKeys.tips_page_ready))
+    def onLoadStarted(self):
+        self.sendTip(I18n.text(LanguageKeys.tips_page_ready))
         self.pjTransport.scroll_to_end = False
         self.pjTransport.has_selection = False
-        self.pjTransport.apply_watch()
+        self.pjTransport.applyWatch()
 
-    def _on_load_progressed(self, value):
-        self.send_tip(I18n.text(LanguageKeys.tips_page_loading))
+    def onLoadProgress(self, value):
+        self.sendTip(I18n.text(LanguageKeys.tips_page_loading))
         Signals().page_loading_progress.emit(value)
 
-    def _on_load_finished(self, result: bool):
+    def onLoadFinished(self, result: bool):
         if result:
-            self.pjTransport.apply_watch()
-            self.pjTransport.refresh_speed()
-            self.pjTransport.refresh_scrollable()
+            self.pjTransport.applyWatch()
+            self.pjTransport.refreshSpeed()
+            self.pjTransport.refreshScrollable()
             Signals().page_loading_progress.emit(0)
-            self.send_tip(I18n.text(LanguageKeys.tips_page_loaded_ok))
+            self.sendTip(I18n.text(LanguageKeys.tips_page_loaded_ok))
         else:
-            self.send_tip(I18n.text(LanguageKeys.tips_page_loaded_bad))
+            self.sendTip(I18n.text(LanguageKeys.tips_page_loaded_bad))
             NetworkBadNotice().exec()

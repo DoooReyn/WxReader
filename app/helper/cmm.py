@@ -52,22 +52,22 @@ class Cmm:
                 return on_final()
 
     @staticmethod
-    def local_cache_at():
+    def localCacheAt():
         return QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)
 
     @staticmethod
-    def app_storage_at():
-        return join(Cmm.local_cache_at(), Cmm.AppName)
+    def appStorageAt():
+        return join(Cmm.localCacheAt(), Cmm.AppName)
 
     @staticmethod
-    def app_config_at():
-        return join(Cmm.app_storage_at(), Cmm.AppConfig)
+    def appConfigAt():
+        return join(Cmm.appStorageAt(), Cmm.AppConfig)
 
     @staticmethod
     def mkdir(directory: str):
         makedirs(directory, exist_ok=True)
 
     @staticmethod
-    def save_as(where: str, content: str):
+    def saveAs(where: str, content: str):
         with open(where, 'w', encoding='utf-8') as f:
             f.write(content)

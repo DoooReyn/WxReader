@@ -60,18 +60,18 @@ class Options(QDialog, _View):
         self.setWindowTitle(I18n.text(LanguageKeys.toolbar_profile))
         self.setFixedHeight(120)
         self.setModal(True)
-        self.set_window_code(Views.Profile)
-        self.set_rect_key(UserKey.Profile.WinRect)
-        self.setup_preferences()
-        self.setup_signals()
+        self.setWindowCode(Views.Profile)
+        self.setWinRectKey(UserKey.Profile.WinRect)
+        self.setupPreferences()
+        self.setupSignals()
 
     # noinspection PyUnresolvedReferences
-    def setup_signals(self):
-        self.ui_btn_call.clicked.connect(self.on_btn_call)
-        self.ui_spin_speed.valueChanged.connect(self.on_speed_changed)
-        self.ui_spin_step.valueChanged.connect(self.on_step_changed)
+    def setupSignals(self):
+        self.ui_btn_call.clicked.connect(self.onCallBtnClicked)
+        self.ui_spin_speed.valueChanged.connect(self.onSpeedChanged)
+        self.ui_spin_step.valueChanged.connect(self.onStepChanged)
 
-    def setup_preferences(self):
+    def setupPreferences(self):
         self.ui_spin_speed.setValue(Preferences().get(UserKey.Reader.Speed))
         self.ui_spin_step.setValue(Preferences().get(UserKey.Reader.Step))
         url = Preferences().get(UserKey.Profile.NoticeUrl)
@@ -79,18 +79,18 @@ class Options(QDialog, _View):
             self.ui_edit_call.setText(url)
 
     @staticmethod
-    def on_speed_changed(value: int):
+    def onSpeedChanged(value: int):
         Preferences().set(UserKey.Reader.Speed, value)
         Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
         Signals().reader_refresh_speed.emit()
 
     @staticmethod
-    def on_step_changed(value: int):
+    def onStepChanged(value: int):
         Preferences().set(UserKey.Reader.Step, value)
         Signals().reader_setting_changed.emit(ReaderActions.SpeedDown)
         Signals().reader_refresh_speed.emit()
 
-    def on_btn_call(self):
+    def onCallBtnClicked(self):
         api = self.ui_edit_call.text()
         print(api)
 

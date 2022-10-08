@@ -6,8 +6,17 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : PyCharm
 """
+from ui.controller.Controller import Controller
+from ui.view.WindowView import WindowView
 
 
-class WindowController:
+class WindowController(Controller):
     def __init__(self):
-        pass
+        super(WindowController, self).__init__()
+
+        self._view = WindowView()
+
+        self.start()
+
+    def start(self):
+        self._view.show()
