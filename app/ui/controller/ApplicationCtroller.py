@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : ApplicationCtroller.py
+@File    : ApplicationController.py
 @Time    : 2022/10/7 15:13
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : PyCharm
@@ -9,14 +9,23 @@
 import sys
 from traceback import format_exception
 
+from PyQt5.QtCore import QCoreApplication, Qt
+from PyQt5.QtWidgets import QApplication
+
+from conf.lang import LanguageKeys
+from conf.res_map import ResMap
 from conf.resources import qInitResources
+from helper.gui import GUI
+from helper.i18n import I18n
 from helper.preferences import Preferences
 from helper.signals import Signals
 from ui.controller.Controller import Controller
-from ui.view.ApplicationView import ApplicationView
+from view.window import Window
 
 
 class ErrorHookProxy:
+    """全局异常捕获代理"""
+
     # 异常捕获备份
     ERROR_HOOK_BAK = sys.excepthook
 
@@ -37,14 +46,33 @@ class ApplicationController(Controller, ErrorHookProxy):
 
     def __init__(self):
         super(ApplicationController, self).__init__()
+
+        # 尝试修复 QWebEngine WebGL 的问题
+        QCoreApplication.setAttribute(Qt.AA_UseDesktopOpenGL)
+
         # 初始化 qrc 资源
         qInitResources()
 
         # 初始化用户配置
         Preferences().init()
 
-        # 创建应用视图
-        self._view = ApplicationView()
+        # 创建 Qt 窗口
+        self.app = QApplication(sys.argv)
 
-        # 启动应用
-        self._view.run()
+        # 使用高清 icon
+        self.app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+        self.app.setWindowIcon(GUI.icon(ResMap.icon_app))
+
+        # 设置应用名称
+        self.app.setApplicationName(I18n.text(LanguageKeys.app_name))
+        self.app.setApplicationDisplayName(I18n.text(LanguageKeys.app_name))
+
+        # 设置主题
+        self.app.setStyleSheet(GUI.Theme.Default)
+
+        # 创建应用窗口
+        self.win = Window()
+        self.win.show()
+
+        # 运行应用
+        sys.exit(self.app.exec_())
