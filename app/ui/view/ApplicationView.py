@@ -19,9 +19,7 @@ from helper.Gui import GUI
 from helper.I18n import I18n
 from helper.Preferences import Preferences
 from helper.Signals import Signals
-from ui.controller.Controller import Controller
-from ui.controller.WindowController import WindowController
-from view.Window import Window
+from ui.view.WindowView import WindowView
 
 
 class ErrorHookProxy:
@@ -42,11 +40,11 @@ class ErrorHookProxy:
         ErrorHookProxy.ERROR_HOOK_BAK(error_type, error_target, error_stack)
 
 
-class ApplicationController(Controller, ErrorHookProxy):
+class ApplicationView(ErrorHookProxy):
     """应用程序控制器"""
 
     def __init__(self):
-        super(ApplicationController, self).__init__()
+        super(ApplicationView, self).__init__()
 
         # 尝试修复 QWebEngine WebGL 的问题
         QCoreApplication.setAttribute(Qt.AA_UseDesktopOpenGL)
@@ -72,7 +70,8 @@ class ApplicationController(Controller, ErrorHookProxy):
         self.app.setStyleSheet(GUI.Theme.Default)
 
         # 创建应用窗口
-        self.win = WindowController()
+        self.win = WindowView()
+        self.win.show()
 
         # 运行应用
         sys.exit(self.app.exec_())

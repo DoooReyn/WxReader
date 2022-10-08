@@ -7,7 +7,7 @@
 @Desc    : 应用入口
 """
 
-from ui.controller.ApplicationCtroller import ApplicationController
+from ui.view.ApplicationView import ApplicationView
 
 if __name__ == '__main__':
-    ApplicationController().start()
+    ApplicationView().start()
