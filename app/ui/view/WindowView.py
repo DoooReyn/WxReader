@@ -6,61 +6,25 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 应用主窗口
 """
-from PyQt5.QtCore import QEvent, QObject, Qt, QTimerEvent
+
+from PyQt5.QtCore import QEvent, QObject, Qt, QTimerEvent, QUrl
 from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, QToolBar
+from PyQt5.QtWidgets import QFileDialog, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, QToolBar
 
 from conf.Lang import LanguageKeys
 from conf.Menus import MainToolbar, MainTray
 from conf.ResMap import ResMap
 from conf.Views import Views
+from helper.Cmm import Cmm
 from helper.Gui import GUI
 from helper.I18n import I18n
-from helper.Preferences import Preferences, UserKey
+from helper.Preferences import UserKey
 from helper.Signals import Signals
-from ui.model.WindowModel import WindowModel
+from ui.model.WindowModel import ReaderActions, WebHelper, WindowModel
+from view.BadNotice import NetworkBadNotice
 from view.Notice import Notice
 from view.Options import Options
-
-# 鼠标移动事件
-MOUSE_EVENT = [
-    QEvent.MouseMove,
-    QEvent.MouseTrackingChange,
-    QEvent.NonClientAreaMouseMove,
-    QEvent.Move,
-    QEvent.HoverMove,
-    QEvent.DragMove,
-]
-
-
-class ReaderActions:
-    """阅读器动作"""
-
-    # 回到首页
-    BackHome = 0
-    # 刷新页面
-    Refresh = 1
-    # 切换自动阅读
-    Scrollable = 2
-    # 降低滚动速度
-    SpeedDown = 3
-    # 加快滚动速度
-    SpeedUp = 4
-    # 导出笔记
-    ExportNote = 5
-    # 切换主题
-    NextTheme = 6
-    # 启用页面选中状态监听
-    Watching = 11
-    # 启用页面滚动状态监听
-    Scrolling = 12
-    # 启用页面加载状态监听
-    Loading = 13
-    # 关闭自动阅读
-    ScrollableOff = 20
-    # 开启自动阅读
-    ScrollableOn = 21
 
 
 class _View(GUI.View):
@@ -142,6 +106,14 @@ class WindowView(QMainWindow, _View):
         self.setWindowCode(Views.Main)
         self.setWinRectKey(UserKey.General.WinRect)
 
+        # 初始化 WebView
+        WebHelper.newWebPage(
+            self._model.DEFAULT_PAGE_PROFILE,
+            self._model.scripts(),
+            self._model.pjTransport,
+            self.ui_webview
+        )
+
         # 初始化配置
         self.refreshScrollable()
         self.refreshPinned()
@@ -150,23 +122,53 @@ class WindowView(QMainWindow, _View):
         # 关联信号槽
         # noinspection PyUnresolvedReferences
         self.ui_tray.activated.connect(self.onTrayActivated)
-        Signals().page_loading_progress.connect(self.onRefreshProgress)
-        Signals().status_tip_updated.connect(self.onRefreshStatusTip)
+        self.ui_webview.loadStarted.connect(self.onWebLoadStarted)
+        self.ui_webview.loadProgress.connect(self.onWebLoadProgress)
+        self.ui_webview.loadFinished.connect(self.onWebLoadFinished)
+        Signals().reader_load_progress.connect(self.refreshProgress)
+        Signals().reader_status_tip_updated.connect(self.refreshStatusTip)
         Signals().reader_refresh_speed.connect(self.refreshSpeed)
+        Signals().reader_setting_changed.connect(self.onReaderActionTriggered)
+        Signals().reader_reading_finished.connect(self.onReaderReadingFinished)
+        Signals().reader_download_note.connect(self.onReaderSaveNote)
 
         # 启动定时器
         self._model.setTimerId(self.startTimer(self._model.READER_TIMER_INTERVAL, Qt.PreciseTimer))
+        self.openUrl(self._model.latestUrl())
+
+    def openUrl(self, url: str):
+        """打开网址"""
+        self.ui_webview.page().load(QUrl(url))
+
+    def backHome(self):
+        self.openUrl(self._model.HOME_PAGE)
+
+    def currentUrl(self):
+        """当前网址"""
+        return self.ui_webview.page().url().toString()
 
     def refreshScrollable(self):
+        """刷新工具栏自动阅读状态"""
         self.ui_act_auto.setChecked(self._model.scrollable())
 
     def refreshPinned(self):
+        """刷新工具栏固定此栏状态"""
         self.ui_act_pinned.setChecked(self._model.pinned())
 
     def refreshSpeed(self):
+        """刷新状态栏阅读速度"""
         self.ui_lab_speed.setText(I18n.text(LanguageKeys.tips_speed).format(self._model.speed()))
 
+    def refreshProgress(self, value: int):
+        """刷新状态栏页面加载进度"""
+        self.ui_progress.setValue(value)
+
+    def refreshStatusTip(self, tip: str):
+        """刷新状态栏提示"""
+        self.ui_lab_status.setText(tip)
+
     def adjustSpeed(self, speed_up: bool):
+        """调整阅读速度"""
         pre = self._model.speed()
         now = self._model.nextSpeed(speed_up)
         if now != pre:
@@ -180,11 +182,109 @@ class WindowView(QMainWindow, _View):
             return
 
         if self.ui_act_auto.isChecked():
-            # self.ui_webview.refreshPageStatus()
-            pass
+            self.doPageScroll()
         else:
-            # self.ui_webview.sendTip('', False)
-            pass
+            self.refreshStatusTip('')
+
+    def doPageScroll(self):
+        self._model.pjTransport.trigger(ReaderActions.Loading)
+        if self._model.pjTransport.loading:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_ready))
+            return
+        else:
+            if self._model.wait_next is True:
+                self._model.pjTransport.applyWatch()
+                self._model.wait_next = False
+                self.sendStatusTip(I18n.text(LanguageKeys.tips_next_chapter_ready))
+                return
+        if self._model.pjTransport.has_selection is True:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_has_selection))
+            return
+        if self._model.wait_next is True:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
+            return
+        if self._model.pjTransport.scroll_to_end is True:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_scroll_to_end))
+            self._model.pjTransport.scroll_to_end = False
+            self._model.wait_next = True
+            return
+        if self.isBookUrl() is False:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_no_book_view))
+            return
+
+        self.sendStatusTip(I18n.text(LanguageKeys.tips_auto_read_on), False)
+        Signals().reader_load_progress.emit(0)
+        self._model.pjTransport.trigger(ReaderActions.Scrolling)
+
+    def sendStatusTip(self, tip: str, output: bool = True):
+        if output:
+            print(tip, self.currentUrl())
+        self.refreshStatusTip(tip)
+
+    def isBookUrl(self):
+        """当前页面是否图书页"""
+        return self.currentUrl().startswith(self._model.BOOK_PAGE)
+
+    def onWebLoadStarted(self):
+        """页面加载开始事件"""
+        self.sendStatusTip(I18n.text(LanguageKeys.tips_page_ready))
+        self._model.pjTransport.scroll_to_end = False
+        self._model.pjTransport.has_selection = False
+        self._model.pjTransport.applyWatch()
+
+    def onWebLoadProgress(self, value: int):
+        """页面加载中事件"""
+        self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loading))
+        Signals().reader_load_progress.emit(value)
+
+    def onWebLoadFinished(self, result: bool):
+        """页面加载结束事件"""
+        if result:
+            self._model.pjTransport.applyWatch()
+            self._model.pjTransport.refreshSpeed()
+            self._model.pjTransport.refreshScrollable()
+            Signals().reader_load_progress.emit(0)
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loaded_ok))
+        else:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loaded_bad))
+            NetworkBadNotice().exec()
+
+    def onReaderActionTriggered(self, act: int):
+        """阅读器动作触发事件"""
+        if act == ReaderActions.BackHome:
+            self.backHome()
+            return
+
+        if act == ReaderActions.Refresh:
+            self.openUrl(self.currentUrl())
+            return
+
+        if act == ReaderActions.SpeedDown or act == ReaderActions.SpeedUp:
+            self._model.pjTransport.refreshSpeed()
+            return
+
+        if act == ReaderActions.Scrollable:
+            self._model.pjTransport.refreshScrollable()
+            return
+
+        if self.isBookUrl():
+            self._model.pjTransport.trigger(act)
+
+    def onReaderSaveNote(self, filename: str, content: str):
+        """阅读器导出笔记动作触发事件"""
+        where, _ = QFileDialog.getSaveFileName(self, I18n.text(LanguageKeys.tips_export_note), filename, filter='*.md')
+        if len(where) > 0:
+            Cmm.saveAs(where, content)
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
+        else:
+            self.sendStatusTip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
+
+    @staticmethod
+    def onReaderReadingFinished():
+        """阅读器全文读完触发事件"""
+        # TODO
+        # ReadingFinishedNotice().exec()
+        pass
 
     def timerEvent(self, timer: QTimerEvent):
         """
@@ -205,7 +305,7 @@ class WindowView(QMainWindow, _View):
             self.killTimer(self._model.timerId())
             self._model.clearTimerId()
         self.saveWinRect()
-        self._model.setLatestUrl(self.ui_webview.url().toString())
+        self._model.setLatestUrl(self.currentUrl())
         self._model.saveAll()
         event.accept()
         super(WindowView, self).closeEvent(event)
@@ -215,8 +315,7 @@ class WindowView(QMainWindow, _View):
         事件过滤
         - 跟踪鼠标移动事件，检测鼠标与工具栏的距离，以实现工具栏的自动隐藏
         """
-        et = event.type()
-        if et in MOUSE_EVENT:
+        if self._model.isMouseEvent(event.type()):
             self.mouseMoveEvent(event)
         return super(WindowView, self).eventFilter(obj, event)
 
@@ -235,6 +334,7 @@ class WindowView(QMainWindow, _View):
                 self.ui_tool_bar.setFixedHeight(cur)
 
     def onTrayActivated(self):
+        """任务栏图标点击触发事件"""
         self.activateWindow()
         if self.isFullScreen():
             self.showFullScreen()
@@ -243,35 +343,36 @@ class WindowView(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
+                # FIXME
                 tx, ty, tw, th = self.getWinRect()
                 self.setGeometry(tx, ty, tw, th)
 
-    def onRefreshProgress(self, value: int):
-        self.ui_progress.setValue(value)
-
-    def onRefreshStatusTip(self, tip: str):
-        self.ui_lab_status.setText(tip)
-
     def onToolbarFullscreen(self):
+        """全屏切换"""
         if self.isFullScreen():
             self.showNormal()
         else:
             self.showFullScreen()
 
     def onToolbarPinned(self):
-        Preferences().set(UserKey.Reader.Pinned, self.ui_act_pinned.isChecked())
+        """固定切换"""
+        self._model.setPinned(self.ui_act_pinned.isChecked())
 
     def onToolbarSpeedUp(self):
+        """加速"""
         self.adjustSpeed(True)
 
     def onToolbarSpeedDown(self):
+        """减速"""
         self.adjustSpeed(False)
 
     def onToolbarQuit(self):
+        """关闭窗口"""
         self.close()
 
     def onToolbarSetAuto(self):
-        Preferences().set(UserKey.Reader.Scrollable, self.ui_act_auto.isChecked())
+        """切换自动阅读"""
+        self._model.setScrollable(self.ui_act_auto.isChecked())
         Signals().reader_setting_changed.emit(ReaderActions.Scrollable)
 
     def onToolbarHide(self):
@@ -284,10 +385,12 @@ class WindowView(QMainWindow, _View):
 
     @staticmethod
     def onToolbarProfile():
+        """更多选项"""
         Options().exec()
 
     @staticmethod
     def onToolbarHelp():
+        """使用帮助"""
         Notice(Views.Help,
                UserKey.Help.WinRect,
                I18n.text(LanguageKeys.toolbar_help),
@@ -296,6 +399,7 @@ class WindowView(QMainWindow, _View):
 
     @staticmethod
     def onToolbarAbout():
+        """关于应用"""
         Notice(Views.About,
                UserKey.About.WinRect,
                I18n.text(LanguageKeys.toolbar_about),
@@ -304,6 +408,7 @@ class WindowView(QMainWindow, _View):
 
     @staticmethod
     def onToolbarSponsor():
+        """赞助"""
         Notice(Views.Sponsor,
                UserKey.Help.WinRect,
                I18n.text(LanguageKeys.toolbar_sponsor),
@@ -312,16 +417,20 @@ class WindowView(QMainWindow, _View):
 
     @staticmethod
     def onToolbarExport():
+        """导出笔记"""
         Signals().reader_setting_changed.emit(ReaderActions.ExportNote)
 
     @staticmethod
     def onToolbarBackHome():
+        """回到首页"""
         Signals().reader_setting_changed.emit(ReaderActions.BackHome)
 
     @staticmethod
     def onToolbarTheme():
+        """切换主题"""
         Signals().reader_setting_changed.emit(ReaderActions.NextTheme)
 
     @staticmethod
     def onToolbarReload():
+        """重新加载"""
         Signals().reader_setting_changed.emit(ReaderActions.Refresh)

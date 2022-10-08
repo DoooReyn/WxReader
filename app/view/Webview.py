@@ -82,17 +82,17 @@ class PjTransport(QObject):
     def j2p(self, msg):
         """js 给 python 发消息，方便测试"""
         print('Python 收到消息:', msg)
-        Signals().status_tip_updated.emit(msg)
+        Signals().reader_status_tip_updated.emit(msg)
 
     @pyqtSlot()
     def readingFinished(self):
         """全书已读完"""
-        Signals().reading_finished.emit()
+        Signals().reader_reading_finished.emit()
 
     @pyqtSlot(str, str)
     def downloadNote(self, filename, content):
         """下载笔记"""
-        Signals().download_note.emit(filename, content)
+        Signals().reader_download_note.emit(filename, content)
 
     @pyqtSlot(int)
     def setSelection(self, has):
@@ -184,8 +184,8 @@ class Webview(QWebEngineView, GUI.View):
         self.loadProgress.connect(self.onLoadProgress)
         self.loadFinished.connect(self.onLoadFinished)
         Signals().reader_setting_changed.connect(self.onReaderActionTriggered)
-        Signals().download_note.connect(self.onSaveNote)
-        Signals().reading_finished.connect(self.onReadingFinished)
+        Signals().reader_download_note.connect(self.onSaveNote)
+        Signals().reader_reading_finished.connect(self.onReadingFinished)
 
     def restoreLatestPage(self):
         self.goToPage(Preferences().get(UserKey.Reader.LatestUrl))
@@ -227,7 +227,7 @@ class Webview(QWebEngineView, GUI.View):
             return
 
         self.sendTip(I18n.text(LanguageKeys.tips_auto_read_on), False)
-        Signals().page_loading_progress.emit(0)
+        Signals().reader_load_progress.emit(0)
         self.pjTransport.trigger(ReaderActions.Scrolling)
 
     def onReaderActionTriggered(self, act: int):
@@ -266,7 +266,7 @@ class Webview(QWebEngineView, GUI.View):
     def sendTip(self, tip: str, output: bool = True):
         if output:
             print(tip, self.currentUrl())
-        Signals().status_tip_updated.emit(tip)
+        Signals().reader_status_tip_updated.emit(tip)
 
     def onLoadStarted(self):
         self.sendTip(I18n.text(LanguageKeys.tips_page_ready))
@@ -276,14 +276,14 @@ class Webview(QWebEngineView, GUI.View):
 
     def onLoadProgress(self, value):
         self.sendTip(I18n.text(LanguageKeys.tips_page_loading))
-        Signals().page_loading_progress.emit(value)
+        Signals().reader_load_progress.emit(value)
 
     def onLoadFinished(self, result: bool):
         if result:
             self.pjTransport.applyWatch()
             self.pjTransport.refreshSpeed()
             self.pjTransport.refreshScrollable()
-            Signals().page_loading_progress.emit(0)
+            Signals().reader_load_progress.emit(0)
             self.sendTip(I18n.text(LanguageKeys.tips_page_loaded_ok))
         else:
             self.sendTip(I18n.text(LanguageKeys.tips_page_loaded_bad))

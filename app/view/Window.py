@@ -137,8 +137,8 @@ class Window(QMainWindow, _View):
         self.setMouseTracking(True)
         # noinspection PyUnresolvedReferences
         self.ui_tray.activated.connect(self.onTrayActivated)
-        Signals().page_loading_progress.connect(self.onRefreshProgress)
-        Signals().status_tip_updated.connect(self.onRefreshStatusTip)
+        Signals().reader_load_progress.connect(self.onRefreshProgress)
+        Signals().reader_status_tip_updated.connect(self.onRefreshStatusTip)
         Signals().reader_refresh_speed.connect(self.onRefreshSpeed)
 
     def closeEvent(self, event: QCloseEvent):
