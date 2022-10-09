@@ -55,13 +55,13 @@ default_user_data = {
     UserKey.Reader.Pinned: True,
     UserKey.Reader.LatestUrl: 'https://weread.qq.com/',
     UserKey.General.Lang: 'CN',
-    UserKey.General.WinRect: [0, 0, 640, 480],
-    UserKey.Profile.WinRect: [0, 0, 640, 480],
-    UserKey.About.WinRect: [0, 0, 640, 480],
-    UserKey.Help.WinRect: [0, 0, 640, 480],
-    UserKey.Exception.WinRect: [0, 0, 640, 480],
-    UserKey.Sponsor.WinRect: [0, 0, 640, 480],
-    UserKey.ReadingFinished.WinRect: [0, 0, 640, 480],
+    UserKey.General.WinRect: [640, 480, 640, 480],
+    UserKey.Profile.WinRect: [640, 480, 640, 480],
+    UserKey.About.WinRect: [640, 480, 640, 480],
+    UserKey.Help.WinRect: [640, 480, 640, 480],
+    UserKey.Exception.WinRect: [640, 480, 640, 480],
+    UserKey.Sponsor.WinRect: [640, 480, 640, 480],
+    UserKey.ReadingFinished.WinRect: [640, 480, 640, 480],
     UserKey.Profile.NoticeUrl: ''
 }
 

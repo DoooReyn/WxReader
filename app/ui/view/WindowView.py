@@ -24,7 +24,7 @@ from helper.Signals import Signals
 from ui.model.ReaderHelper import ReaderActions
 from ui.model.WebHelper import PjTransport, WebHelper
 from ui.model.WindowModel import WindowModel
-from ui.view.BadNotice import NetworkBadNotice
+from ui.view.BadNotice import NetworkBadNotice, ReadingFinishedNotice
 from ui.view.Notice import Notice
 from ui.view.Options import Options
 
@@ -307,8 +307,8 @@ class WindowView(QMainWindow, _View):
     def onReaderReadingFinished(self):
         """阅读器全文读完触发事件"""
         # TODO
-        GUI.sendNotice(I18n.text(LanguageKeys.tips_reading_finished), 3600)
         self.ui_act_auto.setChecked(False)
+        ReadingFinishedNotice().exec()
 
     def timerEvent(self, timer: QTimerEvent):
         """

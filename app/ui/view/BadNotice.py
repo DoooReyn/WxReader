@@ -6,6 +6,8 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 错误通知
 """
+from PyQt5.QtCore import Qt
+
 from conf.Lang import LanguageKeys
 from conf.Views import Views
 from helper.I18n import I18n
@@ -45,13 +47,24 @@ class InjectBadNotice(BadNotice):
 
 
 class ReadingFinishedNotice(Notice):
+    """全文完通知"""
+
     def __init__(self):
         super(ReadingFinishedNotice, self).__init__(
             Views.ReadingFinished,
             UserKey.ReadingFinished.WinRect,
             I18n.text(LanguageKeys.tips_notice),
             I18n.text(LanguageKeys.tips_reading_finished),
-            FillType.Html,
+            FillType.PlainText,
             True
         )
-        self.setFixedSize(240, 100)
+
+        self.setFixedSize(320, 80)
+
+        font = self.ui_msg_box.font()
+        font.setBold(True)
+        font.setPointSize(16)
+        self.ui_msg_box.setFont(font)
+        self.ui_msg_box.setAlignment(Qt.AlignCenter)
+        self.ui_msg_box.document().setDocumentMargin(10)
+        self.ui_msg_box.setFixedHeight(int(self.ui_msg_box.document().size().height()))

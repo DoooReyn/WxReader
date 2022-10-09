@@ -70,8 +70,8 @@ class GUI:
             
             QPushButton 
             {
-                border: 2px solid #34a7ff;
-                border-radius: 10px;
+                border: 1px solid #34a7ff;
+                border-radius: 4px;
                 background: #f4f8f8;
                 font: 15px;
                 min-width: 64px;
@@ -87,13 +87,13 @@ class GUI:
             QPushButton::pressed
             {
                 font: bold;
-                margin: 1px 4px 0 4px;
+                margin: 0 4px 0 4px;
                 background: #f4f8f8;
             }
             
             QToolButton::hover,pressed {
                 border: 1px solid #8f8f8f;
-                border-radius: 10px;
+                border-radius: 4px;
                 background-color: #f1f1f1;
                 font: bold;
             }
@@ -264,9 +264,3 @@ class GUI:
     @staticmethod
     def color(color: str):
         return QColor(color)
-
-    @staticmethod
-    def sendNotice(msg: str, duration: int = 10):
-        title = I18n.text(LanguageKeys.app_name)
-        notification.notify(title=title, message=msg, timeout=duration, app_name=title,
-                            app_icon="../resources/icon/app.ico")

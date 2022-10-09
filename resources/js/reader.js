@@ -120,7 +120,7 @@ function onScrollToEnd() {
         if (done) {
             pjTransport && pjTransport.readingFinished();
             sendToPy('全书已读完.');
-            alert('全书已读完.')
+            // alert('全书已读完.')
         } else {
             sendToPy('糟糕，未检测到的情况！')
         }

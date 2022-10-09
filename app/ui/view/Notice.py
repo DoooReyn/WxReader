@@ -9,11 +9,9 @@
 from enum import Enum
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QPushButton, QTextBrowser, QVBoxLayout
+from PyQt5.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
 
-from conf.Lang import LanguageKeys
 from helper.GUI import GUI
-from helper.I18n import I18n
 
 
 class _View(GUI.View):
@@ -26,14 +24,11 @@ class _View(GUI.View):
         self.ui_msg_box.setFont(GUI.font())
         self.ui_msg_box.setAcceptRichText(True)
         self.ui_msg_box.setOpenExternalLinks(True)
+        self.ui_msg_box.setLineWrapMode(QTextBrowser.NoWrap)
         self.ui_msg_box.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
-        self.ui_btn_ok = QPushButton(I18n.text(LanguageKeys.notice_btn_ok))
-        self.ui_btn_ok.setFixedSize(120, 48)
 
         self.ui_layout = QVBoxLayout()
         self.ui_layout.addWidget(self.ui_msg_box)
-        self.ui_layout.addWidget(self.ui_btn_ok)
-        self.ui_layout.setAlignment(self.ui_btn_ok, Qt.AlignHCenter)
 
         self.setLayout(self.ui_layout)
 
@@ -60,7 +55,6 @@ class Notice(QDialog, _View):
         self.setWindowCode(code)
         self.setWinRectKey(rect_key)
         self.setupUi(sub_title, content, fill_type)
-        self.setupSignals()
 
     def setupUi(self, sub_title: str, content: str, fill_type: FillType):
         self.setWindowTitle(sub_title)
@@ -74,11 +68,3 @@ class Notice(QDialog, _View):
             self.ui_msg_box.setHtml(content)
 
         self.show()
-
-    def setupSignals(self):
-        # noinspection PyUnresolvedReferences
-        self.ui_btn_ok.clicked.connect(self.onOkBtnClicked)
-
-    def onOkBtnClicked(self):
-        self.accept()
-        # self.open()
