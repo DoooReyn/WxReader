@@ -156,7 +156,7 @@ class _Languages:
         "tips_note_exported_ok": '【{}】已保存',
         "tips_note_exported_bad": '【{}】未保存',
         "tips_notice": "通知",
-        "tips_reading_finished": "<p style='font-size:24px;color:#5d646e;text-align:center;'>全书已读完</p>",
+        "tips_reading_finished": "全书已读完",
     }
 
 

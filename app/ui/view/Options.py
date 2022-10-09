@@ -12,11 +12,11 @@ from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QLineEdit, QPushButton
 
 from conf.Lang import LanguageKeys
 from conf.Views import Views
-from helper.Gui import GUI
+from helper.GUI import GUI
 from helper.I18n import I18n
 from helper.Preferences import Preferences, UserKey
 from helper.Signals import Signals
-from view.Webview import ReaderActions
+from ui.model.ReaderHelper import ReaderActions
 
 
 class _View(GUI.View):

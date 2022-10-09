@@ -10,7 +10,7 @@ from conf.Lang import LanguageKeys
 from conf.Views import Views
 from helper.I18n import I18n
 from helper.Preferences import UserKey
-from view.Notice import FillType, Notice
+from ui.view.Notice import FillType, Notice
 
 
 class BadNotice(Notice):

@@ -17,14 +17,16 @@ from conf.Menus import MainToolbar, MainTray
 from conf.ResMap import ResMap
 from conf.Views import Views
 from helper.Cmm import Cmm
-from helper.Gui import GUI
+from helper.GUI import GUI
 from helper.I18n import I18n
 from helper.Preferences import UserKey
 from helper.Signals import Signals
-from ui.model.WindowModel import ReaderActions, WebHelper, WindowModel
-from view.BadNotice import NetworkBadNotice
-from view.Notice import Notice
-from view.Options import Options
+from ui.model.ReaderHelper import ReaderActions
+from ui.model.WebHelper import PjTransport, WebHelper
+from ui.model.WindowModel import WindowModel
+from ui.view.BadNotice import NetworkBadNotice
+from ui.view.Notice import Notice
+from ui.view.Options import Options
 
 
 class _View(GUI.View):
@@ -88,6 +90,7 @@ class WindowView(QMainWindow, _View):
         super(WindowView, self).__init__()
 
         self._model = WindowModel()
+        self._transport = PjTransport("pjTransport")
         self.start()
 
     def start(self):
@@ -108,9 +111,9 @@ class WindowView(QMainWindow, _View):
 
         # 初始化 WebView
         WebHelper.newWebPage(
-            self._model.DEFAULT_PAGE_PROFILE,
-            self._model.scripts(),
-            self._model.pjTransport,
+            self._model.BUILTIN_PROFILE,
+            self._model.BUILTIN_SCRIPTS,
+            self._transport,
             self.ui_webview
         )
 
@@ -150,6 +153,7 @@ class WindowView(QMainWindow, _View):
     def refreshScrollable(self):
         """刷新工具栏自动阅读状态"""
         self.ui_act_auto.setChecked(self._model.scrollable())
+        self._transport.refreshScrollable()
 
     def refreshPinned(self):
         """刷新工具栏固定此栏状态"""
@@ -187,36 +191,53 @@ class WindowView(QMainWindow, _View):
             self.refreshStatusTip('')
 
     def doPageScroll(self):
-        self._model.pjTransport.trigger(ReaderActions.Loading)
-        if self._model.pjTransport.loading:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_ready))
+        """检查页面状态，执行页面滚动"""
+
+        if self._model.scrollable() is False:
+            return
+
+        if self.isBookUrl() is False:
+            # 非读书页面，返回
+            self.showStatusTip(I18n.text(LanguageKeys.tips_no_book_view))
+            return
+
+        if self._transport.loading:
+            # 页面正在加载中，返回
+            self._transport.trigger(ReaderActions.Loading)
+            self.showStatusTip(I18n.text(LanguageKeys.tips_page_ready))
             return
         else:
-            if self._model.wait_next is True:
-                self._model.pjTransport.applyWatch()
-                self._model.wait_next = False
-                self.sendStatusTip(I18n.text(LanguageKeys.tips_next_chapter_ready))
+            if self._model.isWaitingNextChapter():
+                self._transport.applyWatch()
+                self._model.setWaitingNextChapter(False)
+                # self.showStatusTip(I18n.text(LanguageKeys.tips_next_chapter_ready))
                 return
-        if self._model.pjTransport.has_selection is True:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_has_selection))
-            return
-        if self._model.wait_next is True:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
-            return
-        if self._model.pjTransport.scroll_to_end is True:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_scroll_to_end))
-            self._model.pjTransport.scroll_to_end = False
-            self._model.wait_next = True
-            return
-        if self.isBookUrl() is False:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_no_book_view))
+
+        if self._transport.has_selection is True:
+            # 有选中文本，返回
+            self.showStatusTip(I18n.text(LanguageKeys.tips_has_selection))
             return
 
-        self.sendStatusTip(I18n.text(LanguageKeys.tips_auto_read_on), False)
+        if self._model.isWaitingNextChapter():
+            # 正在等待下一章加载完成，返回
+            # self.showStatusTip(I18n.text(LanguageKeys.tips_wait_for_next_chapter))
+            return
+
+        if self._transport.scroll_to_end is True:
+            # 已滚动到底部，返回
+            # self.showStatusTip(I18n.text(LanguageKeys.tips_scroll_to_end))
+            self._transport.scroll_to_end = False
+            self._model.setWaitingNextChapter(True)
+            return
+
+        # 执行页面滚动
+        self.onWebPageLoaded()
+        self.showStatusTip(I18n.text(LanguageKeys.tips_auto_read_on), False)
         Signals().reader_load_progress.emit(0)
-        self._model.pjTransport.trigger(ReaderActions.Scrolling)
+        self._transport.trigger(ReaderActions.Scrolling)
 
-    def sendStatusTip(self, tip: str, output: bool = True):
+    def showStatusTip(self, tip: str, output: bool = True):
+        """更新状态栏提示"""
         if output:
             print(tip, self.currentUrl())
         self.refreshStatusTip(tip)
@@ -227,27 +248,31 @@ class WindowView(QMainWindow, _View):
 
     def onWebLoadStarted(self):
         """页面加载开始事件"""
-        self.sendStatusTip(I18n.text(LanguageKeys.tips_page_ready))
-        self._model.pjTransport.scroll_to_end = False
-        self._model.pjTransport.has_selection = False
-        self._model.pjTransport.applyWatch()
+        self.showStatusTip(I18n.text(LanguageKeys.tips_page_ready))
+        self._transport.scroll_to_end = False
+        self._transport.has_selection = False
+        self._transport.applyWatch()
 
     def onWebLoadProgress(self, value: int):
         """页面加载中事件"""
-        self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loading))
+        self.showStatusTip(I18n.text(LanguageKeys.tips_page_loading))
         Signals().reader_load_progress.emit(value)
 
     def onWebLoadFinished(self, result: bool):
         """页面加载结束事件"""
         if result:
-            self._model.pjTransport.applyWatch()
-            self._model.pjTransport.refreshSpeed()
-            self._model.pjTransport.refreshScrollable()
-            Signals().reader_load_progress.emit(0)
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loaded_ok))
+            self.onWebPageLoaded()
+            self.showStatusTip(I18n.text(LanguageKeys.tips_page_loaded_ok))
         else:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_page_loaded_bad))
+            self.showStatusTip(I18n.text(LanguageKeys.tips_page_loaded_bad))
             NetworkBadNotice().exec()
+
+    def onWebPageLoaded(self):
+        """页面加载完成"""
+        self._transport.refreshScrollable()
+        self._transport.refreshSpeed()
+        self._transport.applyWatch()
+        Signals().reader_load_progress.emit(0)
 
     def onReaderActionTriggered(self, act: int):
         """阅读器动作触发事件"""
@@ -260,31 +285,30 @@ class WindowView(QMainWindow, _View):
             return
 
         if act == ReaderActions.SpeedDown or act == ReaderActions.SpeedUp:
-            self._model.pjTransport.refreshSpeed()
+            self._transport.refreshSpeed()
             return
 
         if act == ReaderActions.Scrollable:
-            self._model.pjTransport.refreshScrollable()
+            self._transport.refreshScrollable()
             return
 
         if self.isBookUrl():
-            self._model.pjTransport.trigger(act)
+            self._transport.trigger(act)
 
     def onReaderSaveNote(self, filename: str, content: str):
         """阅读器导出笔记动作触发事件"""
         where, _ = QFileDialog.getSaveFileName(self, I18n.text(LanguageKeys.tips_export_note), filename, filter='*.md')
         if len(where) > 0:
             Cmm.saveAs(where, content)
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
+            self.showStatusTip(I18n.text(LanguageKeys.tips_note_exported_ok).format(filename))
         else:
-            self.sendStatusTip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
+            self.showStatusTip(I18n.text(LanguageKeys.tips_note_exported_bad).format(filename))
 
-    @staticmethod
-    def onReaderReadingFinished():
+    def onReaderReadingFinished(self):
         """阅读器全文读完触发事件"""
         # TODO
-        # ReadingFinishedNotice().exec()
-        pass
+        GUI.sendNotice(I18n.text(LanguageKeys.tips_reading_finished), 3600)
+        self.ui_act_auto.setChecked(False)
 
     def timerEvent(self, timer: QTimerEvent):
         """

@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication
 from conf.Lang import LanguageKeys
 from conf.ResMap import ResMap
 from conf.Resources import qInitResources
-from helper.Gui import GUI
+from helper.GUI import GUI
 from helper.I18n import I18n
 from helper.Preferences import Preferences
 from helper.Signals import Signals

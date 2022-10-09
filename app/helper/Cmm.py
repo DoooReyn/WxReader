@@ -6,6 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 通用
 """
+import sys
 from os import makedirs
 from os.path import join
 from traceback import format_exc, print_exc

@@ -7,13 +7,12 @@
 @Desc    : 通知子窗口
 """
 from enum import Enum
-from typing import Optional
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QPushButton, QTextBrowser, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QDialog, QPushButton, QTextBrowser, QVBoxLayout
 
 from conf.Lang import LanguageKeys
-from helper.Gui import GUI
+from helper.GUI import GUI
 from helper.I18n import I18n
 
 

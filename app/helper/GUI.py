@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    : Gui.py
+@File    : GUI.py
 @Time    : 2022/9/27 17:21
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : GUI辅助工具
 """
 from typing import Union
 
+from plyer import notification
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
@@ -263,3 +264,9 @@ class GUI:
     @staticmethod
     def color(color: str):
         return QColor(color)
+
+    @staticmethod
+    def sendNotice(msg: str, duration: int = 10):
+        title = I18n.text(LanguageKeys.app_name)
+        notification.notify(title=title, message=msg, timeout=duration, app_name=title,
+                            app_icon="../resources/icon/app.ico")

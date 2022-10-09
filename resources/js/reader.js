@@ -36,6 +36,14 @@ const ReaderActions = {
 }
 
 /**
+ * 发送消息给 Python
+ * @param tip 消息
+ */
+function sendToPy(tip) {
+    pjTransport && pjTransport.j2p(tip);
+}
+
+/**
  * 设置选中状态
  * @param {number} value
  */
@@ -54,47 +62,55 @@ function setScrollToEnd(value) {
 }
 
 /**
+ * 检查滚动状态
+ */
+function checkScrolling() {
+    // 变量scrollTop是滚动条滚动时，滚动条上端距离顶部的距离
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    // 变量windowHeight是可视区的高度
+    const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    // 变量scrollHeight是滚动条的总高度（当前可滚动的页面的总高度）
+    const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+    // 滚动条到底部
+    if (scrollTop + windowHeight >= scrollHeight) {
+        // 要进行的操作
+        setScrollToEnd(1);
+        onScrollToEnd();
+    } else {
+        setScrollToEnd(0);
+    }
+}
+
+/**
  * 滚动监听
  */
 function watchScroll() {
-    document.onscroll = function () {
-        // 变量scrollTop是滚动条滚动时，滚动条上端距离顶部的距离
-        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-        // 变量windowHeight是可视区的高度
-        const windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
-        // 变量scrollHeight是滚动条的总高度（当前可滚动的页面的总高度）
-        const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-        // 滚动条到底部
-        if (scrollTop + windowHeight >= scrollHeight) {
-            // 要进行的操作
-            setScrollToEnd(1);
-            onScrollToEnd();
-        } else {
-            setScrollToEnd(0);
-        }
-    }
-    pjTransport && pjTransport.j2p('滚动监听已启动！');
+    document.onscroll = checkScrolling;
+    sendToPy('滚动监听已启动！');
 }
 
 /**
  * 执行滚动
  */
 function doScroll() {
-    const top = document.documentElement.scrollTop || document.body.scrollTop;
-    window.scroll({left: 0, top: top + SwapData.Speed, behavior: 'smooth'});
+    checkScrolling();
+    if (!SwapData.ScrollToEnd) {
+        const top = document.documentElement.scrollTop || document.body.scrollTop;
+        window.scroll({left: 0, top: top + SwapData.Speed, behavior: 'smooth'});
+    }
 }
 
 /**
  * 滚动到底部回调
  */
 function onScrollToEnd() {
-    if (SwapData.ScrollToEnd === 0) return;
-    if (!SwapData.Scrollable) return;
+    if (!SwapData.Scrollable) return sendToPy("未开启自动阅读");
+    if (SwapData.ScrollToEnd === 0) return sendToPy("未滚动到底部");
 
     let element = document.querySelector('.readerFooter_button');
     if (element) {
         // 下一章: 按下向右按键（按键码39）
-        pjTransport && pjTransport.j2p('切换下一章')
+        sendToPy('正在切换下一章')
         fireKeyEvent(39);
         setSelection(0);
         setScrollToEnd(0);
@@ -102,11 +118,11 @@ function onScrollToEnd() {
         // 找不到下一章时，查看全文是否已结束
         let done = document.querySelector('.readerFooter_ending');
         if (done) {
-            pjTransport && pjTransport.j2p('全书已读完.');
             pjTransport && pjTransport.readingFinished();
+            sendToPy('全书已读完.');
             alert('全书已读完.')
         } else {
-            pjTransport && pjTransport.j2p('糟糕，未检测到的情况！')
+            sendToPy('糟糕，未检测到的情况！')
         }
     }
 }
@@ -121,7 +137,7 @@ function watchSelection() {
         mutations.forEach(function (mutation) {
             if (mutation.type === 'attributes') {
                 setSelection(mutation.target.style.display ? 0 : 1);
-                pjTransport && pjTransport.j2p('选中状态改变');
+                sendToPy('选中状态改变');
             }
             console.log(mutation)
         });
@@ -151,7 +167,7 @@ function watchSelection() {
         const element_toolbar = document.querySelector('.reader_toolbar_container');
         listen(element_toolbar);
 
-        pjTransport && pjTransport.j2p('选中监听已启动！');
+        sendToPy('选中监听已启动！');
     }
 
     // reader_toolbar_container 在加载后并未创建，因此先要监听他的父节点
@@ -160,7 +176,7 @@ function watchSelection() {
         mutations.forEach(function (mutation) {
             for (const node of mutation.addedNodes) {
                 if (node.className === 'reader_toolbar_container') {
-                    pjTransport && pjTransport.j2p('选中监听启动中...');
+                    sendToPy('选中监听启动中...');
                     watch();
                     break;
                 }
@@ -176,7 +192,7 @@ function watchSelection() {
     listen(element_catalog);
     listen(element_note);
 
-    pjTransport && pjTransport.j2p('正在启用选中监听');
+    sendToPy('正在启用选中监听');
 }
 
 /**
@@ -328,9 +344,9 @@ window.onload = function () {
         window.pjTransport = channel.objects.pjTransport;
 
         pjTransport.p2j.connect(function (code) {
-            // pjTransport.j2p(`正在应用阅读器动作: ${code}`);
+            // sendToPy(`正在应用阅读器动作: ${code}`);
             if (code === ReaderActions.ExportNote) {
-                pjTransport.j2p('正在尝试导出笔记');
+                sendToPy('正在尝试导出笔记');
                 exportNotes();
             } else if (code === ReaderActions.NextTheme) {
                 changeTheme();
@@ -343,14 +359,16 @@ window.onload = function () {
                 setPageLoading();
             } else if (code === ReaderActions.ScrollableOff) {
                 SwapData.Scrollable = false;
+                sendToPy("已关闭自动阅读");
             } else if (code === ReaderActions.ScrollableOn) {
                 SwapData.Scrollable = true;
+                sendToPy("已开启自动阅读");
             } else if (code > 1000) {
                 // 使用新的信号竟然不生效，暂时使用这种 Hack 方式来实现速度调节
                 const speed = code - 1000;
                 SwapData.Speed = speed;
                 localStorage.setItem('speed', speed.toString());
-                pjTransport.j2p(`正在应用页面滚动速度: ${speed}`);
+                sendToPy(`正在应用页面滚动速度: ${speed}`);
             }
         })
 
