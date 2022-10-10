@@ -309,6 +309,7 @@ class WindowView(QMainWindow, _View):
         """阅读器全文读完触发事件"""
         # TODO
         self.ui_act_auto.setChecked(False)
+        GUI.playSound(GUI.WindowsSounds.Unlock)
         ReadingFinishedNotice().exec()
 
     def timerEvent(self, timer: QTimerEvent):

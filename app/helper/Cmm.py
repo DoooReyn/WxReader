@@ -6,7 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 通用
 """
-import sys
+import sys, platform
 from os import makedirs
 from os.path import join
 from traceback import format_exc, print_exc
@@ -72,3 +72,12 @@ class Cmm:
     def saveAs(where: str, content: str):
         with open(where, 'w', encoding='utf-8') as f:
             f.write(content)
+
+    @staticmethod
+    def isWindows():
+        print(sys.platform, platform.system(), platform.machine())
+        return platform.system() == 'Windows'
+
+
+if __name__ == '__main__':
+    Cmm.isWindows()

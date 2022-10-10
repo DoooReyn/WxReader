@@ -6,14 +6,17 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : GUI辅助工具
 """
+from enum import Enum, unique
 from typing import Union
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QFont, QIcon
+from PyQt5.QtMultimedia import QSound
 from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
 
 from conf.Lang import LanguageKeys
 from conf.Menus import ActionInfo
+from helper.Cmm import Cmm
 from helper.I18n import I18n
 from helper.Preferences import Preferences
 from helper.Signals import Signals
@@ -22,6 +25,48 @@ from helper.Signals import Signals
 class GUI:
     """GUI辅助工具"""
 
+    @unique
+    class WindowsSounds(Enum):
+        """Windows系统音频"""
+        Background = "Windows Background"
+        Foreground = "Windows Foreground"
+        Logon = "Windows Logon"
+        MessageNudge = "Windows Message Nudge"
+        NotifyCalendar = "Windows Notify Calendar"
+        NotifyEmail = "Windows Notify Email"
+        NotifyMessaging = "Windows Notify Messaging"
+        NotifySystemGeneric = "Windows Notify System Generic"
+        ProximityConnection = "Windows Proximity Connection"
+        ProximityNotification = "Windows Proximity Notification"
+        Unlock = "Windows Unlock"
+        MenuCommand = "Windows Menu Command"
+        Error = "Windows Error"
+        PrintComplete = "Windows Print complete"
+        NavigationStart = "Windows Navigation Start"
+        BatteryLow = "Windows Battery Low"
+        BatteryCritical = "Windows Battery Critical"
+        CriticalStop = "Windows Critical Stop"
+        Ringout = "Windows Ringout"
+        Ringin = "Windows Ringin"
+        Exclamation = "Windows Exclamation"
+        Shutdown = "Windows Shutdown"
+        Restore = "Windows Restore"
+        Recycle = "Windows Recycle"
+        Ding = "Windows Ding"
+        Default = "Windows Default"
+        Startup = "Windows Startup"
+        Balloon = "Windows Balloon"
+        Notify = "Windows Notify"
+        InformationBar = "Windows Information Bar"
+        FeedDiscovered = "Windows Feed Discovered"
+        PopupBlocked = "Windows Pop-up Blocked"
+        HardwareInsert = "Windows Hardware Insert"
+        HardwareFail = "Windows Hardware Fail"
+        HardwareRemove = "Windows Hardware Remove"
+        UserAccountControl = "Windows User Account Control"
+        LogoffSound = "Windows Logoff Sound"
+        Minimize = "Windows Minimize"
+
     class Preferences:
         """默认值"""
         layout_spacing = 8
@@ -29,6 +74,7 @@ class GUI:
         font_size = 14
         font_name = '微软雅黑'
         view_size = QSize(640, 480)
+        WindowsMediaAt = "C:/Windows/Media/{}.wav"
 
     class Theme:
         """主题"""
@@ -263,3 +309,9 @@ class GUI:
     @staticmethod
     def color(color: str):
         return QColor(color)
+
+    @staticmethod
+    def playSound(sound_type: WindowsSounds):
+        if Cmm.isWindows():
+            sound_path = GUI.Preferences.WindowsMediaAt.format(sound_type.value)
+            QSound.play(sound_path)
