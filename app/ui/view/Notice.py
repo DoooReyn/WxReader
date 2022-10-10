@@ -68,3 +68,13 @@ class Notice(QDialog, _View):
             self.ui_msg_box.setHtml(content)
 
         self.show()
+
+    def center(self):
+        font = self.ui_msg_box.font()
+        font.setBold(True)
+        font.setPointSize(16)
+        self.ui_msg_box.setFont(font)
+        self.ui_msg_box.setAlignment(Qt.AlignCenter)
+        self.ui_msg_box.document().setDocumentMargin(10)
+        self.ui_msg_box.setFixedHeight(int(self.ui_msg_box.document().size().height()))
+        self.setFixedSize(320, self.ui_msg_box.height() + 20)

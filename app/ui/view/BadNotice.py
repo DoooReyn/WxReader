@@ -27,7 +27,7 @@ class BadNotice(Notice):
             FillType.PlainText,
             True
         )
-        self.setMinimumSize(320, 240)
+        self.center()
 
 
 class NetworkBadNotice(BadNotice):
@@ -58,13 +58,4 @@ class ReadingFinishedNotice(Notice):
             FillType.PlainText,
             True
         )
-
-        self.setFixedSize(320, 80)
-
-        font = self.ui_msg_box.font()
-        font.setBold(True)
-        font.setPointSize(16)
-        self.ui_msg_box.setFont(font)
-        self.ui_msg_box.setAlignment(Qt.AlignCenter)
-        self.ui_msg_box.document().setDocumentMargin(10)
-        self.ui_msg_box.setFixedHeight(int(self.ui_msg_box.document().size().height()))
+        self.center()

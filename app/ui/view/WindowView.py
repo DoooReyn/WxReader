@@ -75,6 +75,7 @@ class _View(GUI.View):
         self.ui_tray_menu = QMenu(self)
         self.addActionBy(MainTray.ActionQuit, self.ui_tray_menu)
         self.ui_tray.setContextMenu(self.ui_tray_menu)
+        self.ui_tray.setToolTip(I18n.text(LanguageKeys.app_name))
         self.ui_tray.show()
 
         # 中心内容

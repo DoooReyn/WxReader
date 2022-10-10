@@ -8,7 +8,6 @@
 """
 from typing import Union
 
-from plyer import notification
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
