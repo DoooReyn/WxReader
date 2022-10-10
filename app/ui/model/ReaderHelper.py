@@ -4,7 +4,7 @@
 @File    : ReaderHelper.py
 @Time    : 2022/10/9 15:11
 @Author  : DoooReyn<jl88744653@gmail.com>
-@Desc    : PyCharm
+@Desc    : 阅读器辅助工具
 """
 
 

@@ -4,7 +4,7 @@
 @File    : WindowModel.py
 @Time    : 2022/10/8 16:55
 @Author  : DoooReyn<jl88744653@gmail.com>
-@Desc    : PyCharm
+@Desc    : 主窗口数据类
 """
 
 from PyQt5.QtCore import QEvent
@@ -152,3 +152,7 @@ class WindowModel:
     @staticmethod
     def isMouseEvent(et: int):
         return et in WindowModel.MOUSE_EVENT
+
+    @staticmethod
+    def noticeUrl():
+        return Preferences().get(UserKey.Profile.NoticeUrl)

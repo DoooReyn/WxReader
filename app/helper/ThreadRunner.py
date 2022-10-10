@@ -7,7 +7,6 @@
 @Desc    : 线程任务
 """
 from threading import Event, Thread
-from time import sleep
 from typing import Callable, Dict
 
 from helper.Cmm import Cmm
@@ -35,6 +34,9 @@ class StatefulThread(Thread):
 
     def resume(self):
         self._pause_event.clear()
+
+    def wait(self, timeout: float):
+        return self._stop_event.wait(timeout)
 
     def stop(self):
         self._stop_event.set()
@@ -64,6 +66,7 @@ class ThreadRunner:
 
         def on_error(err: str):
             if stop_on_error:
+                print(err)
                 Signals().logger_error.emit(err)
             else:
                 if thread:
@@ -71,11 +74,11 @@ class ThreadRunner:
 
         def _runner():
             while True:
-                if thread is None or thread.stopped():
-                    break
                 if thread.running():
-                    sleep(interval)
                     Cmm.trace(runner, on_error)
+                is_killed = thread.wait(interval)
+                if is_killed:
+                    break
 
         thread = StatefulThread(target=_runner, daemon=True)
         thread.name = str(id(thread))
@@ -101,7 +104,7 @@ class ThreadRunner:
         self._call(tid, 'resume')
 
     def stop(self, tid: str):
-        self._call(tid, 'stop', lambda: self._threads.pop(tid).join(0))
+        self._call(tid, 'stop', lambda: self._threads.pop(tid))
 
     def paused(self, tid: str):
         return self._call(tid, 'paused')

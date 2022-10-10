@@ -37,3 +37,6 @@ class Signals(QObject):
     reader_download_note = QSignal(str, str)
     reader_refresh_speed = QSignal()
     reader_reading_finished = QSignal()
+
+    # API
+    finished_api_done = QSignal(bool)

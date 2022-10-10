@@ -10,7 +10,8 @@
 from PyQt5.QtCore import QEvent, QObject, Qt, QTimerEvent, QUrl
 from PyQt5.QtGui import QCloseEvent, QMouseEvent
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QFileDialog, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, QSystemTrayIcon, QToolBar
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, \
+    QSystemTrayIcon, QToolBar
 
 from conf.Lang import LanguageKeys
 from conf.Menus import MainToolbar, MainTray
@@ -19,14 +20,16 @@ from conf.Views import Views
 from helper.Cmm import Cmm
 from helper.GUI import GUI
 from helper.I18n import I18n
+from helper.NetHelper import NetHelper
 from helper.Preferences import UserKey
 from helper.Signals import Signals
 from ui.model.ReaderHelper import ReaderActions
 from ui.model.WebHelper import PjTransport, WebHelper
 from ui.model.WindowModel import WindowModel
 from ui.view.BadNotice import NetworkBadNotice, ReadingFinishedNotice
-from ui.view.Notice import Notice
+from ui.view.Notice import FillType, Notice
 from ui.view.Options import Options
+from ui.view.SponsorView import SponsorView
 
 
 class _View(GUI.View):
@@ -39,22 +42,37 @@ class _View(GUI.View):
         self.ui_tool_bar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.ui_tool_bar.setAllowedAreas(Qt.ToolBarArea.AllToolBarAreas)
         self.ui_tool_bar.setContextMenuPolicy(Qt.NoContextMenu | Qt.PreventContextMenu)
-        self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.ui_act_back_home = self.addActionBy(MainToolbar.ActionBackHome, self.ui_tool_bar)
         self.ui_act_refresh = self.addActionBy(MainToolbar.ActionRefresh, self.ui_tool_bar)
         self.ui_act_auto = self.addActionBy(MainToolbar.ActionAuto, self.ui_tool_bar)
+        self.ui_act_hide = self.addActionBy(MainToolbar.ActionHide, self.ui_tool_bar)
         self.ui_act_speed_dw = self.addActionBy(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
         self.ui_act_speed_up = self.addActionBy(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
-        self.ui_act_theme = self.addActionBy(MainToolbar.ActionExport, self.ui_tool_bar)
-        self.ui_act_export = self.addActionBy(MainToolbar.ActionTheme, self.ui_tool_bar)
+        self.ui_act_theme = self.addActionBy(MainToolbar.ActionTheme, self.ui_tool_bar)
+        self.ui_act_export = self.addActionBy(MainToolbar.ActionExport, self.ui_tool_bar)
         self.ui_act_screen = self.addActionBy(MainToolbar.ActionFullscreen, self.ui_tool_bar)
         self.ui_act_profile = self.addActionBy(MainToolbar.ActionProfile, self.ui_tool_bar)
+        self.ui_act_about = self.addActionBy(MainToolbar.ActionAbout, self.ui_tool_bar)
         self.ui_act_help = self.addActionBy(MainToolbar.ActionHelp, self.ui_tool_bar)
         self.ui_act_sponsor = self.addActionBy(MainToolbar.ActionSponsor, self.ui_tool_bar)
-        self.ui_act_about = self.addActionBy(MainToolbar.ActionAbout, self.ui_tool_bar)
-        self.ui_act_hide = self.addActionBy(MainToolbar.ActionHide, self.ui_tool_bar)
-        self.ui_act_quit = self.addActionBy(MainToolbar.ActionQuit, self.ui_tool_bar)
         self.ui_act_pinned = self.addActionBy(MainToolbar.ActionPinned, self.ui_tool_bar)
+        self.ui_act_quit = self.addActionBy(MainToolbar.ActionQuit, self.ui_tool_bar)
+        self.ui_act_back_home.setToolTip(I18n.text(LanguageKeys.tooltip_back_home))
+        self.ui_act_refresh.setToolTip(I18n.text(LanguageKeys.tooltip_refresh))
+        self.ui_act_auto.setToolTip(I18n.text(LanguageKeys.tooltip_auto))
+        self.ui_act_hide.setToolTip(I18n.text(LanguageKeys.tooltip_hide))
+        self.ui_act_speed_dw.setToolTip(I18n.text(LanguageKeys.tooltip_speed_dw))
+        self.ui_act_speed_up.setToolTip(I18n.text(LanguageKeys.tooltip_speed_up))
+        self.ui_act_theme.setToolTip(I18n.text(LanguageKeys.tooltip_theme))
+        self.ui_act_export.setToolTip(I18n.text(LanguageKeys.tooltip_export))
+        self.ui_act_screen.setToolTip(I18n.text(LanguageKeys.tooltip_fullscreen))
+        self.ui_act_profile.setToolTip(I18n.text(LanguageKeys.tooltip_profile))
+        self.ui_act_about.setToolTip(I18n.text(LanguageKeys.tooltip_about))
+        self.ui_act_help.setToolTip(I18n.text(LanguageKeys.tooltip_help))
+        self.ui_act_sponsor.setToolTip(I18n.text(LanguageKeys.tooltip_sponsor))
+        self.ui_act_pinned.setToolTip(I18n.text(LanguageKeys.tooltip_pinned))
+        self.ui_act_quit.setToolTip(I18n.text(LanguageKeys.tooltip_quit))
         self.ui_act_auto.setCheckable(True)
         self.ui_act_pinned.setCheckable(True)
 
@@ -307,7 +325,7 @@ class WindowView(QMainWindow, _View):
 
     def onReaderReadingFinished(self):
         """阅读器全文读完触发事件"""
-        # TODO
+        NetHelper.httpGet(self._model.noticeUrl())
         self.onTrayActivated()
         if self._model.scrollable():
             self._model.setFinishedTimerId(self.startTimer(2))
@@ -400,6 +418,7 @@ class WindowView(QMainWindow, _View):
     def onToolbarQuit(self):
         """关闭窗口"""
         self.close()
+        QApplication.exit()
 
     def onToolbarSetAuto(self):
         """切换自动阅读"""
@@ -423,7 +442,8 @@ class WindowView(QMainWindow, _View):
         Notice(Views.Help,
                UserKey.Help.WinRect,
                I18n.text(LanguageKeys.toolbar_help),
-               I18n.text(LanguageKeys.notice_help)
+               I18n.text(LanguageKeys.notice_help),
+               FillType.Html
                ).exec()
 
     @staticmethod
@@ -438,11 +458,7 @@ class WindowView(QMainWindow, _View):
     @staticmethod
     def onToolbarSponsor():
         """赞助"""
-        Notice(Views.Sponsor,
-               UserKey.Help.WinRect,
-               I18n.text(LanguageKeys.toolbar_sponsor),
-               I18n.text(LanguageKeys.notice_sponsor)
-               ).exec()
+        SponsorView().exec()
 
     @staticmethod
     def onToolbarExport():

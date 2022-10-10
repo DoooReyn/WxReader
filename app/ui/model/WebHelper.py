@@ -4,7 +4,7 @@
 @File    : WebHelper.py
 @Time    : 2022/10/9 15:12
 @Author  : DoooReyn<jl88744653@gmail.com>
-@Desc    : PyCharm
+@Desc    : 网页交互辅助工具
 """
 from typing import List
 

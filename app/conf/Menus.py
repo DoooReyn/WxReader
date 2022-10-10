@@ -22,12 +22,13 @@ class ActionInfo:
 
 class MainToolbar:
     """工具栏"""
+    ActionQuit = ActionInfo(LanguageKeys.toolbar_quit, ResMap.icon_logout, 'onToolbarQuit', 'Alt+Q')
+    ActionHide = ActionInfo(LanguageKeys.toolbar_hide, ResMap.icon_eye_off, 'onToolbarHide', 'Esc')
     ActionHelp = ActionInfo(LanguageKeys.toolbar_help, ResMap.icon_help, 'onToolbarHelp', 'F1')
     ActionAbout = ActionInfo(LanguageKeys.toolbar_about, ResMap.icon_brand_github, 'onToolbarAbout', 'F2')
     ActionProfile = ActionInfo(LanguageKeys.toolbar_profile, ResMap.icon_settings, 'onToolbarProfile', 'F12')
-    ActionQuit = ActionInfo(LanguageKeys.toolbar_quit, ResMap.icon_logout, 'onToolbarQuit', 'Alt+Q')
-    ActionHide = ActionInfo(LanguageKeys.toolbar_hide, ResMap.icon_eye_off, 'onToolbarHide', 'Esc')
-    ActionBackHome = ActionInfo(LanguageKeys.toolbar_back_home, ResMap.icon_home_heart, 'onToolbarBackHome', 'F5')
+    ActionBackHome = ActionInfo(LanguageKeys.toolbar_back_home, ResMap.icon_home_heart, 'onToolbarBackHome', 'F3')
+    ActionRefresh = ActionInfo(LanguageKeys.toolbar_refresh, ResMap.icon_refresh, 'onToolbarReload', 'F5')
     ActionExport = ActionInfo(LanguageKeys.toolbar_export, ResMap.icon_markdown, 'onToolbarExport', 'F8')
     ActionTheme = ActionInfo(LanguageKeys.toolbar_theme, ResMap.icon_sun, 'onToolbarTheme', 'F9')
     ActionAuto = ActionInfo(LanguageKeys.toolbar_auto, ResMap.icon_arrow_autofit_down, 'onToolbarSetAuto', 'F10')
@@ -37,7 +38,6 @@ class MainToolbar:
     ActionSpeedDw = ActionInfo(LanguageKeys.toolbar_speed_dw, ResMap.icon_chevrons_left, 'onToolbarSpeedDown', '-')
     ActionSponsor = ActionInfo(LanguageKeys.toolbar_sponsor, ResMap.icon_coffee, 'onToolbarSponsor')
     ActionPinned = ActionInfo(LanguageKeys.toolbar_pinned, ResMap.icon_pinned_off, 'onToolbarPinned')
-    ActionRefresh = ActionInfo(LanguageKeys.toolbar_refresh, ResMap.icon_refresh, 'onToolbarReload')
 
 
 class MainTray:

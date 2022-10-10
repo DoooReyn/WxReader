@@ -6,7 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 通用
 """
-import sys, platform
+import platform
 from os import makedirs
 from os.path import join
 from traceback import format_exc, print_exc
@@ -24,6 +24,7 @@ class Cmm:
         """装饰器"""
 
         """ -------单例 region began -------"""
+
         @staticmethod
         def Singleton(cls):
             """单例"""

@@ -4,7 +4,7 @@
 @File    : ApplicationController.py
 @Time    : 2022/10/7 15:13
 @Author  : DoooReyn<jl88744653@gmail.com>
-@Desc    : PyCharm
+@Desc    : 应用页面
 """
 import sys
 from traceback import format_exception

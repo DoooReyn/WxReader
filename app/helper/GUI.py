@@ -87,8 +87,7 @@ class GUI:
             
             QProgressBar 
             {
-                border: 1px solid #8f8f8f;
-                border-radius: 4px;
+                border: none;
                 background-color: #f1f1f1;
             }
             
@@ -239,7 +238,7 @@ class GUI:
             if self.window_code > 0:
                 Signals().win_closed.emit(self.window_code)
             event.accept()
-            super().closeEvent(event)
+            super(GUI.View, self).closeEvent(event)
 
         def resizeEvent(self, event):
             if self.rect_key is not None:
