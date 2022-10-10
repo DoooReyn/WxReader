@@ -308,17 +308,25 @@ class WindowView(QMainWindow, _View):
     def onReaderReadingFinished(self):
         """阅读器全文读完触发事件"""
         # TODO
+        self.onTrayActivated()
+        if self._model.scrollable():
+            self._model.setFinishedTimerId(self.startTimer(2))
         self.ui_act_auto.setChecked(False)
-        GUI.playSound(GUI.WindowsSounds.Unlock)
-        ReadingFinishedNotice().exec()
+        self._model.setScrollable(False)
 
     def timerEvent(self, timer: QTimerEvent):
         """
         定时器刷新事件
         - 在此更新阅读器页面状态
         """
-        if timer.timerId() == self._model.timerId():
+        tid = timer.timerId()
+        if tid == self._model.timerId():
             self.refreshPageStatus()
+        elif tid == self._model.finishedTimerId():
+            self.killTimer(self._model.finishedTimerId())
+            self._model.clearFinishedTimerId()
+            GUI.playSound(GUI.WindowsSounds.Unlock)
+            ReadingFinishedNotice().exec()
         super(WindowView, self).timerEvent(timer)
 
     def closeEvent(self, event: QCloseEvent):
@@ -369,9 +377,6 @@ class WindowView(QMainWindow, _View):
                 self.showMaximized()
             else:
                 self.showNormal()
-                # FIXME
-                tx, ty, tw, th = self.getWinRect()
-                self.setGeometry(tx, ty, tw, th)
 
     def onToolbarFullscreen(self):
         """全屏切换"""
@@ -404,10 +409,8 @@ class WindowView(QMainWindow, _View):
     def onToolbarHide(self):
         """
         退到后台
-        - FIXME: 在 Win7 上不会移动到不可见区域
         """
-        rect = self.geometry()
-        self.setGeometry(-rect.x(), -rect.y(), rect.width(), rect.height())
+        self.showMinimized()
 
     @staticmethod
     def onToolbarProfile():

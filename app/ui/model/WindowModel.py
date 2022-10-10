@@ -55,7 +55,20 @@ class WindowModel:
 
     def __init__(self):
         self._reader_timer_id = -1
+        self._reader_finished_timer_id = -1
         self._wait_next_chapter = False
+
+    def setFinishedTimerId(self, tid: int):
+        self._reader_finished_timer_id = tid
+
+    def finishedTimerId(self):
+        return self._reader_finished_timer_id
+
+    def clearFinishedTimerId(self):
+        self._reader_finished_timer_id = -1
+
+    def isValidFinishedTimer(self):
+        return self._reader_finished_timer_id > -1
 
     def timerId(self):
         return self._reader_timer_id

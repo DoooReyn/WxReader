@@ -75,9 +75,8 @@ class Cmm:
 
     @staticmethod
     def isWindows():
-        print(sys.platform, platform.system(), platform.machine())
         return platform.system() == 'Windows'
 
-
-if __name__ == '__main__':
-    Cmm.isWindows()
+    @staticmethod
+    def isWindows10():
+        return Cmm.isWindows() and platform.release() == '10'
