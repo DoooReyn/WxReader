@@ -55,7 +55,6 @@ class ReadingFinishedNotice(Notice):
             UserKey.ReadingFinished.WinRect,
             I18n.text(LanguageKeys.tips_notice),
             I18n.text(LanguageKeys.tips_reading_finished),
-            FillType.PlainText,
-            True
+            FillType.PlainText
         )
         self.center()
