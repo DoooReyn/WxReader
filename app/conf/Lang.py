@@ -93,7 +93,7 @@ HELP_CN = """
 <p>如今，时隔两年半，收到了不少用户反馈之后，<strong>微读阅读器2.0</strong> 终于发布啦！</p>
 <p>相比 <strong>1.3</strong>，<strong>2.0</strong> 做了比较大的改进，主要包括：</p>
 <ul>
-<li>弃用 <strong>Electron.js</strong> 框架，改用 <strong>PyQt5</strong> 作为底层支持，大大减小了软件包体积;</li>
+<li>弃用 <strong>Electron.js</strong> 框架，改用 <strong>PyQt5</strong> 作为底层支持;</li>
 <li>所有操作都放在了工具栏，操作更加简单直接，大大提升用户体验；</li>
 <li>修复大范围挂机暂停的问题：
 <ul>

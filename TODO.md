@@ -30,3 +30,10 @@
 - [x] 帮助，关于，捐赠页面
 
 - [ ] 监听二维码和字体选择失败
+
+- [x] 打包
+  - 打包命令：`pyinstaller -w -i ../resources/icon/app.ico --paths ./ --clean -n WxReader -d imports -y --noconfirm .
+    /Main.py`
+  - 这样打出来的包很大，可以手动裁剪一些不需要的库，但因为 Qt 的 WebEngine 动态库文件太大了，所以基础包还是很大
+  - 虽然可以使用 UPX 做进一步压缩，但是发现 UPX 打出来的包运行不了
+  - 于是，想到可以在未压缩的目录下使用 UPX 压缩过的动态库文件，试了下还是可行的，唯一的缺点就是 UPX 处理过的运行起来有点慢
