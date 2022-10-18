@@ -29,8 +29,6 @@
 
 - [x] 帮助，关于，捐赠页面
 
-- [ ] 监听二维码和字体选择失败
-
 - [x] 打包
     - 打包命令：`pyinstaller -w -i ../resources/icon/app.ico --paths ./ --clean -n WxReader -d imports -y --noconfirm .
       /Main.py`
@@ -43,12 +41,8 @@
   - 问题所在：Qt5 的 QWebEngineView 内存管理存在问题
   - 解决方案：升级到 Qt6 或者 PySide6
   - 目前情况：
+    - 项目已升级到升级到 PySide6
     - 加载新页面时会出现内存暴涨；如果页面内容比较多，内存占用会更大；如果快速切换页面，内存会涨得更快；
-    - 但在页面加载完成之后，等待一段时间，内存会下降并稳定下来 *(~=200M)*，可见 QWebEngineView 的内存释放存在滞后性
-  
-- [ ] 可以精简的较大文件 
-  qtiff.dll
-  qwebp.dll
-  
+    - 但在页面加载完成之后，等待一段时间，内存会下降并稳定下来 *(~=200M)*，可见 QWebEngineView 的内存释放存在一定的滞后性
 
-- [ ] 静默模式失效
+- [ ] 静默模式失效？
