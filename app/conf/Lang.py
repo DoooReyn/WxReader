@@ -93,7 +93,7 @@ HELP_CN = """
 <p>如今，时隔两年半，收到了不少用户反馈之后，<strong>微读阅读器2.0</strong> 终于发布啦！</p>
 <p>相比 <strong>1.3</strong>，<strong>2.0</strong> 做了比较大的改进，主要包括：</p>
 <ul>
-<li>弃用 <strong>Electron.js</strong> 框架，改用 <strong>PyQt5</strong> 作为底层支持;</li>
+<li>弃用 <strong>Electron.js</strong> 框架，改用 <strong>PySide6</strong> 作为底层支持;</li>
 <li>所有操作都放在了工具栏，操作更加简单直接，大大提升用户体验；</li>
 <li>修复大范围挂机暂停的问题：
 <ul>
@@ -109,7 +109,7 @@ HELP_CN = """
 <li>
 <strong>2.0</strong>将完全开源，但未经允许禁止投入商业使用。</li>
 </ul>
-<p>最后，<strong>微读阅读器2.0</strong>是基于 <strong>PyQy5</strong> 全新开发的，整个过程差不多花了一周 <em>（因为国庆罢工啦）</em>，时间上是比较仓促的，
+<p>最后，<strong>微读阅读器2.0</strong>是基于 <strong>PySide6</strong> 全新开发的，整个过程差不多花了一周 <em>（因为国庆罢工啦）</em>，时间上是比较仓促的，
 因此很可能还存在一些问题或体验上的不足，后续会陆续跟进维护，也欢迎大家到<a href="https://github.com/DoooReyn/WxReader">官方仓库</a>提问题。</p>
 <hr />
 <h3>二、快捷键</h3>
