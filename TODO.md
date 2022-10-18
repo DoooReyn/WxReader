@@ -32,8 +32,23 @@
 - [ ] 监听二维码和字体选择失败
 
 - [x] 打包
-  - 打包命令：`pyinstaller -w -i ../resources/icon/app.ico --paths ./ --clean -n WxReader -d imports -y --noconfirm .
-    /Main.py`
-  - 这样打出来的包很大，可以手动裁剪一些不需要的库，但因为 Qt 的 WebEngine 动态库文件太大了，所以基础包还是很大
-  - 虽然可以使用 UPX 做进一步压缩，但是发现 UPX 打出来的包运行不了
-  - 于是，想到可以在未压缩的目录下使用 UPX 压缩过的动态库文件，试了下还是可行的，唯一的缺点就是 UPX 处理过的运行起来有点慢
+    - 打包命令：`pyinstaller -w -i ../resources/icon/app.ico --paths ./ --clean -n WxReader -d imports -y --noconfirm .
+      /Main.py`
+    - 这样打出来的包很大，可以手动裁剪一些不需要的库，但因为 Qt 的 WebEngine 动态库文件太大了，所以基础包还是很大
+    - 虽然可以使用 UPX 做进一步压缩，但是发现 UPX 打出来的包运行不了
+    - 于是，想到可以在未压缩的目录下使用 UPX 压缩过的动态库文件，试了下还是可行的，唯一的缺点就是 UPX 处理过的运行起来有点慢
+
+- [x] 内存泄漏问题
+  - 问题描述：每切换一次页面，内存占用只增不减
+  - 问题所在：Qt5 的 QWebEngineView 内存管理存在问题
+  - 解决方案：升级到 Qt6 或者 PySide6
+  - 目前情况：
+    - 加载新页面时会出现内存暴涨；如果页面内容比较多，内存占用会更大；如果快速切换页面，内存会涨得更快；
+    - 但在页面加载完成之后，等待一段时间，内存会下降并稳定下来 *(~=200M)*，可见 QWebEngineView 的内存释放存在滞后性
+  
+- [ ] 可以精简的较大文件 
+  qtiff.dll
+  qwebp.dll
+  
+
+- [ ] 静默模式失效

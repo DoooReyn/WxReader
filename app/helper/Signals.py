@@ -6,7 +6,7 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 基础信号源
 """
-from PyQt5.QtCore import pyqtSignal as QSignal, QObject
+from PySide6.QtCore import Signal, QObject
 
 from helper.Cmm import Cmm
 
@@ -16,27 +16,27 @@ class Signals(QObject):
     """Qt信号"""
 
     # 日志
-    logger_trace = QSignal(str)
-    logger_debug = QSignal(str)
-    logger_info = QSignal(str)
-    logger_warn = QSignal(str)
-    logger_error = QSignal(str)
-    logger_fatal = QSignal(str)
+    logger_trace = Signal(str)
+    logger_debug = Signal(str)
+    logger_info = Signal(str)
+    logger_warn = Signal(str)
+    logger_error = Signal(str)
+    logger_fatal = Signal(str)
 
     # 窗口
-    win_closed = QSignal(int)
-    win_focus_main = QSignal()
+    win_closed = Signal(int)
+    win_focus_main = Signal()
 
     # 多语言
-    lang_changed = QSignal(str)
+    lang_changed = Signal(str)
 
     # 阅读器
-    reader_setting_changed = QSignal(int)
-    reader_load_progress = QSignal(int)
-    reader_status_tip_updated = QSignal(str)
-    reader_download_note = QSignal(str, str)
-    reader_refresh_speed = QSignal()
-    reader_reading_finished = QSignal()
+    reader_setting_changed = Signal(int)
+    reader_load_progress = Signal(int)
+    reader_status_tip_updated = Signal(str)
+    reader_download_note = Signal(str, str)
+    reader_refresh_speed = Signal()
+    reader_reading_finished = Signal()
 
     # API
-    finished_api_done = QSignal(bool)
+    finished_api_done = Signal(bool)

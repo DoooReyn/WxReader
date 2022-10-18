@@ -127,5 +127,5 @@ if __name__ == '__main__':
 
     # qrc 转 py
     with open(Config.QRC_PY_AT, 'w', encoding=Config.ENCODING):
-        cmd = 'pyrcc5 %s -o %s' % (Config.QRC_RAW_AT, Config.QRC_PY_AT)
+        cmd = 'pyside6-rcc %s -o %s' % (Config.QRC_RAW_AT, Config.QRC_PY_AT)
         Popen(cmd, cwd=Config.PROGRAM_AT)

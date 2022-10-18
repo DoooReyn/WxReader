@@ -9,10 +9,11 @@
 from enum import Enum, unique
 from typing import Union
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QColor, QFont, QIcon
-from PyQt5.QtMultimedia import QSound
-from PyQt5.QtWidgets import QAction, QMenu, QToolBar, QWidget
+from PySide6.QtCore import QSize, QObject
+from PySide6.QtGui import QColor, QFont, QIcon
+from PySide6.QtMultimedia import QSoundEffect
+from PySide6.QtWidgets import QMenu, QToolBar, QWidget
+from PySide6.QtGui import QAction
 
 from conf.Lang import LanguageKeys
 from conf.Menus import ActionInfo
@@ -84,34 +85,34 @@ class GUI:
                 font-family: "微软雅黑"; 
                 font-size: 13px;
             }
-            
+
             QProgressBar 
             {
                 border: none;
                 background-color: #f1f1f1;
             }
-            
+
             QProgressBar::chunk 
             {
                 background-color: #85caff;
                 width: 4px;
                 margin: 0.5px;
             }
-            
+
             QMenuBar 
             {
                 border: none;
                 background: #ffffff;
                 spacing: 2px;
             }
-            
+
             QToolBar 
             {
                 border: none;
                 background: #ffffff;
                 spacing: 2px;
             }
-            
+
             QPushButton 
             {
                 border: 1px solid #34a7ff;
@@ -121,20 +122,20 @@ class GUI:
                 min-width: 64px;
                 min-height: 32px;
             }
-            
+
             QPushButton::hover,pressed
             {
                 font: bold;
                 background: #f4f8f8;
             }
-            
+
             QPushButton::pressed
             {
                 font: bold;
                 margin: 0 4px 0 4px;
                 background: #f4f8f8;
             }
-            
+
             QToolButton::hover,pressed {
                 border: 1px solid #8f8f8f;
                 border-radius: 4px;
@@ -162,14 +163,14 @@ class GUI:
                 margin: 0px 0px 0px 0px;
                 border: 1px transparent #2A2929;
             }
-        
+
             QScrollBar::handle:vertical
             {
                 background-color: #c1c1c1;
                 min-height: 5px;
                 border-radius: 4px;
             }
-        
+
             QScrollBar::sub-line:vertical
             {
                 margin: 3px 0px 3px 0px;
@@ -179,7 +180,7 @@ class GUI:
                 subcontrol-position: top;
                 subcontrol-origin: margin;
             }
-        
+
             QScrollBar::add-line:vertical
             {
                 margin: 3px 0px 3px 0px;
@@ -189,7 +190,7 @@ class GUI:
                 subcontrol-position: bottom;
                 subcontrol-origin: margin;
             }
-        
+
             QScrollBar::sub-line:vertical:hover,QScrollBar::sub-line:vertical:on
             {
                 border-image: url(:/qss_icons/rc/up_arrow.png);
@@ -198,7 +199,7 @@ class GUI:
                 subcontrol-position: top;
                 subcontrol-origin: margin;
             }
-        
+
             QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on
             {
                 border-image: url(:/qss_icons/rc/down_arrow.png);
@@ -207,12 +208,12 @@ class GUI:
                 subcontrol-position: bottom;
                 subcontrol-origin: margin;
             }
-        
+
             QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
             {
                 background: none;
             }
-        
+
             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
             {
                 background: none;
@@ -227,7 +228,7 @@ class GUI:
             self.col_start = col_start
             self.col_span = col_span
 
-    class View(QWidget):
+    class View(object):
         """视窗基类"""
         window_code: int = 0
         rect_key: str = None
@@ -313,4 +314,6 @@ class GUI:
     def playSound(sound_type: WindowsSounds):
         if Cmm.isWindows():
             sound_path = GUI.Preferences.WindowsMediaAt.format(sound_type.value)
-            QSound.play(sound_path)
+            effect = QSoundEffect()
+            effect.setSource(sound_path)
+            effect.play()

@@ -7,11 +7,21 @@
 @Desc    : 应用主窗口
 """
 
-from PyQt5.QtCore import QEvent, QObject, Qt, QTimerEvent, QUrl
-from PyQt5.QtGui import QCloseEvent, QMouseEvent
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QMainWindow, QMenu, QProgressBar, QStatusBar, \
-    QSystemTrayIcon, QToolBar
+from PySide6.QtCore import QEvent, QObject, Qt, QTimerEvent, QUrl
+from PySide6.QtGui import QCloseEvent, QMouseEvent
+from PySide6.QtNetwork import QNetworkProxyFactory, QNetworkProxy, QNetworkAccessManager
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QProgressBar,
+    QStatusBar,
+    QSystemTrayIcon,
+    QToolBar
+)
 
 from conf.Lang import LanguageKeys
 from conf.Menus import MainToolbar, MainTray
@@ -36,12 +46,12 @@ class _View(GUI.View):
     def __init__(self):
         super(_View, self).__init__()
         # 工具栏
-        self.ui_tool_bar = QToolBar(self)
+        self.ui_tool_bar = QToolBar()
         self.ui_tool_bar.setFloatable(False)
         self.ui_tool_bar.setMovable(False)
         self.ui_tool_bar.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.ui_tool_bar.setAllowedAreas(Qt.ToolBarArea.AllToolBarAreas)
-        self.ui_tool_bar.setContextMenuPolicy(Qt.NoContextMenu | Qt.PreventContextMenu)
+        self.ui_tool_bar.setContextMenuPolicy(Qt.PreventContextMenu)
         self.ui_tool_bar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.ui_act_back_home = self.addActionBy(MainToolbar.ActionBackHome, self.ui_tool_bar)
         self.ui_act_refresh = self.addActionBy(MainToolbar.ActionRefresh, self.ui_tool_bar)
@@ -77,7 +87,7 @@ class _View(GUI.View):
         self.ui_act_pinned.setCheckable(True)
 
         # 状态栏
-        self.ui_status_bar = QStatusBar(self)
+        self.ui_status_bar = QStatusBar()
         self.ui_progress = QProgressBar()
         self.ui_progress.setValue(0)
         self.ui_progress.setTextVisible(False)
@@ -90,7 +100,7 @@ class _View(GUI.View):
         # 系统托盘
         self.ui_tray = QSystemTrayIcon(self)
         self.ui_tray.setIcon(GUI.icon(ResMap.icon_app))
-        self.ui_tray_menu = QMenu(self)
+        self.ui_tray_menu = QMenu()
         self.addActionBy(MainTray.ActionQuit, self.ui_tray_menu)
         self.ui_tray.setContextMenu(self.ui_tray_menu)
         self.ui_tray.setToolTip(I18n.text(LanguageKeys.app_name))
@@ -100,9 +110,10 @@ class _View(GUI.View):
         self.ui_webview = QWebEngineView()
         self.ui_webview.setContextMenuPolicy(Qt.NoContextMenu)
         self.ui_webview.setContentsMargins(2, 2, 2, 2)
+        self.ui_webview.setAttribute(Qt.WA_NativeWindow)
 
 
-class WindowView(QMainWindow, _View):
+class WindowView(_View, QMainWindow):
     """应用主窗口"""
 
     def __init__(self):
@@ -128,6 +139,11 @@ class WindowView(QMainWindow, _View):
         self.setWindowCode(Views.Main)
         self.setWinRectKey(UserKey.General.WinRect)
 
+        # 关闭系统网络代理
+        QNetworkProxyFactory.setUseSystemConfiguration(False)
+        QNetworkProxy.setApplicationProxy(QNetworkProxy.NoProxy)
+        QNetworkAccessManager().setProxy(QNetworkProxy.NoProxy)
+
         # 初始化 WebView
         WebHelper.newWebPage(
             self._model.BUILTIN_PROFILE,
@@ -144,8 +160,11 @@ class WindowView(QMainWindow, _View):
         # 关联信号槽
         # noinspection PyUnresolvedReferences
         self.ui_tray.activated.connect(self.onTrayActivated)
+        # noinspection PyUnresolvedReferences
         self.ui_webview.loadStarted.connect(self.onWebLoadStarted)
+        # noinspection PyUnresolvedReferences
         self.ui_webview.loadProgress.connect(self.onWebLoadProgress)
+        # noinspection PyUnresolvedReferences
         self.ui_webview.loadFinished.connect(self.onWebLoadFinished)
         Signals().reader_load_progress.connect(self.refreshProgress)
         Signals().reader_status_tip_updated.connect(self.refreshStatusTip)
@@ -160,6 +179,9 @@ class WindowView(QMainWindow, _View):
 
     def openUrl(self, url: str):
         """打开网址"""
+        self.ui_webview.stop()
+        self.ui_webview.page().profile().clearAllVisitedLinks()
+        self.ui_webview.history().clear()
         self.ui_webview.page().load(QUrl(url))
 
     def backHome(self):

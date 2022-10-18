@@ -6,7 +6,6 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 错误通知
 """
-from PyQt5.QtCore import Qt
 
 from conf.Lang import LanguageKeys
 from conf.Views import Views
@@ -24,8 +23,7 @@ class BadNotice(Notice):
             UserKey.Exception.WinRect,
             I18n.text(LanguageKeys.exception_name),
             tips,
-            FillType.PlainText,
-            True
+            FillType.PlainText
         )
         self.center()
 

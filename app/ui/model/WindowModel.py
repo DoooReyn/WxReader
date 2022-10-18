@@ -7,7 +7,7 @@
 @Desc    : 主窗口数据类
 """
 
-from PyQt5.QtCore import QEvent
+from PySide6.QtCore import QEvent
 
 from conf.ResMap import ResMap
 from helper.Preferences import Preferences, UserKey

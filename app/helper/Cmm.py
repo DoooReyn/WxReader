@@ -11,7 +11,7 @@ from os import makedirs
 from os.path import join
 from traceback import format_exc, print_exc
 
-from PyQt5.QtCore import QStandardPaths
+from PySide6.QtCore import QStandardPaths
 
 
 class Cmm:

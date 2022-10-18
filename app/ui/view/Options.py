@@ -6,9 +6,9 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 用户自定义选项视图
 """
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCloseEvent
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QLineEdit, QPushButton, QSpinBox
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QCloseEvent
+from PySide6.QtWidgets import QDialog, QGridLayout, QLabel, QLineEdit, QPushButton, QSpinBox
 
 from conf.Lang import LanguageKeys
 from conf.Views import Views
@@ -56,7 +56,7 @@ class _View(GUI.View):
         self.setLayout(self.ui_layout)
 
 
-class Options(QDialog, _View):
+class Options(_View, QDialog):
     def __init__(self):
         super(Options, self).__init__()
 

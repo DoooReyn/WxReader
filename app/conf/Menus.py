@@ -13,33 +13,126 @@ from conf.ResMap import ResMap
 class ActionInfo:
     """动作"""
 
-    def __init__(self, name: str, icon: str = None, trigger: str = None, shortcut: str = None):
+    def __init__(self, name: str, icon: str = None, trigger: str = None, shortcut: str = None, tooltip: str = None):
         self.name = name
         self.icon = icon
         self.trigger = trigger
         self.shortcut = shortcut
+        self.tooltip = tooltip or name
 
 
 class MainToolbar:
     """工具栏"""
-    ActionQuit = ActionInfo(LanguageKeys.toolbar_quit, ResMap.icon_logout, 'onToolbarQuit', 'Alt+Q')
-    ActionHide = ActionInfo(LanguageKeys.toolbar_hide, ResMap.icon_eye_off, 'onToolbarHide', 'Esc')
-    ActionHelp = ActionInfo(LanguageKeys.toolbar_help, ResMap.icon_help, 'onToolbarHelp', 'F1')
-    ActionAbout = ActionInfo(LanguageKeys.toolbar_about, ResMap.icon_brand_github, 'onToolbarAbout', 'F2')
-    ActionProfile = ActionInfo(LanguageKeys.toolbar_profile, ResMap.icon_settings, 'onToolbarProfile', 'F12')
-    ActionBackHome = ActionInfo(LanguageKeys.toolbar_back_home, ResMap.icon_home_heart, 'onToolbarBackHome', 'F3')
-    ActionRefresh = ActionInfo(LanguageKeys.toolbar_refresh, ResMap.icon_refresh, 'onToolbarReload', 'F5')
-    ActionExport = ActionInfo(LanguageKeys.toolbar_export, ResMap.icon_markdown, 'onToolbarExport', 'F8')
-    ActionTheme = ActionInfo(LanguageKeys.toolbar_theme, ResMap.icon_sun, 'onToolbarTheme', 'F9')
-    ActionAuto = ActionInfo(LanguageKeys.toolbar_auto, ResMap.icon_arrow_autofit_down, 'onToolbarSetAuto', 'F10')
-    ActionFullscreen = ActionInfo(LanguageKeys.toolbar_fullscreen, ResMap.icon_arrows_maximize, 'onToolbarFullscreen',
-                                  'F11')
-    ActionSpeedUp = ActionInfo(LanguageKeys.toolbar_speed_up, ResMap.icon_chevrons_right, 'onToolbarSpeedUp', '=')
-    ActionSpeedDw = ActionInfo(LanguageKeys.toolbar_speed_dw, ResMap.icon_chevrons_left, 'onToolbarSpeedDown', '-')
-    ActionSponsor = ActionInfo(LanguageKeys.toolbar_sponsor, ResMap.icon_coffee, 'onToolbarSponsor')
-    ActionPinned = ActionInfo(LanguageKeys.toolbar_pinned, ResMap.icon_pinned_off, 'onToolbarPinned')
+    ActionQuit = ActionInfo(
+        name=LanguageKeys.toolbar_quit,
+        icon=ResMap.icon_logout,
+        trigger='onToolbarQuit',
+        shortcut='Alt+Q',
+        tooltip=LanguageKeys.tooltip_quit
+    )
+    ActionHide = ActionInfo(
+        name=LanguageKeys.toolbar_hide,
+        icon=ResMap.icon_eye_off,
+        trigger='onToolbarHide',
+        shortcut='Esc',
+        tooltip=LanguageKeys.tooltip_hide
+    )
+    ActionHelp = ActionInfo(
+        name=LanguageKeys.toolbar_help,
+        icon=ResMap.icon_help,
+        trigger='onToolbarHelp',
+        shortcut='F1',
+        tooltip=LanguageKeys.tooltip_help
+    )
+    ActionAbout = ActionInfo(
+        name=LanguageKeys.toolbar_about,
+        icon=ResMap.icon_brand_github,
+        trigger='onToolbarAbout',
+        shortcut='F2',
+        tooltip=LanguageKeys.tooltip_about
+    )
+    ActionProfile = ActionInfo(
+        name=LanguageKeys.toolbar_profile,
+        icon=ResMap.icon_settings,
+        trigger='onToolbarProfile',
+        shortcut='F12',
+        tooltip=LanguageKeys.tooltip_profile
+    )
+    ActionBackHome = ActionInfo(
+        name=LanguageKeys.toolbar_back_home,
+        icon=ResMap.icon_home_heart,
+        trigger='onToolbarBackHome',
+        shortcut='F3',
+        tooltip=LanguageKeys.tooltip_back_home
+    )
+    ActionRefresh = ActionInfo(
+        name=LanguageKeys.toolbar_refresh,
+        icon=ResMap.icon_refresh,
+        trigger='onToolbarReload',
+        shortcut='F5',
+        tooltip=LanguageKeys.tooltip_refresh
+    )
+    ActionExport = ActionInfo(
+        name=LanguageKeys.toolbar_export,
+        icon=ResMap.icon_markdown,
+        trigger='onToolbarExport',
+        shortcut='F8',
+        tooltip=LanguageKeys.tooltip_export
+    )
+    ActionTheme = ActionInfo(
+        name=LanguageKeys.toolbar_theme,
+        icon=ResMap.icon_sun,
+        trigger='onToolbarTheme',
+        shortcut='F9',
+        tooltip=LanguageKeys.tooltip_theme
+    )
+    ActionAuto = ActionInfo(
+        name=LanguageKeys.toolbar_auto,
+        icon=ResMap.icon_arrow_autofit_down,
+        trigger='onToolbarSetAuto',
+        shortcut='F10',
+        tooltip=LanguageKeys.tooltip_auto
+    )
+    ActionFullscreen = ActionInfo(
+        name=LanguageKeys.toolbar_fullscreen,
+        icon=ResMap.icon_arrows_maximize,
+        trigger='onToolbarFullscreen',
+        shortcut='F11',
+        tooltip=LanguageKeys.tooltip_fullscreen
+    )
+    ActionSpeedUp = ActionInfo(
+        name=LanguageKeys.toolbar_speed_up,
+        icon=ResMap.icon_chevrons_right,
+        trigger='onToolbarSpeedUp',
+        shortcut='=',
+        tooltip=LanguageKeys.tooltip_speed_up
+    )
+    ActionSpeedDw = ActionInfo(
+        name=LanguageKeys.toolbar_speed_dw,
+        icon=ResMap.icon_chevrons_left,
+        trigger='onToolbarSpeedDown',
+        shortcut='-',
+        tooltip=LanguageKeys.tooltip_speed_dw
+    )
+    ActionSponsor = ActionInfo(
+        name=LanguageKeys.toolbar_sponsor,
+        icon=ResMap.icon_coffee,
+        trigger='onToolbarSponsor',
+        tooltip=LanguageKeys.tooltip_sponsor
+    )
+    ActionPinned = ActionInfo(
+        name=LanguageKeys.toolbar_pinned,
+        icon=ResMap.icon_pinned_off,
+        trigger='onToolbarPinned',
+        tooltip=LanguageKeys.tooltip_pinned
+    )
 
 
 class MainTray:
     """系统托盘"""
-    ActionQuit = ActionInfo(LanguageKeys.toolbar_quit, ResMap.icon_logout, 'onToolbarQuit')
+    ActionQuit = ActionInfo(
+        name=LanguageKeys.toolbar_quit,
+        icon=ResMap.icon_logout,
+        trigger='onToolbarQuit',
+        tooltip=LanguageKeys.tooltip_quit
+    )

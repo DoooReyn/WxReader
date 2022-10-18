@@ -6,8 +6,8 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 赞助页面
 """
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QDialog, QGridLayout, QLabel, QWidget
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QDialog, QGridLayout, QLabel, QWidget
 
 from conf.Lang import LanguageKeys
 from conf.ResMap import ResMap
@@ -32,7 +32,7 @@ class _View(GUI.View):
         self.setLayout(self.ui_layout)
 
 
-class SponsorView(QDialog, _View):
+class SponsorView(_View, QDialog):
     def __init__(self, parent: QWidget = None):
         super(SponsorView, self).__init__(parent)
 

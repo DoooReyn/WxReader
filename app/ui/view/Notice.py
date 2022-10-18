@@ -8,9 +8,9 @@
 """
 from enum import Enum
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QTextBlockFormat, QTextOption
-from PyQt5.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QTextBlockFormat, QTextOption
+from PySide6.QtWidgets import QDialog, QTextBrowser, QVBoxLayout
 
 from helper.GUI import GUI
 
@@ -43,7 +43,7 @@ class _View(GUI.View):
         self.setLayout(self.ui_layout)
 
 
-class Notice(QDialog, _View):
+class Notice(_View, QDialog):
 
     def __init__(self,
                  code: int,

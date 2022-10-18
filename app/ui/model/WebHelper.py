@@ -8,9 +8,10 @@
 """
 from typing import List
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFile, QIODevice, QObject
-from PyQt5.QtWebChannel import QWebChannel
-from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineView
+from PySide6.QtCore import Signal, Slot, QFile, QIODevice, QObject
+from PySide6.QtWebChannel import QWebChannel
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineScript, QWebEngineSettings
 
 from helper.Preferences import Preferences, UserKey
 from helper.Signals import Signals
@@ -32,35 +33,35 @@ class PjTransport(QObject):
         self.loading = False
 
     # Python 调用 JS
-    p2j = pyqtSignal(int)
+    p2j = Signal(int)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def j2p(self, msg):
         """js 给 python 发消息，方便测试"""
         print('j2p:', msg)
         # Signals().reader_status_tip_updated.emit(msg)
 
-    @pyqtSlot()
+    @Slot()
     def readingFinished(self):
         """全书已读完"""
         Signals().reader_reading_finished.emit()
 
-    @pyqtSlot(str, str)
+    @Slot(str, str)
     def downloadNote(self, filename, content):
         """下载笔记"""
         Signals().reader_download_note.emit(filename, content)
 
-    @pyqtSlot(int)
+    @Slot(int)
     def setSelection(self, has):
         """设置页面是否有选中内容"""
         self.has_selection = has == 1
 
-    @pyqtSlot(int)
+    @Slot(int)
     def setScrollToEnd(self, end):
         """设置页面是否已滚动到底部"""
         self.scroll_to_end = end == 1
 
-    @pyqtSlot(int)
+    @Slot(int)
     def setPageLoading(self, loading):
         """设置页面是否正在加载中"""
         self.loading = loading == 1
@@ -123,7 +124,11 @@ class WebHelper:
                    webview: QWebEngineView):
         """新建web页面"""
         web_profile = QWebEngineProfile(profile_name, webview)
+        web_profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
+        web_profile.setSpellCheckEnabled(False)
         web_profile.scripts().clear()
+        web_profile.settings().setAttribute(QWebEngineSettings.PdfViewerEnabled, False)
+        web_profile.settings().setAttribute(QWebEngineSettings.Accelerated2dCanvasEnabled, True)
         [WebHelper.injectJsToPage(script.where, script.name, web_profile) for script in scripts]
         web_page = QWebEnginePage(web_profile, webview)
         web_channel = QWebChannel(web_page)
