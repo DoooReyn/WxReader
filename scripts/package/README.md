@@ -1,5 +1,17 @@
 # 打包
 
+## 整理可以删除的文件
+
+- devtools_resources.pak
+- locales/*
+  - 保留 zh-CN.pak
+- cefpython3/*.dll
+- PySide6/
+    - translations/*
+    - Qt6Qml.dll
+    - Qt6QmlModels.dll
+    - Qt6Quick.dll
+
 ## 制作便携版
 
 存在配置文件的情况下，直接运行：`pyinstaller WxReader.spec`；

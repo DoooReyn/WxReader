@@ -10,7 +10,7 @@ from threading import Event, Thread
 from typing import Callable, Dict
 
 from helper.Cmm import Cmm
-from helper.Signals import Signals
+from helper.Signals import gSignals
 
 
 class ThreadNotFound(Exception):
@@ -67,7 +67,6 @@ class ThreadRunner:
         def on_error(err: str):
             if stop_on_error:
                 print(err)
-                Signals().logger_error.emit(err)
             else:
                 if thread:
                     thread.stop()

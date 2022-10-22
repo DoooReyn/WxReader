@@ -129,3 +129,4 @@ if __name__ == '__main__':
     with open(Config.QRC_PY_AT, 'w', encoding=Config.ENCODING):
         cmd = 'pyside6-rcc %s -o %s' % (Config.QRC_RAW_AT, Config.QRC_PY_AT)
         Popen(cmd, cwd=Config.PROGRAM_AT)
+        print('Done!')

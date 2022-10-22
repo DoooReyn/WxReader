@@ -11,10 +11,10 @@ from conf.Lang import LanguageKeys
 from conf.Views import Views
 from helper.I18n import I18n
 from helper.Preferences import UserKey
-from ui.view.Notice import FillType, Notice
+from ui.view.NoticeView import ContentFillType, NoticeView
 
 
-class BadNotice(Notice):
+class BadNotice(NoticeView):
     """错误通知"""
 
     def __init__(self, tips: str):
@@ -23,9 +23,9 @@ class BadNotice(Notice):
             UserKey.Exception.WinRect,
             I18n.text(LanguageKeys.exception_name),
             tips,
-            FillType.PlainText
+            ContentFillType.PlainText
         )
-        self.center()
+        self.setContentCentered()
 
 
 class NetworkBadNotice(BadNotice):
@@ -36,15 +36,7 @@ class NetworkBadNotice(BadNotice):
         super(NetworkBadNotice, self).__init__(tips)
 
 
-class InjectBadNotice(BadNotice):
-    """注入脚本失败通知"""
-
-    def __init__(self, filepath: str):
-        tips = I18n.text(LanguageKeys.debug_inject_script_failed).format(filepath)
-        super(InjectBadNotice, self).__init__(tips)
-
-
-class ReadingFinishedNotice(Notice):
+class ReadingFinishedNotice(NoticeView):
     """全文完通知"""
 
     def __init__(self):
@@ -53,6 +45,6 @@ class ReadingFinishedNotice(Notice):
             UserKey.ReadingFinished.WinRect,
             I18n.text(LanguageKeys.tips_notice),
             I18n.text(LanguageKeys.tips_reading_finished),
-            FillType.PlainText
+            ContentFillType.PlainText
         )
-        self.center()
+        self.setContentCentered()

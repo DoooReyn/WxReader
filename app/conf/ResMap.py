@@ -24,4 +24,5 @@ class ResMap:
     img_alipay_qrcode = ":img/alipay_qrcode"
     img_avatar = ":img/avatar"
     img_wx_qrcode = ":img/wx_qrcode"
-    js_reader = ":js/reader"
+    js_inject = ":js/inject"
+    theme_default = ":theme/default"

@@ -1,0 +1,137 @@
+QWidget
+{
+    font-family: "微软雅黑";
+    font-size: 13px;
+}
+
+QProgressBar
+{
+    border: none;
+    background-color: #f1f1f1;
+}
+
+QProgressBar::chunk
+{
+    background-color: #85caff;
+    width: 4px;
+    margin: 0.5px;
+}
+
+QMenuBar
+{
+    border: none;
+    background: #ffffff;
+    spacing: 2px;
+}
+
+QToolBar
+{
+    border: none;
+    background: #ffffff;
+    spacing: 2px;
+}
+
+QPushButton
+{
+    border: 1px solid #34a7ff;
+    border-radius: 4px;
+    background: #f4f8f8;
+    font: 15px;
+    min-width: 64px;
+    min-height: 32px;
+}
+
+QPushButton::hover,pressed
+{
+    font: bold;
+    background: #f4f8f8;
+}
+
+QPushButton::pressed
+{
+    font: bold;
+    margin: 0 4px 0 4px;
+    background: #f4f8f8;
+}
+
+QToolButton::hover,pressed {
+    border: 1px solid #8f8f8f;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+    font: bold;
+}
+
+QToolButton::checked {
+    border: 1px solid #8f8f8f;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+}
+
+QTextBrowser
+{
+    border: none;
+    border-radius: 4px;
+    background-color: #fbfbfb;
+}
+
+QScrollBar:vertical
+{
+    background-color: #f1f1f1;
+    width: 8px;
+    margin: 0 0 0 0;
+}
+
+QScrollBar::handle:vertical
+{
+    background-color: #c1c1c1;
+    min-height: 5px;
+    border-radius: 4px;
+}
+
+QScrollBar::sub-line:vertical
+{
+    margin: 3px 0px 3px 0px;
+    border-image: url(:/qss_icons/rc/up_arrow_disabled.png);
+    height: 10px;
+    width: 10px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical
+{
+    margin: 3px 0px 3px 0px;
+    border-image: url(:/qss_icons/rc/down_arrow_disabled.png);
+    height: 10px;
+    width: 10px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical:hover,QScrollBar::sub-line:vertical:on
+{
+    border-image: url(:/qss_icons/rc/up_arrow.png);
+    height: 10px;
+    width: 10px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on
+{
+    border-image: url(:/qss_icons/rc/down_arrow.png);
+    height: 10px;
+    width: 10px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+    background: none;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+    background: none;
+}

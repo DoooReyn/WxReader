@@ -6,10 +6,10 @@
 @Author  : DoooReyn<jl88744653@gmail.com>
 @Desc    : 网络辅助工具
 """
-from urllib.request import urlopen
 import re
+from urllib.request import urlopen
 
-from helper.Signals import Signals
+from helper.Signals import gSignals
 from helper.ThreadRunner import ThreadRunner
 
 
@@ -18,17 +18,19 @@ class NetHelper:
 
     @staticmethod
     def httpGet(api: str):
+        """发送 GET 请求"""
         if not re.match(r'^https?:/{2}\w.+$', api):
-            Signals().finished_api_done.emit(False)
+            gSignals.finished_api_done.emit(False)
             return
 
         def runner():
             try:
                 with urlopen(api):
-                    Signals().finished_api_done.emit(True)
+                    gSignals.finished_api_done.emit(True)
             except Exception as e:
                 print(e)
-                Signals().finished_api_done.emit(False)
+                gSignals.finished_api_done.emit(False)
             finally:
                 ThreadRunner().stop(tid)
+
         tid = ThreadRunner().start(runner, 30)

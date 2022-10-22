@@ -48,7 +48,7 @@ InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 
 Section "Installer"
   SetOutPath $INSTDIR
-  File /r "..\..\dist\${PRODUCT_NAME}\*.*"
+  File /r ".\dist\${PRODUCT_NAME}\*.*"
   SetShellVarContext all
   CreateShortCut "$DESKTOP\${PRODUCT_NAME}.lnk" "$INSTDIR\${PRODUCT_NAME}.exe"
   WriteUninstaller "Uninstaller.exe"

@@ -11,7 +11,7 @@ from conf.ResMap import ResMap
 
 
 class ActionInfo:
-    """动作"""
+    """动作信息"""
 
     def __init__(self, name: str, icon: str = None, trigger: str = None, shortcut: str = None, tooltip: str = None):
         self.name = name
@@ -30,13 +30,6 @@ class MainToolbar:
         shortcut='Alt+Q',
         tooltip=LanguageKeys.tooltip_quit
     )
-    ActionHide = ActionInfo(
-        name=LanguageKeys.toolbar_hide,
-        icon=ResMap.icon_eye_off,
-        trigger='onToolbarHide',
-        shortcut='Esc',
-        tooltip=LanguageKeys.tooltip_hide
-    )
     ActionHelp = ActionInfo(
         name=LanguageKeys.toolbar_help,
         icon=ResMap.icon_help,
@@ -51,18 +44,18 @@ class MainToolbar:
         shortcut='F2',
         tooltip=LanguageKeys.tooltip_about
     )
-    ActionProfile = ActionInfo(
-        name=LanguageKeys.toolbar_profile,
-        icon=ResMap.icon_settings,
-        trigger='onToolbarProfile',
-        shortcut='F12',
-        tooltip=LanguageKeys.tooltip_profile
+    ActionSponsor = ActionInfo(
+        name=LanguageKeys.toolbar_sponsor,
+        icon=ResMap.icon_coffee,
+        trigger='onToolbarSponsor',
+        shortcut='F3',
+        tooltip=LanguageKeys.tooltip_sponsor
     )
     ActionBackHome = ActionInfo(
         name=LanguageKeys.toolbar_back_home,
         icon=ResMap.icon_home_heart,
         trigger='onToolbarBackHome',
-        shortcut='F3',
+        shortcut='F4',
         tooltip=LanguageKeys.tooltip_back_home
     )
     ActionRefresh = ActionInfo(
@@ -71,6 +64,13 @@ class MainToolbar:
         trigger='onToolbarReload',
         shortcut='F5',
         tooltip=LanguageKeys.tooltip_refresh
+    )
+    ActionPinned = ActionInfo(
+        name=LanguageKeys.toolbar_pinned,
+        icon=ResMap.icon_pinned_off,
+        trigger='onToolbarPinned',
+        shortcut='F6',
+        tooltip=LanguageKeys.tooltip_pinned
     )
     ActionExport = ActionInfo(
         name=LanguageKeys.toolbar_export,
@@ -100,6 +100,13 @@ class MainToolbar:
         shortcut='F11',
         tooltip=LanguageKeys.tooltip_fullscreen
     )
+    ActionProfile = ActionInfo(
+        name=LanguageKeys.toolbar_profile,
+        icon=ResMap.icon_settings,
+        trigger='onToolbarProfile',
+        shortcut='F12',
+        tooltip=LanguageKeys.tooltip_profile
+    )
     ActionSpeedUp = ActionInfo(
         name=LanguageKeys.toolbar_speed_up,
         icon=ResMap.icon_chevrons_right,
@@ -114,22 +121,16 @@ class MainToolbar:
         shortcut='-',
         tooltip=LanguageKeys.tooltip_speed_dw
     )
-    ActionSponsor = ActionInfo(
-        name=LanguageKeys.toolbar_sponsor,
-        icon=ResMap.icon_coffee,
-        trigger='onToolbarSponsor',
-        tooltip=LanguageKeys.tooltip_sponsor
-    )
-    ActionPinned = ActionInfo(
-        name=LanguageKeys.toolbar_pinned,
-        icon=ResMap.icon_pinned_off,
-        trigger='onToolbarPinned',
-        tooltip=LanguageKeys.tooltip_pinned
-    )
 
 
 class MainTray:
     """系统托盘"""
+    ActionHelp = ActionInfo(
+        name=LanguageKeys.toolbar_help,
+        icon=ResMap.icon_help,
+        trigger='onToolbarHelp',
+        tooltip=LanguageKeys.tooltip_help
+    )
     ActionQuit = ActionInfo(
         name=LanguageKeys.toolbar_quit,
         icon=ResMap.icon_logout,

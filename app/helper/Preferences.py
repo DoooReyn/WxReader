@@ -48,6 +48,7 @@ class UserKey:
         WinRect = 'reading_finished.win_rect'
 
 
+# 默认用户存储数据
 default_user_data = {
     UserKey.Reader.Speed: 1,
     UserKey.Reader.Step: 1,
@@ -68,15 +69,19 @@ default_user_data = {
 
 @Cmm.Decorator.Singleton
 class Preferences:
+    """用户存储管理器"""
+
     def __init__(self):
         self._data = {}
         self.config_at = Cmm.appConfigAt()
 
     def init(self):
+        """初始化：创建配置、读取数据到内存"""
         Cmm.mkdir(Cmm.appStorageAt())
         self._read()
 
     def _read(self):
+        """读取数据到内存"""
         if exists(self.config_at):
             try:
                 with open(self.config_at, 'r', encoding='utf-8') as f:
@@ -88,21 +93,29 @@ class Preferences:
             self._saveDefault()
 
     def _saveDefault(self):
+        """保存默认数据"""
         self._data = default_user_data
         self.save()
 
     def _sync(self):
+        """数据同步"""
         for k, v in default_user_data.items():
             if self._data.get(k) is None:
                 self._data.setdefault(k, v)
 
     def save(self):
+        """保存数据"""
         with open(self.config_at, 'w', encoding='utf-8') as f:
             f.write(dumps(self._data, indent=2))
 
     def get(self, key: str):
+        """获取数据"""
         return self._data[key]
 
     def set(self, key: str, value):
+        """修改数据"""
         self._data[key] = value
         self.save()
+
+
+gPreferences = Preferences()
