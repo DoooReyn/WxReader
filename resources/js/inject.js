@@ -283,7 +283,7 @@ function doScroll(offset_y = 0) {
     }
 
     const top = (document.documentElement.scrollTop || document.body.scrollTop) + offset_y;
-    scroll({left: 0, top: top, behavior: 'smooth'});
+    scroll({left: 0, top: top, behavior: 'auto'});
     updateState(`自动阅读中...`);
 }
 
