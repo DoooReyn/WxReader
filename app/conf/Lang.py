@@ -79,7 +79,7 @@ class LanguageKeys:
 
 ABOUT_CN = """
 - 应用：微读自动阅读器
-- 版本：2.0.0
+- 版本：2.0.1
 - 作者：[DoooReyn](https://github.com/DoooReyn)
 - 仓库：[WxReader](https://github.com/DoooReyn/WxReader)
 - 引用: 

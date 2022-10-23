@@ -5,7 +5,7 @@ SetCompress force
 ; base
 !define TEMP_NAME "WxReader"
 !define PRODUCT_NAME "WxReader"
-!define PRODUCT_VERSION "2.0.0.0"
+!define PRODUCT_VERSION "2.0.1.0"
 !define PRODUCT_COMPANY "DoooReyn"
 
 VIProductVersion "${PRODUCT_VERSION}"
