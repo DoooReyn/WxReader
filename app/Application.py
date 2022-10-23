@@ -8,6 +8,7 @@
 """
 
 import sys
+from os.path import join
 
 from PySide6.QtCore import QLocale
 from PySide6.QtWidgets import QApplication
@@ -34,21 +35,6 @@ def main():
     # 调试模式?
     Config.DEBUG = '--DEBUG' in sys.argv
 
-    # 初始化 cef
-    cef_module_at = cef.GetModuleDirectory()
-    cef_settings = {
-        "debug": Config.DEBUG,
-        "locale": cef_module_at + Config.LocaleAt,
-        "log_file": Cmm.appStorageAt(),
-        "cache_path": Cmm.appStorageAt(),
-        "context_menu": {"enabled": False},
-    }
-    cef_switches = {
-        "disable-gpu": "",
-        "disable-gpu-compositing": "",
-    }
-    cef.Initialize(settings=cef_settings, switches=cef_switches)
-
     # 设置异常代理
     applyCustomExceptionProxy()
 
@@ -60,6 +46,21 @@ def main():
 
     # 初始化用户配置
     gPreferences.init()
+
+    # 初始化 cef
+    cef_module_at = cef.GetModuleDirectory()
+    cef_settings = {
+        "debug": Config.DEBUG,
+        "locale": join(cef_module_at, Config.LocaleAt),
+        "log_file": Cmm.appStorageAt(),
+        "cache_path": Cmm.appStorageAt(),
+        "context_menu": {"enabled": False},
+    }
+    cef_switches = {
+        "disable-gpu": "",
+        "disable-gpu-compositing": "",
+    }
+    cef.Initialize(settings=cef_settings, switches=cef_switches)
 
     # 创建应用
     app = QApplication(sys.argv)
