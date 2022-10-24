@@ -56,8 +56,8 @@ def checkPlatform():
 
 def checkCommandArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-D", "--debug", type=bool, help="开启调试模式")
-    parser.add_argument("-U", "--upx", type=bool, help="使用 UPX 压缩包体")
+    parser.add_argument("-D", "--debug",  action='store_true', help="开启调试模式")
+    parser.add_argument("-U", "--upx",  action='store_true', help="使用 UPX 压缩包体")
     parser.add_argument("-V", "--version", type=str, help="设置软件版本号")
     args = parser.parse_args()
     cache.setDebug(True if args.debug else False)
