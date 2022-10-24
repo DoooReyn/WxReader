@@ -47,12 +47,16 @@
     - 删除静默模式
 
 - [x] `QWebEngineView` 性能问题
-  > 就目前的体验来看， `Qt` 内置的 `QWebEngineView` 体验不太好，主要包括：
+
+  就目前的体验来看， `Qt` 内置的 `QWebEngineView` 体验不太好，主要包括：
     - 首次加载网页速度出奇得慢 *(看讨论需要禁用代理，我试过了但没啥卵用)*
     - 网页内响应出奇得卡 *(硬伤，没得洗)*
 
-  刚好之前了解过 [cef](https://bitbucket.org/chromiumembedded/cef/src/master/) 项目，看看能不能使用 `cef` 替换掉 `QWebEngineView`.
+  刚好之前了解过 [cef](https://bitbucket.org/chromiumembedded/cef/src/master/) 项目，看看能不能使用 `cef`
+  替换掉 `QWebEngineView`.
     - 试了下结合 `PySide6` 和 `cefpython3` 打开微信读书首页，打出来的包比原来的还小，运行速度十分流畅!
     - 改日可以研究一下如何实现交互！敬请期待！
 
   新版本已发布，将全面拥抱 `cefpython3`！
+
+- [x] 优化打包工具，尽量做到全自动化

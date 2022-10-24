@@ -1,1 +1,0 @@
-makensis package.nsi
