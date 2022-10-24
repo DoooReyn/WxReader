@@ -26,21 +26,17 @@ EXE_EXT = ".exe" if is_win else (".app" if is_darwin else "")
 
 # 冗余资源
 RES_REDUNDANCIES = [
+    "cefpython3/",
     "locales/",
     "PySide6/translations/",
     "devtools_resources.pak",
     "PySide6/Qt6Qml" + DYNAMIC_LIBRARY_EXT,
     "PySide6/Qt6QmlModels" + DYNAMIC_LIBRARY_EXT,
     "PySide6/Qt6Quick" + DYNAMIC_LIBRARY_EXT,
-    "cefpython3/chrome_elf" + DYNAMIC_LIBRARY_EXT,
-    "cefpython3/libcef" + DYNAMIC_LIBRARY_EXT,
-    "cefpython3/msvcp90" + DYNAMIC_LIBRARY_EXT,
-    "cefpython3/msvcp100" + DYNAMIC_LIBRARY_EXT,
-    "cefpython3/msvcp140" + DYNAMIC_LIBRARY_EXT,
 ]
 
 # 保留资源
-RES_RESERVES = ['zh-CN.pak']
+RES_RESERVES = ["zh-CN.pak", "cefpython_py38.pyd"]
 
 
 # -----------------------------------------------------------------------------
@@ -56,8 +52,8 @@ def checkPlatform():
 
 def checkCommandArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-D", "--debug",  action='store_true', help="开启调试模式")
-    parser.add_argument("-U", "--upx",  action='store_true', help="使用 UPX 压缩包体")
+    parser.add_argument("-D", "--debug", action="store_true", help="开启调试模式")
+    parser.add_argument("-U", "--upx", action="store_true", help="使用 UPX 压缩包体")
     parser.add_argument("-V", "--version", type=str, help="设置软件版本号")
     args = parser.parse_args()
     cache.setDebug(True if args.debug else False)
@@ -155,10 +151,12 @@ def removeRedundancies():
     cefapp_dir = join(curdir, "dist", cache.manifest.get('app_name'))
     for entry in RES_REDUNDANCIES:
         filepath = join(cefapp_dir, entry)
+        print(filepath, isdir(filepath))
         if isfile(filepath):
             removeFile(filepath)
         elif isdir(filepath):
             for sub_entry in listdir(filepath):
+                print('  -', sub_entry, sub_entry not in RES_RESERVES)
                 if sub_entry not in RES_RESERVES:
                     removeFile(join(filepath, sub_entry))
 
@@ -177,6 +175,7 @@ def testExecutableProgram():
             system("%s/explorer.exe /n,/e,%s" % (cache.getEnv("SYSTEMROOT"), cefapp_dir))
 
 
+# noinspection PyTypeChecker
 def zipExecutableProgram():
     """生成便携版压缩包"""
     curdir = dirname(abspath(__file__))
@@ -230,6 +229,9 @@ def main():
     # 根据模板生成 pyinstaller.spec / package.nsi
     generateBundleConfiguration('pyinstaller.spec', 'utf-8')
     generateBundleConfiguration('package.nsi', 'utf-8-sig')
+
+    # 更新项目配置
+    cache.saveManifest()
 
     # 清空缓存
     rmdir("build/")

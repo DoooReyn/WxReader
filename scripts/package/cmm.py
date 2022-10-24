@@ -1,3 +1,5 @@
+from json import dumps
+
 from PyInstaller import log
 from os import environ
 
@@ -32,6 +34,12 @@ class Cache:
     def setManifest(self, manifest):
         """设置项目配置"""
         self.manifest = manifest
+
+    def saveManifest(self):
+        self.manifest['display_version'] = self.display_version
+        self.manifest['production_version'] = self.production_version
+        with open('./package.json', 'w', encoding='utf-8') as f:
+            f.write(dumps(self.manifest, ensure_ascii=False, indent=4))
 
     @staticmethod
     def getEnv(key, default=None):
