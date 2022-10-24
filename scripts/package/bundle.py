@@ -54,13 +54,16 @@ def checkCommandArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-D", "--debug", action="store_true", help="开启调试模式")
     parser.add_argument("-U", "--upx", action="store_true", help="使用 UPX 压缩包体")
+    parser.add_argument("--disable-cache", action="store_true", help="不使用缓存")
     parser.add_argument("-V", "--version", type=str, help="设置软件版本号")
     args = parser.parse_args()
     cache.setDebug(True if args.debug else False)
     cache.setUpx(True if args.upx else False)
     cache.setVersion(checkVersion(args.version))
-    logger.info(f'调试模式: {"开启" if cache.debug else "关闭"}')
-    logger.info(f'UPX压缩: {"开启" if cache.upx else "关闭"}')
+    cache.setDisableCache(True if args.disable_cache else False)
+    logger.info(f'调试模式: {"是" if cache.debug else "否"}')
+    logger.info(f'禁用缓存: {"是" if cache.disable_cache else "否"}')
+    logger.info(f'UPX压缩: {"是" if cache.upx else "否"}')
     logger.info(f'软件版本: {cache.display_version}')
 
 
@@ -118,7 +121,10 @@ def generateExecutableProgram():
     """生成可执行程序"""
 
     # 运行 pyinstaller
-    sub = Popen(["pyinstaller", "--clean", "pyinstaller.spec"], env=cache.env)
+    command = ["pyinstaller", "pyinstaller.spec"]
+    if cache.disable_cache:
+        command.append("--clean")
+    sub = Popen(command, env=cache.env)
     sub.communicate()
     rcode = sub.returncode
     if rcode != 0:
@@ -176,13 +182,13 @@ def testExecutableProgram():
 
 
 # noinspection PyTypeChecker
-def zipExecutableProgram():
-    """生成便携版压缩包"""
+def packExecutableProgram():
+    """生成便携版和安装包"""
     curdir = dirname(abspath(__file__))
     app_name = cache.manifest.get('app_name')
     cefapp_dir = join(curdir, "dist", app_name)
     portable = f'./{app_name}_v{cache.display_version}_Portable.zip'
-    logger.info(f'正在制作便携版压缩包！ > {portable}')
+    logger.info(f'正在制作便携版！ > {portable}')
     z = ZipFile(portable, 'w', ZIP_DEFLATED)
     for dir_path, dirs, files in walk(cefapp_dir):
         fpath = dir_path.replace(cefapp_dir, '')
@@ -190,8 +196,15 @@ def zipExecutableProgram():
         for filename in files:
             z.write(join(dir_path, filename), fpath + filename)
     z.close()
-    logger.info(f'便携版压缩包已生成！ > {portable}')
-    return portable
+    logger.info(f'便携版已生成！ > {portable}')
+    generateSha256(portable)
+
+    # 生成安装包
+    generateInstaller()
+    if is_win:
+        installer = f'./{app_name}_v{cache.display_version}_Installer.exe'
+        logger.info(f'安装包已生成！ > {installer}')
+        generateSha256(installer)
 
 
 def generateInstaller():
@@ -243,20 +256,12 @@ def main():
     # 校验可执行程序
     testExecutableProgram()
 
-    # 生成便携版压缩包
-    portable = zipExecutableProgram()
-
-    # 生成安装包
-    generateInstaller()
+    # 生成便携版和安装包
+    packExecutableProgram()
 
     # 删除配置
     os.remove('pyinstaller.spec')
     os.remove('package.nsi')
-
-    # 生成 SHA256
-    installer = portable.replace('Portable', 'Installer').replace('zip', 'exe')
-    generateSha256(portable)
-    generateSha256(installer)
 
     # 打包全部完成
     logger.info('恭喜！打包完成！')
