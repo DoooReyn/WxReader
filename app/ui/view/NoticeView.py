@@ -31,7 +31,7 @@ class _View(ViewDelegate):
         super(_View, self).__init__(win, code, key)
 
         self.ui_msg_box = QTextBrowser()
-        self.ui_msg_box.setContextMenuPolicy(Qt.NoContextMenu)
+        self.ui_msg_box.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
         self.ui_msg_box.setReadOnly(True)
         self.ui_msg_box.setFont(GUI.font())
         self.ui_msg_box.setAcceptRichText(True)
@@ -67,8 +67,8 @@ class NoticeView(QDialog):
 
     def setupUi(self, sub_title: str, content: str, fill_type: ContentFillType):
         """设置UI"""
+        self.setMinimumSize(480, 320)
         self.setWindowTitle(sub_title)
-        self.setMinimumSize(480, 340)
 
         if fill_type == ContentFillType.PlainText:
             self.view.ui_msg_box.setPlainText(content)

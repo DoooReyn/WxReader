@@ -1,4 +1,6 @@
 class ResMap:
+    html_about = ":html/about"
+    html_help = ":html/help"
     icon_app = ":icon/app"
     icon_arrow_autofit_down = ":icon/arrow_autofit_down"
     icon_arrows_maximize = ":icon/arrows_maximize"

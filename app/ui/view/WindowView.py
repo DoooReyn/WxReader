@@ -335,7 +335,7 @@ class WindowView(QMainWindow):
         NoticeView(Views.Help,
                    UserKey.Help.WinRect,
                    I18n.text(LanguageKeys.toolbar_help),
-                   I18n.text(LanguageKeys.notice_help),
+                   Cmm.readFile(ResMap.html_help),
                    ContentFillType.Html
                    ).exec()
 
@@ -345,7 +345,8 @@ class WindowView(QMainWindow):
         NoticeView(Views.About,
                    UserKey.About.WinRect,
                    I18n.text(LanguageKeys.toolbar_about),
-                   I18n.text(LanguageKeys.notice_about)
+                   Cmm.readFile(ResMap.html_about),
+                   ContentFillType.Html
                    ).exec()
 
     @staticmethod
