@@ -112,5 +112,6 @@
 
 开发不易，请大家多多支持！😊
 
-![](./resources/img/wx_qrcode.jpg)
 ![](./resources/img/alipay_qrcode.jpg)
+
+![](./resources/img/wx_qrcode.jpg)
