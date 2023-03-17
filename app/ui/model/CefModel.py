@@ -67,7 +67,7 @@ class CefModel:
         SpeedDown = 189
 
         values = (
-            Quit, Escape, Help, About, Home, Sponsor,
+            Escape, Help, About, Home, Sponsor,
             Reload, Export, Theme, Auto, Fullscreen,
             Pinned, Options, SpeedUp, SpeedDown,
         )
