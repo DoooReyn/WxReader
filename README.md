@@ -111,3 +111,7 @@
 ### 写在最后
 
 开发不易，请大家多多支持！😊
+
+![](./resources/img/alipay_qrcode.jpg)
+
+![](./resources/img/wx_qrcode.jpg)
