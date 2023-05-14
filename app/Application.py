@@ -12,7 +12,7 @@ from os.path import join
 
 from PySide6.QtCore import QLocale
 from PySide6.QtWidgets import QApplication
-from cefpython3 import cefpython_py38 as cef
+from cefpython3 import cefpython as cef
 
 from conf.Config import Config
 from conf.Lang import LanguageKeys
