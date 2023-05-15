@@ -1,7 +1,7 @@
 from typing import Optional
 
 from PySide6.QtWidgets import QWidget, QFileDialog
-from cefpython3 import cefpython_py38 as cef
+from cefpython3 import cefpython as cef
 
 from conf.Lang import LanguageKeys
 from conf.ResMap import ResMap
