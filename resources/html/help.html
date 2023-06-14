@@ -11,59 +11,6 @@
     </style>
 </head>
 <body>
-<h3 id="更新说明">更新说明</h3>
-<h4 id="wxreader-200-20221022">WxReader 2.0.0 [2022/10/22]</h4>
-<ul>
-    <li>全新的 WebView 方案
-        <ul>
-            <li>Qt WebEngine 存在严重的性能问题，本轮优化已完全弃用</li>
-            <li>cefpython3 在此方面表现非常优异，大幅提升了阅读体验</li>
-        </ul>
-    </li>
-    <li>工具栏调整
-        <ul>
-            <li>删除&quot;静默&quot;</li>
-            <li>&quot;固定&quot;修改为&quot;收起&quot;，并绑定快捷键 F6</li>
-            <li>顺序调整</li>
-            <li>悬停时提示加上了快捷键</li>
-        </ul>
-    </li>
-    <li>快捷键调整
-        <ul>
-            <li>删除工具栏&quot;静默&quot;动作对应的 Esc</li>
-            <li>首页从 F3 调整为 F4</li>
-            <li>F3 分配给&quot;赞助&quot;</li>
-        </ul>
-    </li>
-    <li>系统托盘图标行为反馈
-        <ul>
-            <li>单击或双击将激活主窗口</li>
-            <li>右击不会激活主窗口</li>
-        </ul>
-    </li>
-    <li>状态栏调整
-        <ul>
-            <li>&quot;页面加载进度条&quot; 修改为 &quot;显示当前页面地址&quot;</li>
-        </ul>
-    </li>
-</ul>
-<h4 id="wxreader-200-beta2-20221018">WxReader 2.0.0-beta.2 [2022/10/18]</h4>
-<ul>
-    <li>升级引擎到 PySide6，主要解决 Qt WebEngine 内存占用问题</li>
-    <li>新增安装包</li>
-    <li>更新便携版
-        <ul>
-            <li>对包体进行了精简优化</li>
-        </ul>
-    </li>
-    <li>更新 LICENSE</li>
-</ul>
-<h4 id="wxreader-200-beta-20221011">WxReader 2.0.0-beta [2022/10/11]</h4>
-<ul>
-    <li>微读自动阅读器 2.0.0 推出啦！ 首个包是未删减、无压缩的便携版。</li>
-    <li>因为 Qt 的 WebEngine 动态库体积比较大，所以包整体体积也不小。</li>
-    <li>后续会尝试通过不同手段来优化一下包体，敬请期待。</li>
-</ul>
 <hr>
 <h3 id="快捷键">快捷键</h3>
 <table>
@@ -161,6 +108,85 @@
     </tbody>
 </table>
 <hr>
+<h3 id="更新说明">更新说明</h3>
+<h4 id="wxreader-2-0-2-2023-06-14-">WxReader 2.0.2 [2023/06/14]</h4>
+<ul>
+    <li>开发环境最高支持到 Python 3.7
+        <blockquote>
+            <p>因为 cefpython3 对全平台的支持目前最新的版本是 66.0，但是它对 Python 版本的要求是低于 3.8，
+                也就是说 Python 3.8+ 是不能用的，望开发者知悉。</p>
+        </blockquote>
+    </li>
+    <li>尝试修复 <a href="https://github.com/DoooReyn/WxReader/issues/19">issue#19</a> 网络错误问题
+        <ul>
+            <li>增加网络错误详情提示（方便查看具体错误，也方便大家报告，不然很难追踪）</li>
+            <li>如果遇到 <code>chrome-error</code> 错误，则自动跳回首页</li>
+        </ul>
+    </li>
+    <li>“主题切换”功能暂不可用
+        <blockquote>
+            <p>“主题切换”功能由于官方最近把 API 隐藏了，目前无法使用模拟点击实现，且暂未找到替代的方法。
+                因此 2.0.2 决定将“主题切换”设置为“暂不可用”，请用户暂时通过官方按钮手动切换。</p>
+        </blockquote>
+    </li>
+</ul>
+<h4 id="wxreader-2-0-1-2022-10-23-">WxReader 2.0.1 [2022/10/23]</h4>
+<ul>
+    <li>修复 cef 缓存路径创建失败问题</li>
+    <li>优化页面滚动体验</li>
+</ul>
+<h4 id="wxreader-200-20221022">WxReader 2.0.0 [2022/10/22]</h4>
+<ul>
+    <li>全新的 WebView 方案
+        <ul>
+            <li>Qt WebEngine 存在严重的性能问题，本轮优化已完全弃用</li>
+            <li>cefpython3 在此方面表现非常优异，大幅提升了阅读体验</li>
+        </ul>
+    </li>
+    <li>工具栏调整
+        <ul>
+            <li>删除&quot;静默&quot;</li>
+            <li>&quot;固定&quot;修改为&quot;收起&quot;，并绑定快捷键 F6</li>
+            <li>顺序调整</li>
+            <li>悬停时提示加上了快捷键</li>
+        </ul>
+    </li>
+    <li>快捷键调整
+        <ul>
+            <li>删除工具栏&quot;静默&quot;动作对应的 Esc</li>
+            <li>首页从 F3 调整为 F4</li>
+            <li>F3 分配给&quot;赞助&quot;</li>
+        </ul>
+    </li>
+    <li>系统托盘图标行为反馈
+        <ul>
+            <li>单击或双击将激活主窗口</li>
+            <li>右击不会激活主窗口</li>
+        </ul>
+    </li>
+    <li>状态栏调整
+        <ul>
+            <li>&quot;页面加载进度条&quot; 修改为 &quot;显示当前页面地址&quot;</li>
+        </ul>
+    </li>
+</ul>
+<h4 id="wxreader-200-beta2-20221018">WxReader 2.0.0-beta.2 [2022/10/18]</h4>
+<ul>
+    <li>升级引擎到 PySide6，主要解决 Qt WebEngine 内存占用问题</li>
+    <li>新增安装包</li>
+    <li>更新便携版
+        <ul>
+            <li>对包体进行了精简优化</li>
+        </ul>
+    </li>
+    <li>更新 LICENSE</li>
+</ul>
+<h4 id="wxreader-200-beta-20221011">WxReader 2.0.0-beta [2022/10/11]</h4>
+<ul>
+    <li>微读自动阅读器 2.0.0 推出啦！ 首个包是未删减、无压缩的便携版。</li>
+    <li>因为 Qt 的 WebEngine 动态库体积比较大，所以包整体体积也不小。</li>
+    <li>后续会尝试通过不同手段来优化一下包体，敬请期待。</li>
+</ul>
 <h3 id="问题反馈">问题反馈</h3>
 <ul>
     <li>如有问题或建议，请到<a href="https://github.com/DoooReyn/WxReader">官方仓库</a>进行讨论;</li>
