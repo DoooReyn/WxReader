@@ -3,8 +3,8 @@
     "temp_name": "WxReader",
     "display_name": "微读阅读器",
     "author": "DoooReyn",
-    "production_version": "2.0.1.2",
-    "display_version": "2.0.1",
+    "production_version": "2.0.2.0",
+    "display_version": "2.0.2",
     "app_icon": "../../resources/icon/app.ico",
     "app_entry": "../../app/Application.py",
     "app_dir": "../../app"

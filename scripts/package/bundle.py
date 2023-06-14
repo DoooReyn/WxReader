@@ -29,14 +29,25 @@ RES_REDUNDANCIES = [
     "cefpython3/",
     "locales/",
     "PySide6/translations/",
+    "PySide6/plugins/generic/"
+    "PySide6/plugins/multimedia/"
     "devtools_resources.pak",
+    "PySide6/plugins/generic/qtuiotouchplugin" + DYNAMIC_LIBRARY_EXT,
+    "PySide6/plugins/multimedia/ffmpegmediaplugin" + DYNAMIC_LIBRARY_EXT,
+    "PySide6/plugins/multimedia/windowsmediaplugin" + DYNAMIC_LIBRARY_EXT,
+    "PySide6/Qt6Pdf" + DYNAMIC_LIBRARY_EXT,
     "PySide6/Qt6Qml" + DYNAMIC_LIBRARY_EXT,
     "PySide6/Qt6QmlModels" + DYNAMIC_LIBRARY_EXT,
     "PySide6/Qt6Quick" + DYNAMIC_LIBRARY_EXT,
 ]
 
 # 保留资源
-RES_RESERVES = ["zh-CN.pak", "cefpython_py38.pyd"]
+RES_RESERVES = ["zh-CN.pak"]
+
+# cefpython.pyd
+py_ver = "".join(map(str, sys.version_info[:2]))
+cef_ver = f"cefpython_py{py_ver}.pyd"
+RES_RESERVES.append(cef_ver)
 
 
 # -----------------------------------------------------------------------------
@@ -54,7 +65,7 @@ def checkCommandArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-D", "--debug", action="store_true", help="开启调试模式")
     parser.add_argument("-U", "--upx", action="store_true", help="使用 UPX 压缩包体")
-    parser.add_argument("--disable-cache", action="store_true", help="不使用缓存")
+    parser.add_argument("-C", "--disable-cache", action="store_true", help="不使用缓存")
     parser.add_argument("-V", "--version", type=str, help="设置软件版本号")
     args = parser.parse_args()
     cache.setDebug(True if args.debug else False)
@@ -82,18 +93,18 @@ def checkVersion(version: str):
     """检查版本号"""
     if version is None:
         quitCLI("必须传入版本号！")
-
+    
     sections = version.split('.')
     if len(sections) != 4:
         quitCLI('版本号格式错误！请遵循如下格式: a.b.c.d')
-
+    
     versions = []
     for sec in sections:
         try:
             versions.append(str(int(sec)))
         except ValueError:
             quitCLI('版本号格式错误！每个部分只允许使用数字！')
-
+    
     return versions
 
 
@@ -119,29 +130,32 @@ def generateBundleConfiguration(config, encoding):
 
 def generateExecutableProgram():
     """生成可执行程序"""
-
+    
     # 运行 pyinstaller
     command = ["pyinstaller", "pyinstaller.spec"]
+    if cache.upx:
+        command.append("--upx-dir=./upx")
     if cache.disable_cache:
         command.append("--clean")
     sub = Popen(command, env=cache.env)
     sub.communicate()
     rcode = sub.returncode
     if rcode != 0:
-        rmdir("build/")
-        rmdir("dist/")
+        if cache.disable_cache:
+            rmdir("build/")
+            rmdir("dist/")
         quitCLI(f"Error: PyInstaller 任务执行失败, code={rcode}")
-
+    
     # 删除冗余文件
     removeRedundancies()
-
+    
     # 校验程序
     curdir = dirname(abspath(__file__))
     cefapp_dir = join(curdir, "dist", cache.manifest.get('app_name'))
     executable = join(cefapp_dir, cache.manifest.get('app_name') + EXE_EXT)
     if not exists(executable):
         quitCLI(f"Error: PyInstaller failed, main executable is missing: {executable}")
-
+    
     logger.info(f"程序已生成 {executable}!")
 
 
@@ -157,12 +171,10 @@ def removeRedundancies():
     cefapp_dir = join(curdir, "dist", cache.manifest.get('app_name'))
     for entry in RES_REDUNDANCIES:
         filepath = join(cefapp_dir, entry)
-        print(filepath, isdir(filepath))
         if isfile(filepath):
             removeFile(filepath)
         elif isdir(filepath):
             for sub_entry in listdir(filepath):
-                print('  -', sub_entry, sub_entry not in RES_RESERVES)
                 if sub_entry not in RES_RESERVES:
                     removeFile(join(filepath, sub_entry))
 
@@ -198,7 +210,7 @@ def packExecutableProgram():
     z.close()
     logger.info(f'便携版已生成！ > {portable}')
     generateSha256(portable)
-
+    
     # 生成安装包
     generateInstaller()
     if is_win:
@@ -217,7 +229,7 @@ def generateSha256(filepath):
     """生成文件的SHA256"""
     if not exists(filepath):
         return
-
+    
     block_size = 65536
     h = sha256()
     with open(filepath, 'rb') as fh:
@@ -232,37 +244,38 @@ def generateSha256(filepath):
 def main():
     # 检查支持平台
     checkPlatform()
-
+    
     # 检查命令行参数
     checkCommandArgs()
-
+    
     # 读取项目配置
     readProjectConfiguration()
-
+    
     # 根据模板生成 pyinstaller.spec / package.nsi
     generateBundleConfiguration('pyinstaller.spec', 'utf-8')
     generateBundleConfiguration('package.nsi', 'utf-8-sig')
-
+    
     # 更新项目配置
     cache.saveManifest()
-
+    
     # 清空缓存
-    rmdir("build/")
-    rmdir("dist/")
-
+    if cache.disable_cache:
+        rmdir("build/")
+        rmdir("dist/")
+    
     # 生成可执行程序（同步）
     generateExecutableProgram()
-
+    
     # 校验可执行程序
     testExecutableProgram()
-
+    
     # 生成便携版和安装包
     packExecutableProgram()
-
+    
     # 删除配置
     os.remove('pyinstaller.spec')
     os.remove('package.nsi')
-
+    
     # 打包全部完成
     logger.info('恭喜！打包完成！')
 

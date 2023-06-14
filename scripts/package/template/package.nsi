@@ -16,7 +16,7 @@ VIAddVersionKey FileVersion "${PRODUCT_VERSION}"
 VIAddVersionKey ProductName "${PRODUCT_NAME}" 
 VIAddVersionKey ProductVersion "${PRODUCT_VERSION}"
 VIAddVersionKey CompanyName "${PRODUCT_COMPANY}"
-VIAddVersionKey LegalCopyright "Copyright (C) 2020-2022 ${PRODUCT_COMPANY}"
+VIAddVersionKey LegalCopyright "Copyright (C) 2020-2023 ${PRODUCT_COMPANY}"
 
 ;使用现代外观
 ;Include Modern UI
