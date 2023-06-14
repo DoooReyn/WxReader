@@ -106,7 +106,7 @@ class _Languages:
         "tooltip_refresh": "刷新页面    F5",
         "tooltip_pinned": "收起工具栏    F6",
         "tooltip_export": "导出阅读笔记    F8",
-        "tooltip_theme": "切换主题    F9",
+        "tooltip_theme": "切换主题 (暂不可用) F9",
         "tooltip_auto": "切换自动阅读    F10",
         "tooltip_fullscreen": "切换全屏    F11",
         "tooltip_profile": "更多选项    F12",
@@ -124,7 +124,7 @@ class _Languages:
         # debug
         "debug_method_not_implemented": "[ {0} > {1} ] 方法未实现",
         "debug_inject_script_failed": "注入脚本{}失败",
-        "debug_network_error": "网络似乎有点问题呢~",
+        "debug_network_error": "网络似乎有点问题呢~\n错误代码: {0}\n错误信息: {1}",
 
         # tips
         "tips_speed": "阅读速度:{}",

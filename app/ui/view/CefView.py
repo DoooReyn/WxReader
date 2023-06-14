@@ -20,33 +20,56 @@ class ClientHandler(object):
         self.is_ready = False
         self.js_inject = Cmm.readFile(ResMap.js_inject)
 
-    def OnLoadStart(self, browser, **_):
+    # noinspection PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
+    def OnLoadingProgressChange(self, browser, progress):
+        """页面加载进度事件"""
+        # print('=> DisplayHandler::OnLoadingProgressChange()')
+        # print("     progress: ", progress)
+        return True
+
+    # noinspection PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
+    def OnAddressChange(self, browser, frame, url):
+        """页面URL切换事件"""
+        # print('=> DisplayHandler:OnAddressChange()')
+        # print("     url: ", url)
+        gSignals.cef_update_state.emit()
+
+    # noinspection PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
+    def OnLoadStart(self, browser, frame):
         """页面加载开始事件"""
-        # print('=> browser load start:', browser.GetUrl())
+        self.is_ready = False
+        # print('=> LoadHandler::OnLoadStart()')
+        # print("     url: ", browser.GetUrl())
         browser.GetMainFrame().ExecuteJavascript(self.js_inject)
         gSignals.cef_load_start.emit()
 
     # noinspection PyUnusedLocal
     # noinspection PyMethodMayBeStatic
-    def OnLoadingStateChange(self, browser, **_):
-        """页面状态变化事件"""
-        # print('=> browser state changed:', browser.GetUrl())
-        gSignals.cef_update_state.emit()
-
-    # noinspection PyUnusedLocal
-    # noinspection PyMethodMayBeStatic
     def OnLoadEnd(self, browser, frame, http_code):
         """页面加载结束事件"""
-        # print("=> browser load end:", browser.GetUrl(), http_code)
-        gSignals.cef_load_finished.emit()
-        self.is_ready = True
+        # print("=> LoadHandler::OnLoadEnd()")
+        # print("     http code: ", http_code)
+        if 200 <= http_code < 300:
+            gSignals.cef_load_finished.emit()
+            self.is_ready = True
+        else:
+            self.is_ready = False
 
     # noinspection PyUnusedLocal
     # noinspection PyMethodMayBeStatic
     def OnLoadError(self, browser, frame, error_code, error_text_out, failed_url):
         """页面加载失败事件"""
-        # print("=> browser load error:", error_code, error_text_out, failed_url)
-        frame.ExecuteFunction(CefModel.JsMethod.Alert, I18n.text(LanguageKeys.debug_network_error))
+        self.is_ready = False
+        reason = "".join(error_text_out)
+        reason = I18n.text(LanguageKeys.debug_network_error).format(error_code, reason)
+        # print("=> LoadHandler::OnLoadError()")
+        # print("     url : ", failed_url)
+        # print("     code: ", error_code)
+        # print("     text: ", reason)
+        frame.ExecuteFunction(CefModel.JsMethod.Alert, reason)
         Cmm.playBeep()
 
     # noinspection PyUnusedLocal
@@ -84,6 +107,9 @@ class CefView(QWidget):
 
         # 创建 Webview
         url = gPreferences.get(UserKey.Reader.LatestUrl)
+        if url == "chrome-error://chromewebdata/":
+            # fix [issue#19](https://github.com/DoooReyn/WxReader/issues/19)
+            url = CefModel.HOME_PAGE
         self.handler = ClientHandler(self)
         self.browser = cef.CreateBrowserSync(window_info, url=url)
         self.browser.SetClientHandler(self.handler)

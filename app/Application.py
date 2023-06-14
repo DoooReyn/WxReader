@@ -52,6 +52,9 @@ def main():
     cef_settings = {
         "debug": Config.DEBUG,
         "locale": join(cef_module_at, Config.LocaleAt),
+        "windowless_rendering_enabled": True,
+        "persist_user_preferences": True,
+        "persist_session_cookies": True,
         "log_file": Cmm.appStorageAt(),
         "cache_path": Cmm.appStorageAt(),
         "context_menu": {"enabled": False},

@@ -81,6 +81,7 @@ class _View(ViewDelegate):
         self.ui_act_pinned.setToolTip(I18n.text(LanguageKeys.tooltip_pinned))
         self.ui_act_quit.setToolTip(I18n.text(LanguageKeys.tooltip_quit))
         self.ui_act_auto.setCheckable(True)
+        self.ui_act_theme.setEnabled(False)
 
         # stateful actions
         self.stateful_act_auto = ScrollableAction(self.ui_act_auto)
