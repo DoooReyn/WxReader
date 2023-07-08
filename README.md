@@ -1,5 +1,9 @@
 # WxReader
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=doooreyn/WxReader&type=Date)](https://star-history.com/#doooreyn/WxReader&Date)
+
 ## 更新说明
 
 ### WxReader 2.0.2 [2023/06/14]
