@@ -62,6 +62,10 @@ class ClientHandler(object):
     # noinspection PyMethodMayBeStatic
     def OnLoadError(self, browser, frame, error_code, error_text_out, failed_url):
         """页面加载失败事件"""
+        if error_code == -3:
+            # 忽略 ABORTED 事件
+            return
+            
         self.is_ready = False
         reason = "".join(error_text_out)
         reason = I18n.text(LanguageKeys.debug_network_error).format(error_code, reason)
