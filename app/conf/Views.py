@@ -26,6 +26,9 @@ class Views:
     # 赞助
     Sponsor = 4
 
+    # 定时
+    Timing = 5
+
     # 读完
     ReadingFinished = 99
 

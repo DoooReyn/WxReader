@@ -27,6 +27,7 @@ class LanguageKeys:
     toolbar_back_home = "toolbar_back_home"
     toolbar_speed_up = "toolbar_speed_up"
     toolbar_speed_dw = "toolbar_speed_dw"
+    toolbar_timing = "toolbar_timing"
     toolbar_sponsor = "toolbar_sponsor"
     toolbar_pinned = "toolbar_pinned"
     tooltip_help = "tooltip_help"
@@ -44,6 +45,7 @@ class LanguageKeys:
     tooltip_sponsor = "tooltip_sponsor"
     tooltip_pinned = "tooltip_pinned"
     tooltip_open_view = "tooltip_open_view"
+    tooltip_timing = "tooltip_timing"
     notice_btn_ok = "notice_btn_ok"
     notice_sponsor = "notice_sponsor"
     exception_name = "exception_name"
@@ -66,6 +68,7 @@ class LanguageKeys:
     tips_note_exported_bad = "tips_note_exported_bad"
     tips_notice = "tips_notice"
     tips_reading_finished = "tips_reading_finished"
+    
     options_speed = "options_speed"
     options_tooltip_speed = "options_tooltip_speed"
     options_step = "options_step"
@@ -73,6 +76,16 @@ class LanguageKeys:
     options_finished_notice = "options_finished_notice"
     options_finished_placeholder = "options_finished_placeholder"
     options_api_test = "options_api_test"
+
+    timing_start = "timing_start"
+    timing_stop = "timing_stop"
+    timing_every_day = "timing_every_day"
+
+    tips_timing_start = "tips_timing_start"
+    tips_timing_stop = "tips_timing_stop"
+    tips_timing_every_day = "tips_timing_every_day"
+    timing_btn_open = "timing_btn_open"
+    timing_btn_close = "timing_btn_close"
 
 
 class _Languages:
@@ -98,6 +111,7 @@ class _Languages:
         "toolbar_speed_dw": "减速",
         "toolbar_sponsor": "赞助",
         "toolbar_pinned": "收起",
+        "toolbar_timing": "定时",
 
         "tooltip_help": "查看帮助    F1",
         "tooltip_about": "关于软件    F2",
@@ -113,6 +127,7 @@ class _Languages:
         "tooltip_quit": "退出阅读    Alt+Q",
         "tooltip_speed_up": "加速    +",
         "tooltip_speed_dw": "减速    -",
+        "tooltip_timing": "每天定时阅读",
 
         # notice
         "notice_btn_ok": "好哒！",
@@ -144,6 +159,10 @@ class _Languages:
         "tips_notice": "通知",
         "tips_reading_finished": "全书已读完",
 
+        "tips_timing_start": "开启自动阅读的时间",
+        "tips_timing_stop": "停止自动阅读的时间",
+        "tips_timing_every_day": "是否每天生效",
+
         # options
         "options_speed": "滚动速度",
         "options_tooltip_speed": "直接修改阅读速度 (1-100)",
@@ -152,6 +171,12 @@ class _Languages:
         "options_finished_notice": "读完通知",
         "options_finished_placeholder": "你可以在此填入一个GET接口",
         "options_api_test": "测试",
+
+        "timing_start": "开始时间",
+        "timing_stop": "结束时间",
+        "timing_every_day": "每天生效",
+        "timing_btn_open": "开启",
+        "timing_btn_close": "关闭"
     }
 
 

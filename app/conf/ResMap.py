@@ -23,6 +23,7 @@ class ResMap:
     icon_refresh = ":icon/refresh"
     icon_settings = ":icon/settings"
     icon_sun = ":icon/sun"
+    icon_timing = ":icon/timing"
     img_alipay_qrcode = ":img/alipay_qrcode"
     img_avatar = ":img/avatar"
     img_wx_qrcode = ":img/wx_qrcode"
