@@ -35,6 +35,8 @@ from ui.view.OptionsView import OptionsView
 from ui.view.SponsorView import SponsorView
 from ui.view.ToolbarAction import ScrollableAction, PinnedAction, SpeedDwAction, SpeedUpAction
 from ui.view.ViewDelegate import ViewDelegate
+from ui.view.TimingView import TimingView
+from PySide6.QtCore import QTime
 
 
 class _View(ViewDelegate):
@@ -65,7 +67,10 @@ class _View(ViewDelegate):
         self.ui_act_profile = self.addActionBy(MainToolbar.ActionProfile, self.ui_tool_bar)
         self.ui_act_speed_dw = self.addActionBy(MainToolbar.ActionSpeedDw, self.ui_tool_bar)
         self.ui_act_speed_up = self.addActionBy(MainToolbar.ActionSpeedUp, self.ui_tool_bar)
+        self.ui_act_timing = self.addActionBy(MainToolbar.ActionTiming, self.ui_tool_bar)
         self.ui_act_quit = self.addActionBy(MainToolbar.ActionQuit, self.ui_tool_bar)
+
+
         self.ui_act_back_home.setToolTip(I18n.text(LanguageKeys.tooltip_back_home))
         self.ui_act_refresh.setToolTip(I18n.text(LanguageKeys.tooltip_refresh))
         self.ui_act_auto.setToolTip(I18n.text(LanguageKeys.tooltip_auto))
@@ -79,6 +84,7 @@ class _View(ViewDelegate):
         self.ui_act_help.setToolTip(I18n.text(LanguageKeys.tooltip_help))
         self.ui_act_sponsor.setToolTip(I18n.text(LanguageKeys.tooltip_sponsor))
         self.ui_act_pinned.setToolTip(I18n.text(LanguageKeys.tooltip_pinned))
+        self.ui_act_timing.setToolTip(I18n.text(LanguageKeys.tooltip_timing))
         self.ui_act_quit.setToolTip(I18n.text(LanguageKeys.tooltip_quit))
         self.ui_act_auto.setCheckable(True)
         self.ui_act_theme.setEnabled(False)
@@ -123,12 +129,14 @@ class WindowView(QMainWindow):
 
         self.timer_cef: Optional[QTimer] = None
         self.timer_reading: Optional[QTimer] = None
+        self.timer_timing: Optional[QTimer] = None
         self.view = _View(self, Views.Main, UserKey.General.WinRect)
 
         self.setupUi()
         self.setupSignals()
         self.setupCefTimer()
         self.setupReadingTimer()
+        self.setupTimingTimer()
 
     def setupUi(self):
         """初始化 UI"""
@@ -204,9 +212,7 @@ class WindowView(QMainWindow):
         elif shortcut == CefModel.ShortCut.Fullscreen:
             self.onToolbarFullscreen()
         elif shortcut == CefModel.ShortCut.Auto:
-            checked = self.view.ui_act_auto.isChecked()
-            self.view.ui_act_auto.setChecked(not checked)
-            self.onToolbarSetAuto()
+            self.onToolbarAuto()
         elif shortcut == CefModel.ShortCut.Pinned:
             self.onToolbarPinned()
         else:
@@ -235,6 +241,12 @@ class WindowView(QMainWindow):
         self.timer_reading.timeout.connect(self.onAutoReading)
         self.timer_reading.start(CefModel.MS_AUTO)
 
+    def setupTimingTimer(self):
+        """启动定时阅读功能定时器"""
+        self.timer_timing = QTimer()
+        self.timer_timing.timeout.connect(self.onTimingReading)
+        self.timer_timing.start(100)
+
     def onRunCef(self):
         """CEF 更新"""
         self.view.ui_cef.runLoop()
@@ -244,6 +256,32 @@ class WindowView(QMainWindow):
         self.timer_reading.stop()
         self.timer_cef.stop()
         self.view.ui_cef.quit()
+
+    def onToolbarAuto(self):
+        """模拟工具栏的自动阅读点击"""
+        checked = self.view.ui_act_auto.isChecked()
+        self.view.ui_act_auto.setChecked(not checked)
+        self.onToolbarSetAuto()
+
+    def onTimingReading(self):
+        """定时阅读功能"""        
+        isOpen = gPreferences.get(UserKey.Timing.EveryDay)        
+        if isOpen:
+            currentTime = QTime.currentTime().toString("hh:mm:ss")
+            startTime = QTime.fromMSecsSinceStartOfDay(gPreferences.get(UserKey.Timing.StartTime)).toString("hh:mm:ss")
+            stopTime = QTime.fromMSecsSinceStartOfDay(gPreferences.get(UserKey.Timing.StopTime)).toString("hh:mm:ss")
+        
+            if currentTime == startTime:
+                checked = self.view.ui_act_auto.isChecked()
+                if not checked:                                            
+                    self.onToolbarAuto()
+            elif currentTime == stopTime:                
+                checked = self.view.ui_act_auto.isChecked()
+                if checked: 
+                    self.onToolbarAuto()                
+            else:
+                pass
+
 
     def onAutoReading(self):
         """阅读器更新"""
@@ -354,3 +392,8 @@ class WindowView(QMainWindow):
     def onToolbarProfile():
         """打开选项视图"""
         OptionsView().exec()
+
+    @staticmethod
+    def onToolbarTiming():
+        """打开定时视图"""
+        TimingView().exec()

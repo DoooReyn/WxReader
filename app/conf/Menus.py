@@ -121,6 +121,13 @@ class MainToolbar:
         shortcut='-',
         tooltip=LanguageKeys.tooltip_speed_dw
     )
+    ActionTiming = ActionInfo(
+        name=LanguageKeys.toolbar_timing,
+        icon=ResMap.icon_timing,
+        trigger='onToolbarTiming',
+        shortcut='-',
+        tooltip=LanguageKeys.tooltip_timing
+    )
 
 
 class MainTray:

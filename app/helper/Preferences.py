@@ -47,6 +47,13 @@ class UserKey:
     class ReadingFinished:
         WinRect = 'reading_finished.win_rect'
 
+    class Timing:
+        WinRect = 'timing.win_rect'
+        EveryDay = 'timing.every_day'
+        StartTime = 'timing.start_time'
+        StopTime = 'timing.stop_time'
+
+
 
 # 默认用户存储数据
 default_user_data = {
@@ -63,7 +70,11 @@ default_user_data = {
     UserKey.Exception.WinRect: [640, 480, 640, 480],
     UserKey.Sponsor.WinRect: [640, 480, 640, 480],
     UserKey.ReadingFinished.WinRect: [640, 480, 640, 480],
-    UserKey.Profile.NoticeUrl: ''
+    UserKey.Profile.NoticeUrl: '',
+    UserKey.Timing.WinRect: [640,480,640,480],    
+    UserKey.Timing.EveryDay : False,
+    UserKey.Timing.StartTime: 0,
+    UserKey.Timing.StopTime: 0
 }
 
 

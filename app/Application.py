@@ -10,7 +10,7 @@
 import sys
 from os.path import join
 
-from PySide6.QtCore import QLocale
+from PySide6.QtCore import QLocale, Qt
 from PySide6.QtWidgets import QApplication
 from cefpython3 import cefpython as cef
 
@@ -47,6 +47,21 @@ def main():
     # 初始化用户配置
     gPreferences.init()
 
+    # 创建应用
+    app = QApplication(sys.argv)
+    app.setStyleSheet(Cmm.readFile(ResMap.theme_default))
+    app.setWindowIcon(GUI.icon(ResMap.icon_app))
+    app.setApplicationName(Config.AppName)
+    app.setApplicationDisplayName(I18n.text(LanguageKeys.app_name))
+    app.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 启用高DPI缩放
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+    # 获取屏幕DPI
+    screen = app.primaryScreen()
+    logicalDpi = screen.logicalDotsPerInch()
+    # 根据DPI计算缩放比例，这里的逻辑可以按需调整
+    scaleFactor = logicalDpi / 96.0  # 假设默认DPI为96
+
     # 初始化 cef
     cef_module_at = cef.GetModuleDirectory()
     cef_settings = {
@@ -62,15 +77,9 @@ def main():
     cef_switches = {
         "disable-gpu": "",
         "disable-gpu-compositing": "",
+        "--force-device-scale-factor": str(scaleFactor),  # 将缩放比例转换为字符串
     }
     cef.Initialize(settings=cef_settings, switches=cef_switches)
-
-    # 创建应用
-    app = QApplication(sys.argv)
-    app.setStyleSheet(Cmm.readFile(ResMap.theme_default))
-    app.setWindowIcon(GUI.icon(ResMap.icon_app))
-    app.setApplicationName(Config.AppName)
-    app.setApplicationDisplayName(I18n.text(LanguageKeys.app_name))
 
     # 创建应用主窗口
     win = WindowView()
